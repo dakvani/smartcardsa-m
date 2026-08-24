@@ -263,7 +263,7 @@ export function SortableLinkItem({
                     />
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-1.5 leading-relaxed px-1 whitespace-pre-wrap">
-                    {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            Remove the “what does shows here?” text from the dashboard UI elements and replace it with professional end-user wording.\n\nVerify that any profile edits I make in the dashboard are reflected correctly on the public pages under the hosted domain.\n\nAdd an automated end-to-end test that loads a published profile on the hosted domain and confirms the layout and texts look professional.\n\nStandardize typography, spacing, and helper copy styling across the profile builder so the hosted profile page looks consistent and professional.`}
+                    {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            run a test to check for you said I have updated the literal display text in the profile builder's helper messages as requested.`}
                   </p>
                 </div>
               );
