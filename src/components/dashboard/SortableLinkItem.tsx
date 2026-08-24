@@ -142,14 +142,17 @@ export function SortableLinkItem({
               (def.icon &&
                 (icons as Record<string, React.ComponentType<{ className?: string }>>)[def.icon]) ||
               icons.Link2;
-            const fallback =
-              t !== "custom" ? (
-                brandLogo ? (
-                  <img src={brandLogo} alt={def.label} className="w-5 h-5 object-contain" />
-                ) : (
-                  <Ico className="w-5 h-5" />
-                )
-              ) : null;
+            const fallback = brandLogo ? (
+              <img
+                src={brandLogo}
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                className="w-6 h-6 object-contain"
+              />
+            ) : (
+              <Ico className="w-5 h-5" />
+            );
             return (
               <LinkThumbnailUpload
                 userId={link.user_id}

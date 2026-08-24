@@ -45,7 +45,7 @@ export function NewLinkDialog({ onCreate, trigger }: NewLinkDialogProps) {
                 >
                   <div className="w-12 h-12 flex items-center justify-center bg-white/5 rounded-full group-hover:scale-110 transition-transform duration-200 overflow-hidden">
                     {brandLogo ? (
-                      <img src={brandLogo} alt={t.label} className="w-7 h-7 object-contain" />
+                      <img src={brandLogo} alt="" aria-hidden="true" loading="lazy" className="w-8 h-8 object-contain" />
                     ) : (
                       <Icon className="w-6 h-6 text-white/70" />
                     )}

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { SocialIcons } from "@/components/profile/SocialIcons";
 import { EmailSignup } from "@/components/profile/EmailSignup";
 import { SaveContactButton } from "@/components/profile/SaveContactButton";
-import { BRAND_LOGOS } from "@/lib/brand-logos";
+import { getBrandLogo } from "@/lib/brand-logos";
 
 import { AnimatedBackground } from "@/components/profile/AnimatedBackground";
 import { ClaimSmartCardDialog } from "@/components/profile/ClaimSmartCardDialog";
@@ -303,14 +303,16 @@ export default function PublicProfile() {
   // fall back to a generic icon so every button has a visual anchor.
   const renderAutoIcon = (url: string, size = "w-5 h-5", title?: string) => {
     const t = detectLinkType(url, title);
-    const brandLogo = BRAND_LOGOS[t];
-    
+    const brandLogo = getBrandLogo(t);
+
     if (brandLogo) {
       return (
-        <img 
-          src={brandLogo} 
-          alt={t} 
-          className={`${size} object-contain shrink-0`} 
+        <img
+          src={brandLogo}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          className={`${size} object-contain shrink-0 drop-shadow-sm`}
         />
       );
     }
