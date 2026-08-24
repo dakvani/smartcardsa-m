@@ -1,19 +1,60 @@
+// Official brand marks, served from the CDN as transparent PNGs.
+// Keys line up with LinkType values (see src/lib/link-types.ts) and the
+// social-link keys used by profiles, so every platform renders its real
+// brand icon instead of a generic outline glyph.
+import discord from "@/assets/social/discord.png.asset.json";
+import email from "@/assets/social/email.png.asset.json";
+import facebook from "@/assets/social/facebook.png.asset.json";
+import github from "@/assets/social/github.png.asset.json";
+import globe from "@/assets/social/globe.png.asset.json";
+import instagram from "@/assets/social/instagram.png.asset.json";
+import link from "@/assets/social/link.png.asset.json";
+import linkedin from "@/assets/social/linkedin.png.asset.json";
+import messenger from "@/assets/social/messenger.png.asset.json";
+import phone from "@/assets/social/phone.png.asset.json";
+import pinterest from "@/assets/social/pinterest.png.asset.json";
+import reddit from "@/assets/social/reddit.png.asset.json";
+import snapchat from "@/assets/social/snapchat.png.asset.json";
+import spotify from "@/assets/social/spotify.png.asset.json";
+import telegram from "@/assets/social/telegram.png.asset.json";
+import tiktok from "@/assets/social/tiktok.png.asset.json";
+import twitch from "@/assets/social/twitch.png.asset.json";
+import whatsapp from "@/assets/social/whatsapp.png.asset.json";
+import x from "@/assets/social/x.png.asset.json";
+import youtube from "@/assets/social/youtube.png.asset.json";
+
 export const BRAND_LOGOS: Record<string, string> = {
-  twitter: "https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg",
-  instagram: "https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg",
-  facebook: "https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg",
-  whatsapp: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
-  youtube: "https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg",
-  tiktok: "https://upload.wikimedia.org/wikipedia/commons/3/34/Ionicons_logo-tiktok.svg",
-  linkedin: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
-  snapchat: "https://upload.wikimedia.org/wikipedia/en/a/ad/Snapchat_logo.svg",
-  messenger: "https://upload.wikimedia.org/wikipedia/commons/b/be/Facebook_Messenger_logo_2020.svg",
-  github: "https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg",
-  telegram: "https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg",
-  discord: "https://static.cdnlogo.com/logos/d/43/discord.svg",
-  pinterest: "https://upload.wikimedia.org/wikipedia/commons/0/08/Pinterest-logo.png",
-  twitch: "https://upload.wikimedia.org/wikipedia/commons/d/d3/Twitch_Glitch_Logo_Purple.svg",
-  spotify: "https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg",
-  reddit: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Reddit_logo.svg",
-  website: "https://upload.wikimedia.org/wikipedia/commons/c/c4/Globe_icon.svg",
+  // Social platforms
+  instagram: instagram.url,
+  facebook: facebook.url,
+  messenger: messenger.url,
+  whatsapp: whatsapp.url,
+  snapchat: snapchat.url,
+  twitter: x.url,
+  x: x.url,
+  linkedin: linkedin.url,
+  youtube: youtube.url,
+  tiktok: tiktok.url,
+  github: github.url,
+  telegram: telegram.url,
+  discord: discord.url,
+  pinterest: pinterest.url,
+  reddit: reddit.url,
+  twitch: twitch.url,
+  spotify: spotify.url,
+
+  // Contact + generic
+  email: email.url,
+  mail: email.url,
+  phone: phone.url,
+  website: globe.url,
+  globe: globe.url,
+  custom: link.url,
+  link: link.url,
 };
+
+/** Resolve a brand logo for a platform/link-type key (case-insensitive). */
+export function getBrandLogo(key?: string | null): string | undefined {
+  if (!key) return undefined;
+  return BRAND_LOGOS[key.toLowerCase().trim()];
+}
