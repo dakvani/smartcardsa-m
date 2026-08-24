@@ -263,7 +263,7 @@ export function SortableLinkItem({
                     />
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-1.5 leading-relaxed px-1 whitespace-pre-wrap">
-                    {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            delete`}
+                    {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            publish this bio from the smartlink bio templates, it is not reaching to the builder and it dont publishing too`}
                   </p>
                 </div>
               );
