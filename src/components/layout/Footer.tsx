@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
 import { SmartCardLogo } from "@/components/brand/SmartCardLogo";
+import { BRAND_LOGOS } from "@/lib/brand-logos";
 
 const footerLinks = {
   Product: [
