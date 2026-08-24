@@ -69,7 +69,9 @@ export function SocialLinksEditor({ socialLinks, onChange, onBlur }: SocialLinks
             <div key={key}>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-[#2C2D31] flex items-center justify-center flex-shrink-0 overflow-hidden">
-                  {brandLogo && <img src={brandLogo} alt={label} className="w-5 h-5 object-contain" />}
+                  {brandLogo && (
+                    <img src={brandLogo} alt="" aria-hidden="true" loading="lazy" className="w-6 h-6 object-contain" />
+                  )}
                 </div>
                 <div className="relative flex-1">
                   <input
