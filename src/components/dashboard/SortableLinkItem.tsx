@@ -263,7 +263,7 @@ export function SortableLinkItem({
                     />
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-1.5 leading-relaxed px-1 whitespace-pre-wrap">
-                    {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            1. Fix the NFC Products page so all NFC items with “custom design/logo upload” actually open the Design Customizer with full editing options.\n\n2. Replace the internal developer/QA instructions shown under phone/WhatsApp fields with clear end-user helper copy.\n\n3. Update the iOS Install SmartCard banner so it never covers the bottom SmartLink Bio tabs and doesn’t block navigation taps.\n\n4. Add an iPhone UI regression test that verifies SmartLink Bio tabs remain tappable with the Install banner visible.`}
+                    {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            what does shows here? take it off and need a professionalism, also update on the profiles which working already under the hosted domain`}
                   </p>
                 </div>
               );
