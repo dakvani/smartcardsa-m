@@ -263,7 +263,7 @@ export function SortableLinkItem({
                     />
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-1.5 leading-relaxed px-1 whitespace-pre-wrap">
-                    {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            run a test to check for you said I have updated the literal display text in the profile builder's helper messages as requested.`}
+                    {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            delete`}
                   </p>
                 </div>
               );
