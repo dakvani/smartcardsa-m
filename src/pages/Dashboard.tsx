@@ -146,6 +146,28 @@ export default function Dashboard() {
     try { localStorage.setItem(APPEARANCE_TAB_KEY, appearanceTab); } catch { /* storage unavailable */ }
   }, [appearanceTab]);
 
+  /** Live preview device size, persisted so the preview stays consistent across refreshes. */
+  const PREVIEW_SIZE_KEY = "smartcard:previewSize";
+  const [previewSize, setPreviewSize] = useState<"sm" | "md" | "lg">(() => {
+    try {
+      const stored = localStorage.getItem(PREVIEW_SIZE_KEY);
+      if (stored === "sm" || stored === "md" || stored === "lg") return stored;
+    } catch { /* storage unavailable */ }
+    return "md";
+  });
+  useEffect(() => {
+    try { localStorage.setItem(PREVIEW_SIZE_KEY, previewSize); } catch { /* storage unavailable */ }
+  }, [previewSize]);
+  const previewColumnClass =
+    previewSize === "sm" ? "md:w-[260px] lg:w-[300px]" : previewSize === "lg" ? "md:w-[320px] lg:w-[420px]" : "md:w-[290px] lg:w-[360px]";
+  const previewFrameClass =
+    previewSize === "sm"
+      ? "md:h-[min(100%,calc((300px-2rem)*19.5/9))]"
+      : previewSize === "lg"
+      ? "md:h-[min(100%,calc((420px-2rem)*19.5/9))]"
+      : "md:h-[min(100%,calc((360px-2rem)*19.5/9))]";
+
+
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
