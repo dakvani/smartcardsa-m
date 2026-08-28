@@ -7,7 +7,5 @@ project_id = "aytnjjteziwwbfqddjrw"
     verify_jwt = false
   [functions.preview-transactional-email]
     verify_jwt = false
-  [functions.reset-legacy-passwords]
-    verify_jwt = false
 
 
