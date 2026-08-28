@@ -7,12 +7,13 @@ import { Label } from "@/components/ui/label";
 import {
   Loader2, Check, Palette, Briefcase, Camera, Sparkles, Lock,
   Stethoscope, Home, Trophy, Music, UtensilsCrossed, Dumbbell,
-  Code, Star, GraduationCap, Gauge, Eye, EyeOff, Upload, X, Crown, Trash2, Undo2,
+  Code, Star, GraduationCap, Gauge, Eye, EyeOff, Upload, X, Crown, Trash2, Undo2, Search,
 } from "lucide-react";
 import { toast } from "sonner";
 import { UnlockProDialog } from "./UnlockProDialog";
 import { TemplatePreview } from "./TemplatePreview";
-import { templates as smartlinkTemplates } from "@/lib/smartlink-templates";
+import { templates as smartlinkTemplates, templateCategories, linkLabel } from "@/lib/smartlink-templates";
+
 import {
   smartlinkTemplateToProfilePatch, smartlinkTemplateTier, canUseTemplateTier,
   saveThemeSnapshot, readThemeSnapshot, clearThemeSnapshot, type ThemeSnapshot,
@@ -171,6 +172,22 @@ export function ProfileTemplates({
   const [publishingSmartlink, setPublishingSmartlink] = useState(false);
   const [snapshot, setSnapshot] = useState<ThemeSnapshot | null>(() => readThemeSnapshot(userId));
   useEffect(() => { setSnapshot(readThemeSnapshot(userId)); }, [userId]);
+
+  // SmartLink gallery search + category filter
+  const [slQuery, setSlQuery] = useState("");
+  const [slCategory, setSlCategory] = useState<string>("All templates");
+  const smartlinkCategories = templateCategories;
+  const slq = slQuery.trim().toLowerCase();
+  const filteredSmartlinkTemplates = smartlinkTemplates.filter((t) => {
+    const inCat = slCategory === "All templates" || t.category === slCategory;
+    if (!inCat) return false;
+    if (!slq) return true;
+    const haystack = [t.name, t.username, t.category, t.bio, ...t.links.map(linkLabel)]
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(slq);
+  });
+
 
   // Per-user hidden templates (UI-only) — persisted to localStorage
   const hiddenKey = `tpl_hidden:${userId || "anon"}`;
