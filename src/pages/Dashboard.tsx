@@ -1499,7 +1499,7 @@ export default function Dashboard() {
 
               {/* iPhone Frame */}
               <div className="mx-auto w-[220px] lg:w-auto lg:flex-1 lg:min-h-0 lg:flex lg:items-center lg:justify-center">
-                <div className={`relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 w-[260px] aspect-[9/19.5] ${previewFit === "full" ? "lg:w-auto lg:h-full lg:max-w-full" : "lg:w-[300px]"}`}>
+                <div className="relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 w-[260px] aspect-[9/19.5] lg:w-[300px]">
                   {/* Side buttons */}
                   <div className="absolute -left-[3px] top-24 w-[3px] h-8 rounded-l-md bg-neutral-700" />
                   <div className="absolute -left-[3px] top-36 w-[3px] h-12 rounded-l-md bg-neutral-700" />
