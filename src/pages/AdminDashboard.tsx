@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LayoutTemplate } from "lucide-react";
+import { AdminBuilderSettings } from "@/components/admin/AdminBuilderSettings";
 import { AdminTableViewer } from "@/components/admin/AdminTableViewer";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AdminUserManager } from "@/components/admin/AdminUserManager";
@@ -413,6 +415,14 @@ export default function AdminDashboard() {
                   <Clock className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                   <span className="hidden sm:inline">Audit</span>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="builder"
+                  className="min-w-0 gap-1.5 px-1 sm:px-3 text-xs h-9 sm:h-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:ring-1 data-[state=active]:ring-primary/40 transition-colors"
+                  aria-label="Builder"
+                >
+                  <LayoutTemplate className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+                  <span className="hidden sm:inline">Builder</span>
+                </TabsTrigger>
               </TabsList>
 
               {/* Overview Tab */}
@@ -604,6 +614,10 @@ export default function AdminDashboard() {
 
               <TabsContent value="users">
                 <AdminUserManager />
+              </TabsContent>
+
+              <TabsContent value="builder">
+                <AdminBuilderSettings />
               </TabsContent>
 
               <TabsContent value="audit">

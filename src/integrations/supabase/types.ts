@@ -71,6 +71,39 @@ export type Database = {
         }
         Relationships: []
       }
+      builder_settings: {
+        Row: {
+          allow_3d: boolean
+          allow_animations: boolean
+          allow_custom_background: boolean
+          allow_link_motion: boolean
+          id: number
+          max_links_free: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          allow_3d?: boolean
+          allow_animations?: boolean
+          allow_custom_background?: boolean
+          allow_link_motion?: boolean
+          id?: number
+          max_links_free?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          allow_3d?: boolean
+          allow_animations?: boolean
+          allow_custom_background?: boolean
+          allow_link_motion?: boolean
+          id?: number
+          max_links_free?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           company: string | null
@@ -448,6 +481,7 @@ export type Database = {
           group_id: string | null
           id: string
           is_featured: boolean | null
+          motion: string | null
           position: number
           scheduled_end: string | null
           scheduled_start: string | null
@@ -464,6 +498,7 @@ export type Database = {
           group_id?: string | null
           id?: string
           is_featured?: boolean | null
+          motion?: string | null
           position?: number
           scheduled_end?: string | null
           scheduled_start?: string | null
@@ -480,6 +515,7 @@ export type Database = {
           group_id?: string | null
           id?: string
           is_featured?: boolean | null
+          motion?: string | null
           position?: number
           scheduled_end?: string | null
           scheduled_start?: string | null
@@ -933,6 +969,7 @@ export type Database = {
           animation_type: string | null
           avatar_url: string | null
           bio: string | null
+          card_style: Json
           created_at: string | null
           custom_accent_color: string | null
           custom_background_type: string | null
@@ -967,6 +1004,7 @@ export type Database = {
           animation_type?: string | null
           avatar_url?: string | null
           bio?: string | null
+          card_style?: Json
           created_at?: string | null
           custom_accent_color?: string | null
           custom_background_type?: string | null
@@ -1001,6 +1039,7 @@ export type Database = {
           animation_type?: string | null
           avatar_url?: string | null
           bio?: string | null
+          card_style?: Json
           created_at?: string | null
           custom_accent_color?: string | null
           custom_background_type?: string | null
@@ -1080,6 +1119,33 @@ export type Database = {
         Update: {
           id?: string
           public_theme?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      smartlink_template_settings: {
+        Row: {
+          enabled: boolean
+          position: number
+          template_key: string
+          tier: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          enabled?: boolean
+          position?: number
+          template_key: string
+          tier?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          enabled?: boolean
+          position?: number
+          template_key?: string
+          tier?: string
           updated_at?: string
           updated_by?: string | null
         }

@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { SocialIcons } from "@/components/profile/SocialIcons";
 import { EmailSignup } from "@/components/profile/EmailSignup";
 import { SaveContactButton } from "@/components/profile/SaveContactButton";
+import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
+import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
 import { getBrandLogo } from "@/lib/brand-logos";
 
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
@@ -51,6 +53,7 @@ interface Profile {
   custom_background_url?: string | null;
   custom_background_type?: "image" | "video" | null;
   plan?: string;
+  card_style?: unknown;
 }
 
 interface LinkItem {
@@ -63,6 +66,7 @@ interface LinkItem {
   scheduled_end: string | null;
   group_id: string | null;
   is_featured: boolean;
+  motion?: string | null;
 }
 
 interface LinkGroup {
@@ -150,7 +154,7 @@ export default function PublicProfile() {
       try {
         const { data: profileData, error: profileError } = await supabase
           .from("profiles")
-          .select("id,user_id,username,title,bio,avatar_url,theme_name,theme_gradient,gradient_direction,social_links,custom_bg_color,custom_accent_color,animation_type,animation_speed,animation_intensity,motion_enabled,custom_background_url,custom_background_type,email_collection_enabled,plan,created_at,updated_at")
+          .select("id,user_id,username,title,bio,avatar_url,theme_name,theme_gradient,gradient_direction,social_links,custom_bg_color,custom_accent_color,animation_type,animation_speed,animation_intensity,motion_enabled,card_style,custom_background_url,custom_background_type,email_collection_enabled,plan,created_at,updated_at")
           .eq("username", username.toLowerCase())
           .maybeSingle();
 
@@ -323,6 +327,9 @@ export default function PublicProfile() {
 
   // Auto-icon for every link based on the detected type. Custom/website links
   // fall back to a generic icon so every button has a visual anchor.
+  const cardStyle = parseCardStyle(profile?.card_style);
+  const reduceLinkMotion = profile?.motion_enabled === false;
+
   const renderAutoIcon = (url: string, size = "w-5 h-5", title?: string) => {
     const t = detectLinkType(url, title);
     const brandLogo = getBrandLogo(t);
@@ -459,7 +466,7 @@ export default function PublicProfile() {
                     </span>
                   )}
                 </div>
-                <h1 className="text-xl sm:text-2xl font-bold text-primary-foreground leading-tight">{profile.title}</h1>
+                <h1 className={`text-xl sm:text-2xl leading-tight text-primary-foreground ${headingClassFor(cardStyle)}`}>{profile.title}</h1>
                 {profile.bio && (
                   <p className="text-sm text-primary-foreground/70 mt-1.5 max-w-xs mx-auto leading-snug">{profile.bio}</p>
                 )}
@@ -474,22 +481,24 @@ export default function PublicProfile() {
                       Featured
                     </p>
                     {links.filter((l) => l.is_featured).map((link, index) => (
-                      <motion.button
+                      <ProfileLinkButton
                         key={link.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        onClick={() => handleLinkClick(link.id, link.url)}
-                        className="w-full flex items-center gap-3 py-3.5 px-5 rounded-2xl bg-primary-foreground/30 backdrop-blur border border-primary-foreground/20 hover:bg-primary-foreground/40 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
-                      >
-                        {link.thumbnail_url ? (
-                          <img src={link.thumbnail_url} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0 ring-2 ring-primary-foreground/30" />
-                        ) : (
-                          renderAutoIcon(link.url, "w-6 h-6", link.title)
-                        )}
-                        <span className="flex-1 text-primary-foreground font-bold text-center text-lg">{link.title}</span>
-                        {(link.thumbnail_url || renderAutoIcon(link.url, "w-5 h-5", link.title)) && <div className="w-12" />}
-                      </motion.button>
+                        title={link.title}
+                        url={link.url}
+                        motionStyle={link.motion}
+                        featured
+                        cardStyle={cardStyle}
+                        reducedMotion={reduceLinkMotion}
+                        index={index}
+                        icon={
+                          link.thumbnail_url ? (
+                            <img src={link.thumbnail_url} alt="" className="w-12 h-12 rounded-xl object-cover flex-shrink-0 ring-2 ring-primary-foreground/30" />
+                          ) : (
+                            renderAutoIcon(link.url, "w-6 h-6", link.title)
+                          )
+                        }
+                        onActivate={() => handleLinkClick(link.id, link.url)}
+                      />
                     ))}
                   </div>
                 )}
@@ -497,22 +506,23 @@ export default function PublicProfile() {
                 {links.filter((l) => !l.group_id && !l.is_featured).length > 0 && (
                   <div className="space-y-2.5">
                     {links.filter((l) => !l.group_id && !l.is_featured).map((link, index) => (
-                      <motion.button
+                      <ProfileLinkButton
                         key={link.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        onClick={() => handleLinkClick(link.id, link.url)}
-                        className="w-full flex items-center gap-3 py-3 px-5 rounded-2xl bg-primary-foreground/20 backdrop-blur hover:bg-primary-foreground/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                      >
-                        {link.thumbnail_url ? (
-                          <img src={link.thumbnail_url} alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
-                        ) : (
-                          renderAutoIcon(link.url, "w-5 h-5", link.title)
-                        )}
-                        <span className="flex-1 text-primary-foreground font-semibold text-center">{link.title}</span>
-                        {(link.thumbnail_url || renderAutoIcon(link.url, "w-5 h-5", link.title)) && <div className="w-10" />}
-                      </motion.button>
+                        title={link.title}
+                        url={link.url}
+                        motionStyle={link.motion}
+                        cardStyle={cardStyle}
+                        reducedMotion={reduceLinkMotion}
+                        index={index}
+                        icon={
+                          link.thumbnail_url ? (
+                            <img src={link.thumbnail_url} alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
+                          ) : (
+                            renderAutoIcon(link.url, "w-5 h-5", link.title)
+                          )
+                        }
+                        onActivate={() => handleLinkClick(link.id, link.url)}
+                      />
                     ))}
                   </div>
                 )}
@@ -530,22 +540,23 @@ export default function PublicProfile() {
                       <p className="text-primary-foreground/60 text-sm font-medium mb-3 text-center">{group.name}</p>
                       <div className="space-y-3">
                         {groupLinks.map((link, index) => (
-                          <motion.button
+                          <ProfileLinkButton
                             key={link.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3 + index * 0.05 }}
-                            onClick={() => handleLinkClick(link.id, link.url)}
-                            className="w-full flex items-center gap-3 py-3 px-5 rounded-2xl bg-primary-foreground/20 backdrop-blur hover:bg-primary-foreground/30 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                          >
-                            {link.thumbnail_url ? (
-                              <img src={link.thumbnail_url} alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
-                            ) : (
-                              renderAutoIcon(link.url, "w-5 h-5", link.title)
-                            )}
-                            <span className="flex-1 text-primary-foreground font-semibold text-center">{link.title}</span>
-                            {(link.thumbnail_url || renderAutoIcon(link.url, "w-5 h-5", link.title)) && <div className="w-10" />}
-                          </motion.button>
+                            title={link.title}
+                            url={link.url}
+                            motionStyle={link.motion}
+                            cardStyle={cardStyle}
+                            reducedMotion={reduceLinkMotion}
+                            index={index}
+                            icon={
+                              link.thumbnail_url ? (
+                                <img src={link.thumbnail_url} alt="" className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
+                              ) : (
+                                renderAutoIcon(link.url, "w-5 h-5", link.title)
+                              )
+                            }
+                            onActivate={() => handleLinkClick(link.id, link.url)}
+                          />
                         ))}
                       </div>
                     </motion.div>

@@ -13,7 +13,10 @@ import {
   AlertCircle,
   MoreVertical,
   Search,
+  Sparkles,
 } from "lucide-react";
+import { LINK_MOTIONS, normalizeMotion } from "@/lib/link-motion";
+
 import { LinkThumbnailUpload } from "./LinkThumbnailUpload";
 import { LinkScheduler } from "./LinkScheduler";
 import { LinkOgPreview } from "./LinkOgPreview";
@@ -66,6 +69,9 @@ interface LinkItem {
   scheduled_end?: string | null;
   group_id?: string | null;
   is_featured?: boolean;
+  /** Per-link movement style played on the public profile. */
+  motion?: string | null;
+
 }
 
 interface SortableLinkItemProps {
@@ -346,6 +352,29 @@ export function SortableLinkItem({
             );
           })()}
 
+          {/* Movement — how this button animates on the public profile */}
+          <div className="flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 text-primary shrink-0" />
+            <Select
+              value={normalizeMotion(link.motion)}
+              onValueChange={(value) => onUpdate(link.id, { motion: value })}
+            >
+              <SelectTrigger
+                className="h-7 w-[150px] text-[11px] px-2"
+                aria-label="Button movement"
+              >
+                <SelectValue placeholder="Movement" />
+              </SelectTrigger>
+              <SelectContent>
+                {LINK_MOTIONS.map((m) => (
+                  <SelectItem key={m.value} value={m.value} className="text-xs">
+                    {m.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {!compact ? (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] sm:text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
@@ -395,6 +424,7 @@ export function SortableLinkItem({
               {!link.visible && <span className="text-amber-400">• hidden</span>}
               {link.is_featured && <span className="text-primary">• pinned</span>}
             </div>
+
           )}
         </div>
 

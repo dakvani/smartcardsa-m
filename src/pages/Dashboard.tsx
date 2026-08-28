@@ -54,6 +54,12 @@ import {
 import type { TemplateProfile } from "@/lib/smartlink-templates";
 import { SmartlinkPublishDialog } from "@/components/dashboard/SmartlinkPublishDialog";
 import { profilePath } from "@/lib/profile-url";
+import { cardStyleFromTemplate, type CardStyle } from "@/lib/template-card-style";
+import {
+  templateFieldKeys, prefillFields, missingFields,
+  type TemplateFieldKey, type TemplateFieldValues,
+} from "@/lib/template-fields";
+import { TemplateFieldsDialog } from "@/components/dashboard/TemplateFieldsDialog";
 
 interface Profile {
   id: string;
@@ -75,6 +81,7 @@ interface Profile {
   custom_background_url?: string | null;
   custom_background_type?: "image" | "video" | null;
   motion_enabled?: boolean;
+  card_style?: CardStyle;
 }
 
 interface LinkItem {
@@ -90,6 +97,7 @@ interface LinkItem {
   scheduled_end: string | null;
   group_id: string | null;
   is_featured: boolean;
+  motion?: string | null;
 }
 
 const tabs = [
@@ -390,6 +398,35 @@ export default function Dashboard() {
   const [handoff, setHandoff] = useState<{ pending: PendingBio; template: TemplateProfile } | null>(null);
   const [handoffPublishing, setHandoffPublishing] = useState(false);
 
+  /* --- Template action-field popup -------------------------------------- *
+   * Templates ship call / WhatsApp / email / map / booking / shop buttons.
+   * We prefill them from the user's existing links and account email, and
+   * only ask for what is genuinely missing before applying the design.      */
+  const [fieldsDialog, setFieldsDialog] = useState<{
+    template: TemplateProfile;
+    fields: TemplateFieldKey[];
+    missing: TemplateFieldKey[];
+    initial: TemplateFieldValues;
+  } | null>(null);
+  const fieldsResolver = useRef<((v: TemplateFieldValues | null) => void) | null>(null);
+
+  const requestTemplateFields = (t: TemplateProfile) =>
+    new Promise<TemplateFieldValues | null>((resolve) => {
+      const keys = templateFieldKeys(t);
+      if (!keys.length) return resolve({});
+      const initial = prefillFields(keys, { links, email: user?.email ?? null });
+      const missing = missingFields(keys, initial);
+      if (!missing.length) return resolve(initial);
+      fieldsResolver.current = resolve;
+      setFieldsDialog({ template: t, fields: keys, missing, initial });
+    });
+
+  const resolveFields = (values: TemplateFieldValues | null) => {
+    fieldsResolver.current?.(values);
+    fieldsResolver.current = null;
+    setFieldsDialog(null);
+  };
+
   useEffect(() => {
     if (!profile || !user || handoffApplied.current) return;
     const pending = readPendingBio();
@@ -471,9 +508,15 @@ export default function Dashboard() {
    * When `keepExistingLinks` is true the current buttons are preserved and the
    * template's buttons are appended below them; otherwise they are replaced.
    */
-  const importTemplateContent = async (template: TemplateProfile, keepExistingLinks = true) => {
+  const importTemplateContent = async (
+    template: TemplateProfile,
+    keepExistingLinks = true,
+    values?: TemplateFieldValues,
+  ) => {
     if (!user || !profile) return;
-    const content = templateContent(template);
+    const resolved = values ?? (await requestTemplateFields(template));
+    if (resolved === null) return; // user cancelled the details popup
+    const content = templateContent(template, resolved);
     try {
       let existing: any[] = links;
       if (!keepExistingLinks) {
@@ -485,6 +528,7 @@ export default function Dashboard() {
         user_id: user.id,
         title: l.title,
         url: l.url,
+        motion: l.motion,
         position: offset + l.position,
       }));
       let inserted: any[] = [];
@@ -498,6 +542,9 @@ export default function Dashboard() {
       const profilePatch = {
         social_links: { ...(profile.social_links || {}), ...content.social_links },
         avatar_url: profile.avatar_url || content.avatar_url,
+        // The template's element design (buttons, fonts, colours, layout) —
+        // not just its background — so the profile really looks like it.
+        card_style: cardStyleFromTemplate(template),
       };
       await supabase.from("profiles").update(profilePatch as any).eq("user_id", user.id);
       setProfile((p) => (p ? ({ ...p, ...profilePatch } as Profile) : p));
@@ -1403,6 +1450,16 @@ export default function Dashboard() {
         </div>
       </div>
       <MobileTabBar activeTab={activeTab} onChange={setActiveTab} />
+
+      <TemplateFieldsDialog
+        open={!!fieldsDialog}
+        onOpenChange={(o) => { if (!o) resolveFields(null); }}
+        templateName={fieldsDialog?.template.name ?? ""}
+        fields={fieldsDialog?.fields ?? []}
+        missing={fieldsDialog?.missing ?? []}
+        initialValues={fieldsDialog?.initial ?? {}}
+        onConfirm={(values) => resolveFields(values)}
+      />
 
       <SmartlinkPublishDialog
         open={!!handoff}
