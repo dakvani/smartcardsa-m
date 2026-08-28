@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { AnimatedBackground } from "@/components/profile/AnimatedBackground";
 import {
   iconMap,
   shapeClassFor,
@@ -26,8 +27,16 @@ export function TemplatePhoneCard({
   const shapeClass = shapeClassFor(t.buttonShape);
   const fontClass = fontClassFor(t.font);
 
+  const animConfig = {
+    speed: t.animationSpeed ?? 1,
+    intensity: t.animationIntensity ?? 1,
+  };
+
   return (
-    <div
+    <motion.div
+      whileHover={t.threeD ? { rotateX: -6, rotateY: 6, scale: 1.02 } : undefined}
+      transition={{ type: "spring", stiffness: 200, damping: 18 }}
+      style={t.threeD ? { transformPerspective: 900, transformStyle: "preserve-3d" } : undefined}
       className={`relative rounded-[36px] overflow-hidden ${aspect} shadow-elevated ring-1 ring-black/10 ${className}`}
     >
       <img
@@ -38,8 +47,13 @@ export function TemplatePhoneCard({
       />
       {t.bgTint && <div className={`absolute inset-0 ${t.bgTint}`} />}
       <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/0 to-black/40" />
+      {t.animation && (
+        <div className="absolute inset-0 pointer-events-none">
+          <AnimatedBackground animationType={t.animation} config={animConfig} />
+        </div>
+      )}
 
-      <div className="relative h-full flex flex-col items-center px-5 pt-8 pb-6">
+      <div style={t.threeD ? { transform: "translateZ(30px)" } : undefined} className="relative h-full flex flex-col items-center px-5 pt-8 pb-6">
         <img
           src={t.avatarImage}
           alt={t.name}
@@ -85,6 +99,6 @@ export function TemplatePhoneCard({
           })}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
