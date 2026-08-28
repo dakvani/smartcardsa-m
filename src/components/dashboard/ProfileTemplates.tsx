@@ -83,6 +83,8 @@ interface ProfileTemplatesProps {
   currentTheme?: Omit<ThemeSnapshot, "saved_at">;
   /** Live profile values previewed inside the confirm step. */
   previewIdentity?: { name?: string; bio?: string; username?: string };
+  /** Load a SmartLink template plus its elements into the editor for editing. */
+  onEditTemplateInBuilder?: (t: TemplateProfile) => Promise<void> | void;
   initialAnimationSpeed?: number;
   initialMotionEnabled?: boolean;
   onPersist?: (updates: {
@@ -137,6 +139,7 @@ export function ProfileTemplates({
   onPersist,
   currentTheme,
   previewIdentity,
+  onEditTemplateInBuilder,
 }: ProfileTemplatesProps) {
   const effectivePlan: UserPlan = plan ?? (isPro ? "pro" : "free");
   const isProTier = isPro || PRO_TIERS.includes(effectivePlan);
@@ -738,6 +741,20 @@ export function ProfileTemplates({
         overrides={previewIdentity}
         publishing={publishingSmartlink}
         onConfirm={confirmSmartlinkTemplate}
+        onKeepEditing={
+          onEditTemplateInBuilder && previewTemplate
+            ? async () => {
+                const t = previewTemplate;
+                setPublishingSmartlink(true);
+                try {
+                  await onEditTemplateInBuilder(t);
+                  setPreviewTemplate(null);
+                } finally {
+                  setPublishingSmartlink(false);
+                }
+              }
+            : undefined
+        }
       />
 
       {/* Templates Grid */}

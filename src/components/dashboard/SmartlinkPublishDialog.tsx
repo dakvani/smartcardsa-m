@@ -7,7 +7,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, Rocket, Eye } from "lucide-react";
+import { Loader2, Rocket, Eye, Pencil } from "lucide-react";
 import { TemplatePhoneCard } from "@/components/smartlink/TemplatePhoneCard";
 import type { TemplateProfile } from "@/lib/smartlink-templates";
 
@@ -20,6 +20,11 @@ interface SmartlinkPublishDialogProps {
   publishing?: boolean;
   confirmLabel?: string;
   onConfirm: () => void;
+  /**
+   * Load the template and all of its elements (links, socials, avatar) into
+   * the editor so they can be edited, deleted or added to before publishing.
+   */
+  onKeepEditing?: () => void;
 }
 
 /**
@@ -34,6 +39,7 @@ export function SmartlinkPublishDialog({
   publishing = false,
   confirmLabel = "Publish live",
   onConfirm,
+  onKeepEditing,
 }: SmartlinkPublishDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -45,7 +51,8 @@ export function SmartlinkPublishDialog({
           </DialogTitle>
           <DialogDescription>
             This is exactly how your public page will look with
-            {template ? ` "${template.name}"` : " this template"}. Nothing is live until you confirm.
+            {template ? ` "${template.name}"` : " this template"}. Nothing is live until you confirm — or
+            open it in the builder to edit its links, socials and text first.
           </DialogDescription>
         </DialogHeader>
 
@@ -64,8 +71,13 @@ export function SmartlinkPublishDialog({
         )}
 
         <DialogFooter className="gap-2 sm:gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={publishing}>
-            Keep editing
+          <Button
+            variant="outline"
+            onClick={() => (onKeepEditing ? onKeepEditing() : onOpenChange(false))}
+            disabled={publishing}
+          >
+            <Pencil className="w-4 h-4" />
+            {onKeepEditing ? "Edit in builder" : "Keep editing"}
           </Button>
           <Button onClick={onConfirm} disabled={publishing || !template}>
             {publishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Rocket className="w-4 h-4" />}

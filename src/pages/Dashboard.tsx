@@ -49,7 +49,7 @@ import { MobileTabBar } from "@/components/dashboard/MobileTabBar";
 import { computeOnboardingPrefill, trackOnboarding, type OnboardingPrefill } from "@/lib/onboarding";
 import {
   readPendingBio, clearPendingBio, findSmartlinkTemplate, smartlinkTemplateToProfilePatch,
-  saveThemeSnapshot, smartlinkTemplateTier, canUseTemplateTier, type PendingBio,
+  saveThemeSnapshot, smartlinkTemplateTier, canUseTemplateTier, templateContent, type PendingBio,
 } from "@/lib/smartlink-handoff";
 import type { TemplateProfile } from "@/lib/smartlink-templates";
 import { SmartlinkPublishDialog } from "@/components/dashboard/SmartlinkPublishDialog";
@@ -452,12 +452,81 @@ export default function Dashboard() {
         return;
       }
       setProfile((p) => (p ? ({ ...p, ...patch } as Profile) : p));
+      await importTemplateContent(template);
       setHandoff(null);
       toast.success(`"${template.name}" template published — you can revert it in Appearance`);
     } finally {
       setHandoffPublishing(false);
     }
   };
+
+  /**
+   * Bring a template's actual elements into the editor as editable rows:
+   * its link buttons become real links, its socials fill the social inputs
+   * and its avatar is applied — so the user can edit, delete, reorder or add.
+   */
+  const importTemplateContent = async (template: TemplateProfile) => {
+    if (!user || !profile) return;
+    const content = templateContent(template);
+    try {
+      // Replace the current link set with the template's buttons.
+      await supabase.from("links").delete().eq("user_id", user.id);
+      const rows = content.links.map((l) => ({
+        user_id: user.id,
+        title: l.title,
+        url: l.url,
+        position: l.position,
+      }));
+      let inserted: any[] = [];
+      if (rows.length) {
+        const { data, error } = await supabase.from("links").insert(rows).select();
+        if (error) throw error;
+        inserted = data || [];
+      }
+      setLinks(inserted as any);
+
+      const profilePatch = {
+        social_links: { ...(profile.social_links || {}), ...content.social_links },
+        avatar_url: profile.avatar_url || content.avatar_url,
+      };
+      await supabase.from("profiles").update(profilePatch as any).eq("user_id", user.id);
+      setProfile((p) => (p ? ({ ...p, ...profilePatch } as Profile) : p));
+    } catch (e: any) {
+      toast.error("Could not import the template's content: " + (e?.message || "unknown error"));
+    }
+  };
+
+  /** "Edit in builder": apply the template + its elements, then open Links. */
+  const editTemplateInBuilder = async (template: TemplateProfile, pending?: PendingBio) => {
+    if (!user || !profile) return;
+    if (!canUseTemplateTier(smartlinkTemplateTier(template), plan)) {
+      toast.error(`"${template.name}" is a Pro template — upgrade to edit it.`);
+      return;
+    }
+    // Importing a template replaces the current buttons — never silently.
+    if (links.length > 0 && !window.confirm(
+      `Load "${template.name}" into the builder? Your ${links.length} current link${links.length === 1 ? "" : "s"} will be replaced by this template's elements (you can edit or delete them after).`
+    )) return;
+    setHandoffPublishing(true);
+    try {
+      const patch: Record<string, any> = {
+        ...smartlinkTemplateToProfilePatch(template),
+        title: pending?.name || profile.title,
+        bio: (pending?.bio || profile.bio || "").slice(0, 160),
+      };
+      await supabase.from("profiles").update(patch as any).eq("user_id", user.id);
+      setProfile((p) => (p ? ({ ...p, ...patch } as Profile) : p));
+      await importTemplateContent(template);
+      clearPendingBio();
+      setHandoff(null);
+      setActiveTab("links");
+      toast.success(`"${template.name}" loaded into the editor — edit, delete or add elements, then publish.`);
+    } finally {
+      setHandoffPublishing(false);
+    }
+  };
+
+
 
 
 
@@ -1119,6 +1188,7 @@ export default function Dashboard() {
                         custom_background_url: profile.custom_background_url ?? null,
                         custom_background_type: (profile.custom_background_type as "image" | "video" | null) ?? null,
                       }}
+                      onEditTemplateInBuilder={(t) => editTemplateInBuilder(t)}
                       onPersist={(u) => setProfile({ ...profile, ...u } as Profile)}
                       onApply={(updates) => {
                         setProfile({ ...profile, ...updates } as Profile);
@@ -1330,7 +1400,9 @@ export default function Dashboard() {
         }}
         publishing={handoffPublishing}
         onConfirm={publishHandoff}
+        onKeepEditing={() => handoff && editTemplateInBuilder(handoff.template, handoff.pending)}
       />
+
     </div>
   );
 }
