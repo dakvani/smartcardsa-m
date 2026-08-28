@@ -68,17 +68,29 @@ export function TemplateDesignEditor({
         <p className="text-[11px] text-muted-foreground">These settings apply to the editor preview and public page.</p>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="space-y-1.5">
-          <Label className="text-xs">Layout</Label>
-          <Select value={layout} onValueChange={(v) => update({ layout: v as TemplateLayout })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="classic">Classic links</SelectItem>
-              <SelectItem value="social">Social profile</SelectItem>
-              <SelectItem value="biodata">Biodata</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="space-y-1.5 sm:col-span-3">
+          <Label className="text-xs">Layout — how your data is arranged</Label>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {TEMPLATE_LAYOUTS.map((l) => (
+              <button
+                key={l}
+                type="button"
+                onClick={() => update({ layout: l })}
+                aria-pressed={layout === l}
+                className={`rounded-lg border p-2 text-left transition ${
+                  layout === l
+                    ? "border-primary bg-primary/10 ring-1 ring-primary"
+                    : "border-border bg-background hover:border-primary/50"
+                }`}
+              >
+                <LayoutGlyph layout={l} />
+                <span className="mt-1.5 block truncate text-[11px] font-medium">{LAYOUT_LABELS[l]}</span>
+                <span className="block text-[10px] leading-tight text-muted-foreground line-clamp-2">{LAYOUT_HINTS[l]}</span>
+              </button>
+            ))}
+          </div>
         </div>
+
         <div className="space-y-1.5">
           <Label className="text-xs">Button shape</Label>
           <Select value={value.buttonShape ?? "pill"} onValueChange={(v) => update({ buttonShape: v as ButtonShape })}>
