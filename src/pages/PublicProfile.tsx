@@ -1,8 +1,8 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion";
-import { Star, Smartphone, Maximize2, icons as LucideIcons } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Star, Smartphone, Maximize2, ChevronDown, icons as LucideIcons } from "lucide-react";
 import { detectLinkType, getLinkTypeDef } from "@/lib/link-types";
 import { SmartCardLogo } from "@/components/brand/SmartCardLogo";
 import { QRCodeSVG } from "qrcode.react";
@@ -133,6 +133,8 @@ export default function PublicProfile() {
   const forceMobile = searchParams.get("mobile") === "1" || searchParams.get("m") === "1";
   const [previewMode, setPreviewMode] = useState<PreviewMode>("phone");
   const [claimOpen, setClaimOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const accessibilityScopeRef = useRef<HTMLDivElement | null>(null);
 
   // Apply the saved accessibility preferences within the public bio profile
