@@ -203,7 +203,8 @@ export default function SmartLinkBio() {
     });
     trackEvent("smartlink_publish_clicked", { template: selected.username });
     const { data } = await supabase.auth.getSession();
-    navigate(data.session ? "/dashboard?tab=appearance" : "/signup?next=/dashboard");
+    const dest = "/dashboard?tab=appearance";
+    navigate(data.session ? dest : `/signup?next=${encodeURIComponent(dest)}`);
   };
 
   return (
