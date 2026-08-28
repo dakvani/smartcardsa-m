@@ -64,7 +64,17 @@ export type TemplateProfile = {
   socialColor: string;
   links: string[];
   socials: SocialIcon[];
+  /**
+   * Optional animated background layer (matches AnimatedBackground types:
+   * aurora, matrix, sparkle, bokeh, particles, orbs, neon, snow, bubbles…).
+   */
+  animation?: string;
+  animationSpeed?: number;
+  animationIntensity?: number;
+  /** Enables the 3D depth/parallax treatment on the phone card. */
+  threeD?: boolean;
 };
+
 
 export const iconMap: Record<SocialIcon, LucideIcon> = {
   instagram: Instagram,
