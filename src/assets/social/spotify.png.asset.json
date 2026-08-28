@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "f8218f1e-9b6a-41f7-951f-910e04c54907",
-  "project_id": "5602c707-7a0d-427b-abdd-a5f836d7fee9",
-  "url": "/__l5e/assets-v1/f8218f1e-9b6a-41f7-951f-910e04c54907/spotify.png",
-  "r2_key": "a/v1/5602c707-7a0d-427b-abdd-a5f836d7fee9/f8218f1e-9b6a-41f7-951f-910e04c54907/spotify.png",
-  "original_filename": "spotify.png",
-  "size": 35760,
   "content_type": "image/png",
-  "created_at": "2026-08-24T06:26:52Z"
+  "created_at": "2026-08-24T06:26:52Z",
+  "original_filename": "spotify.png",
+  "project_id": "7ca5bc2b-4062-4ab7-88dc-7f1558133925",
+  "r2_key": "a/v1/7ca5bc2b-4062-4ab7-88dc-7f1558133925/f8218f1e-9b6a-41f7-951f-910e04c54907/spotify.png",
+  "size": 35760,
+  "url": "/__l5e/assets-v1/f8218f1e-9b6a-41f7-951f-910e04c54907/spotify.png",
+  "version": 1
 }

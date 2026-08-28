@@ -1,1 +1,0 @@
-GRANT SELECT (email_collection_enabled) ON public.profiles TO anon;

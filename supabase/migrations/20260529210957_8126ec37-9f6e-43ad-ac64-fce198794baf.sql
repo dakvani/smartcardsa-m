@@ -1,3 +1,0 @@
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS plan text NOT NULL DEFAULT 'free';
-ALTER TABLE public.profiles ADD CONSTRAINT profiles_plan_check CHECK (plan IN ('free','pro'));
-CREATE INDEX IF NOT EXISTS idx_profiles_plan ON public.profiles(plan);

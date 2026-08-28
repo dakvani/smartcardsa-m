@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "f65ce37a-e895-4018-92fe-0a49d84cb4e1",
-  "project_id": "5602c707-7a0d-427b-abdd-a5f836d7fee9",
-  "url": "/__l5e/assets-v1/f65ce37a-e895-4018-92fe-0a49d84cb4e1/twitch.png",
-  "r2_key": "a/v1/5602c707-7a0d-427b-abdd-a5f836d7fee9/f65ce37a-e895-4018-92fe-0a49d84cb4e1/twitch.png",
-  "original_filename": "twitch.png",
-  "size": 22156,
   "content_type": "image/png",
-  "created_at": "2026-08-24T06:27:00Z"
+  "created_at": "2026-08-24T06:27:00Z",
+  "original_filename": "twitch.png",
+  "project_id": "7ca5bc2b-4062-4ab7-88dc-7f1558133925",
+  "r2_key": "a/v1/7ca5bc2b-4062-4ab7-88dc-7f1558133925/f65ce37a-e895-4018-92fe-0a49d84cb4e1/twitch.png",
+  "size": 22156,
+  "url": "/__l5e/assets-v1/f65ce37a-e895-4018-92fe-0a49d84cb4e1/twitch.png",
+  "version": 1
 }
