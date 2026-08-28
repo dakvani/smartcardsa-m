@@ -1,0 +1,1 @@
+ALTER TABLE public.nfc_orders ADD COLUMN notes text DEFAULT '';

@@ -1,1 +1,10 @@
-project_id = "ezflznozfbmrzxepfndu"
+project_id = "aytnjjteziwwbfqddjrw"
+
+[functions]
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.link-preview]
+    verify_jwt = false
+  [functions.preview-transactional-email]
+    verify_jwt = false
+

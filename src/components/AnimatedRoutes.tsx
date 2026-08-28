@@ -31,7 +31,6 @@ const PublicProfile = lazy(() => import("@/pages/PublicProfile"));
 const QRRedirect = lazy(() => import("@/pages/QRRedirect"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const NFCPage = lazy(() => import("@/pages/NFC"));
-const Unsubscribe = lazy(() => import("@/pages/Unsubscribe"));
 const MarketingUnsubscribe = lazy(() => import("@/pages/MarketingUnsubscribe"));
 
 function RouteFallback() {
@@ -80,7 +79,6 @@ export function AnimatedRoutes() {
             <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
             <Route path="/nfc" element={<PageTransition><NFCPage /></PageTransition>} />
             <Route path="/~oauth/*" element={<Navigate to="/login" replace />} />
-            <Route path="/unsubscribe" element={<PageTransition><Unsubscribe /></PageTransition>} />
             <Route path="/marketing-unsubscribe" element={<PageTransition><MarketingUnsubscribe /></PageTransition>} />
             <Route path="/qr/:username" element={<QRRedirect />} />
             <Route path="/:username" element={<PageTransition><PublicProfile /></PageTransition>} />
