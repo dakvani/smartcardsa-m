@@ -1017,7 +1017,7 @@ export default function Dashboard() {
         </div>
 
         {/* Builder Layout: Left Nav | Edit Panel | Live Preview (static 3-column shell on desktop) */}
-        <div className="flex flex-col lg:flex-row lg:items-stretch gap-4 mt-4 pb-20 md:pb-0">
+        <div className="flex flex-col lg:flex-row lg:items-stretch lg:min-h-0 gap-4 mt-4 pb-20 md:pb-0" style={builderStyle}>
           {/* Left: Vertical Builder Nav — hidden on mobile (replaced by bottom tab bar) */}
           <aside className="hidden md:flex lg:w-20 lg:flex-col gap-1.5 p-2 bg-background/60 backdrop-blur-sm rounded-2xl border border-border/60 shadow-sm lg:shrink-0 lg:overflow-y-auto scrollbar-hide lg:justify-center">
 
