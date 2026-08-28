@@ -1070,7 +1070,7 @@ export default function Dashboard() {
                 </div>
 
               </div>
-              <div className="p-3 sm:p-4 lg:flex-1 lg:min-h-0 lg:overflow-y-auto scrollbar-hide">
+              <div className="p-3 sm:p-4 md:flex-1 md:min-h-0 md:overflow-y-auto scrollbar-hide [&_button[role=combobox]]:h-10 [&_select]:h-10 [&_input]:h-10">
 
               {activeTab === "links" && (
                 <div className="space-y-4 sm:space-y-6">
