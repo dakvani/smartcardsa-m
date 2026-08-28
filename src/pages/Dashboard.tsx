@@ -153,19 +153,6 @@ export default function Dashboard() {
 
   const [loading, setLoading] = useState(true);
 
-  /** Preview fit mode: "contain" locks the builder to the phone aspect ratio, "full" fills the viewport. */
-  const PREVIEW_FIT_KEY = "smartcard:previewFit";
-  const [previewFit, setPreviewFit] = useState<"contain" | "full">(() => {
-    try {
-      const stored = localStorage.getItem(PREVIEW_FIT_KEY);
-      if (stored === "contain" || stored === "full") return stored;
-    } catch { /* storage unavailable */ }
-    return "contain";
-  });
-  useEffect(() => {
-    try { localStorage.setItem(PREVIEW_FIT_KEY, previewFit); } catch { /* storage unavailable */ }
-  }, [previewFit]);
-
   // Desktop-only height locking (inline styles can't be media-queried)
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined" ? window.matchMedia("(min-width: 1024px)").matches : false
@@ -181,7 +168,7 @@ export default function Dashboard() {
   const previewCardRef = useRef<HTMLDivElement>(null);
   const [builderHeight, setBuilderHeight] = useState<number | null>(null);
   useEffect(() => {
-    if (!isDesktop || previewFit === "full") { setBuilderHeight(null); return; }
+    if (!isDesktop) { setBuilderHeight(null); return; }
     const el = previewCardRef.current;
     if (!el) return;
     const update = () => setBuilderHeight(el.offsetHeight);
@@ -189,15 +176,9 @@ export default function Dashboard() {
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [isDesktop, previewFit, loading]);
+  }, [isDesktop, loading]);
 
-  const builderStyle = isDesktop
-    ? previewFit === "full"
-      ? { height: "calc(100vh - 7.5rem)" }
-      : builderHeight
-        ? { height: builderHeight }
-        : undefined
-    : undefined;
+  const builderStyle = isDesktop && builderHeight ? { height: builderHeight } : undefined;
 
   // Remember editor scroll position per builder section
   const editorScrollRef = useRef<HTMLDivElement>(null);
@@ -1507,14 +1488,6 @@ export default function Dashboard() {
               <div className="flex items-center justify-between mb-3 px-1">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Live Preview</p>
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setPreviewFit(previewFit === "contain" ? "full" : "contain")}
-                    title={previewFit === "contain" ? "Switch to full-height preview" : "Switch to contained preview"}
-                    className="hidden lg:inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors"
-                  >
-                    {previewFit === "contain" ? "Contain" : "Full height"}
-                  </button>
                   <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live
                   </span>
@@ -1526,7 +1499,7 @@ export default function Dashboard() {
 
               {/* iPhone Frame */}
               <div className="mx-auto w-[220px] lg:w-auto lg:flex-1 lg:min-h-0 lg:flex lg:items-center lg:justify-center">
-                <div className={`relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 w-[260px] aspect-[9/19.5] ${previewFit === "full" ? "lg:w-auto lg:h-full lg:max-w-full" : "lg:w-[300px]"}`}>
+                <div className="relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 w-[260px] aspect-[9/19.5] lg:w-[300px]">
                   {/* Side buttons */}
                   <div className="absolute -left-[3px] top-24 w-[3px] h-8 rounded-l-md bg-neutral-700" />
                   <div className="absolute -left-[3px] top-36 w-[3px] h-12 rounded-l-md bg-neutral-700" />
