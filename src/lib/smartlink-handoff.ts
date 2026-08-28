@@ -167,3 +167,47 @@ const PRO_PLANS = ["pro", "pro_plus", "business", "enterprise", "lifetime"];
 /** Can this plan apply a template of the given tier? */
 export const canUseTemplateTier = (tier: TemplateTier, plan?: string): boolean =>
   tier === "free" || PRO_PLANS.includes(plan || "free");
+
+/* ------------------------------------------------------------------ *
+ * Template content → editable editor elements
+ *
+ * A template is not just a look: it ships link buttons, socials and an
+ * avatar. Importing it turns those into real, editable rows in the
+ * dashboard so the user can rename, delete, reorder or add to them.
+ * ------------------------------------------------------------------ */
+
+/** Editor social keys (see SocialLinksEditor) a template icon maps to. */
+const SOCIAL_KEY_MAP: Record<string, "instagram" | "twitter" | "youtube" | "facebook" | "linkedin" | "github" | "website"> = {
+  instagram: "instagram",
+  x: "twitter",
+  youtube: "youtube",
+  facebook: "facebook",
+  linkedin: "linkedin",
+  github: "github",
+  website: "website",
+};
+
+export interface TemplateContent {
+  /** Link buttons, in template order — inserted as editable rows. */
+  links: { title: string; url: string; position: number }[];
+  /** Values for the social inputs the editor supports. */
+  social_links: Record<string, string>;
+  avatar_url: string;
+}
+
+/** Everything from a template that becomes editable content in the editor. */
+export function templateContent(t: TemplateProfile): TemplateContent {
+  const handle = t.username.replace(/^@/, "");
+  const social_links: Record<string, string> = {};
+  for (const icon of t.socials) {
+    const key = SOCIAL_KEY_MAP[icon];
+    if (!key) continue;
+    social_links[key] =
+      key === "website" ? `https://${handle.replace(/[^a-z0-9]/gi, "")}.com` : handle;
+  }
+  return {
+    links: t.links.map((title, i) => ({ title, url: "", position: i })),
+    social_links,
+    avatar_url: t.avatarImage,
+  };
+}
