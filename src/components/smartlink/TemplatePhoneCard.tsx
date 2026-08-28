@@ -22,6 +22,8 @@ export interface TemplatePhoneCardProps {
   overrides?: Partial<Pick<TemplateProfile, "name" | "bio" | "username" | "links" | "socials" | "avatarImage">>;
   /** Compact = smaller aspect for grid; full = tall preview. */
   size?: "compact" | "full";
+  /** First-screen cards: load images eagerly and skip entry animations. */
+  priority?: boolean;
   className?: string;
 }
 
@@ -39,6 +41,7 @@ export function TemplatePhoneCard({
   template,
   overrides,
   size = "compact",
+  priority = false,
   className = "",
 }: TemplatePhoneCardProps) {
   const t: TemplateProfile = { ...template, ...overrides };
@@ -46,6 +49,8 @@ export function TemplatePhoneCard({
   const shapeClass = shapeClassFor(t.buttonShape);
   const fontClass = fontClassFor(t.font);
   const layout = t.layout ?? "classic";
+  const imgLoading = priority ? "eager" : "lazy";
+
 
   const animConfig = {
     speed: t.animationSpeed ?? 1,
