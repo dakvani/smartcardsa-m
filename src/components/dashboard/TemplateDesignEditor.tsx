@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { CardStyle } from "@/lib/template-card-style";
-import { FONT_FAMILIES, FONT_LABELS, fontClassFor, type ButtonShape, type FontFamily, type TemplateLayout } from "@/lib/smartlink-templates";
+import { FONT_FAMILIES, FONT_LABELS, fontClassFor, TEMPLATE_LAYOUTS, type ButtonShape, type FontFamily, type TemplateLayout } from "@/lib/smartlink-templates";
+import { LAYOUT_HINTS, LAYOUT_LABELS } from "@/lib/template-layout";
+
 import { LINK_MOTIONS } from "@/lib/link-motion";
 import { LINK_SHADOWS, parseLinkStyle, type LinkShadow, type LinkStyle } from "@/lib/link-style";
 
@@ -32,6 +34,97 @@ interface Props {
 
 
 type DetailKey = "stats" | "facts";
+
+/** Tiny wireframe preview of each layout so the choice is visual. */
+function LayoutGlyph({ layout }: { layout: TemplateLayout }) {
+  const bar = "rounded-[2px] bg-foreground/25";
+  const wrap = "flex h-12 w-full flex-col gap-1 rounded-md bg-muted/60 p-1.5";
+  switch (layout) {
+    case "grid":
+      return (
+        <div className={wrap}>
+          <div className={`${bar} mx-auto h-2.5 w-2.5 rounded-full`} />
+          <div className="grid flex-1 grid-cols-2 gap-1">
+            {[0, 1, 2, 3].map((i) => <div key={i} className={`${bar} h-full`} />)}
+          </div>
+        </div>
+      );
+    case "hero":
+      return (
+        <div className={wrap}>
+          <div className={`${bar} h-4 w-full`} />
+          <div className={`${bar} h-1 w-1/2`} />
+          <div className={`${bar} h-1.5 w-full`} />
+          <div className={`${bar} h-1.5 w-full`} />
+        </div>
+      );
+    case "card":
+      return (
+        <div className={wrap}>
+          <div className="flex h-full flex-col gap-1 rounded border border-foreground/20 bg-foreground/5 p-1">
+            <div className={`${bar} mx-auto h-2 w-2 rounded-full`} />
+            <div className={`${bar} h-1.5 w-full`} />
+            <div className={`${bar} h-1.5 w-full`} />
+          </div>
+        </div>
+      );
+    case "minimal":
+      return (
+        <div className={wrap}>
+          <div className={`${bar} h-1.5 w-1/3`} />
+          <div className={`${bar} h-1 w-full`} />
+          <div className={`${bar} h-1 w-full`} />
+          <div className={`${bar} h-1 w-full`} />
+        </div>
+      );
+    case "magazine":
+      return (
+        <div className={wrap}>
+          <div className="flex items-center gap-1">
+            <div className={`${bar} h-3.5 w-3.5 rounded`} />
+            <div className="flex-1 space-y-1">
+              <div className={`${bar} h-1 w-full`} />
+              <div className={`${bar} h-1 w-2/3`} />
+            </div>
+          </div>
+          <div className={`${bar} h-1.5 w-full`} />
+          <div className={`${bar} h-1.5 w-full`} />
+        </div>
+      );
+    case "social":
+      return (
+        <div className={wrap}>
+          <div className={`${bar} mx-auto h-2.5 w-2.5 rounded-full`} />
+          <div className="grid grid-cols-3 gap-1">
+            {[0, 1, 2].map((i) => <div key={i} className={`${bar} h-2`} />)}
+          </div>
+          <div className={`${bar} h-1.5 w-full`} />
+        </div>
+      );
+    case "biodata":
+      return (
+        <div className={wrap}>
+          <div className={`${bar} mx-auto h-2 w-2 rounded-full`} />
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex gap-1">
+              <div className={`${bar} h-1 w-1/3`} />
+              <div className={`${bar} h-1 flex-1`} />
+            </div>
+          ))}
+        </div>
+      );
+    default:
+      return (
+        <div className={wrap}>
+          <div className={`${bar} mx-auto h-2.5 w-2.5 rounded-full`} />
+          <div className={`${bar} h-1.5 w-full`} />
+          <div className={`${bar} h-1.5 w-full`} />
+          <div className={`${bar} h-1.5 w-full`} />
+        </div>
+      );
+  }
+}
+
 
 export function TemplateDesignEditor({
   value = {},
@@ -68,17 +161,29 @@ export function TemplateDesignEditor({
         <p className="text-[11px] text-muted-foreground">These settings apply to the editor preview and public page.</p>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-        <div className="space-y-1.5">
-          <Label className="text-xs">Layout</Label>
-          <Select value={layout} onValueChange={(v) => update({ layout: v as TemplateLayout })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="classic">Classic links</SelectItem>
-              <SelectItem value="social">Social profile</SelectItem>
-              <SelectItem value="biodata">Biodata</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="space-y-1.5 sm:col-span-3">
+          <Label className="text-xs">Layout — how your data is arranged</Label>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {TEMPLATE_LAYOUTS.map((l) => (
+              <button
+                key={l}
+                type="button"
+                onClick={() => update({ layout: l })}
+                aria-pressed={layout === l}
+                className={`rounded-lg border p-2 text-left transition ${
+                  layout === l
+                    ? "border-primary bg-primary/10 ring-1 ring-primary"
+                    : "border-border bg-background hover:border-primary/50"
+                }`}
+              >
+                <LayoutGlyph layout={l} />
+                <span className="mt-1.5 block truncate text-[11px] font-medium">{LAYOUT_LABELS[l]}</span>
+                <span className="block text-[10px] leading-tight text-muted-foreground line-clamp-2">{LAYOUT_HINTS[l]}</span>
+              </button>
+            ))}
+          </div>
         </div>
+
         <div className="space-y-1.5">
           <Label className="text-xs">Button shape</Label>
           <Select value={value.buttonShape ?? "pill"} onValueChange={(v) => update({ buttonShape: v as ButtonShape })}>

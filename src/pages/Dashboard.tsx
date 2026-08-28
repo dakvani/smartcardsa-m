@@ -65,6 +65,7 @@ import { TemplateFieldsDialog } from "@/components/dashboard/TemplateFieldsDialo
 import { TemplateDesignEditor } from "@/components/dashboard/TemplateDesignEditor";
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
+import { layoutClasses } from "@/lib/template-layout";
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
 import { DeferredProfileMedia } from "@/components/profile/DeferredProfileMedia";
 
@@ -1544,48 +1545,59 @@ export default function Dashboard() {
 
                     {/* Content - scrollable */}
                     <div className="absolute inset-0 pt-10 pb-4 px-4 overflow-y-auto scrollbar-hide">
-                      <div className="text-center mb-4 relative z-10">
-                        <div className="w-16 h-16 mx-auto rounded-full bg-primary-foreground/20 backdrop-blur mb-2 flex items-center justify-center overflow-hidden ring-2 ring-primary-foreground/20">
-                          {profile.avatar_url ? (
-                            <img src={profile.avatar_url} alt={profile.title} className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="text-xl font-bold text-primary-foreground">
-                              {profile.username[0]?.toUpperCase()}
-                            </span>
-                          )}
+                     {(() => {
+                       const cs = parseCardStyle(profile.card_style);
+                       const PL = layoutClasses(cs.layout, "mini");
+                       return (
+                        <div className={PL.panel}>
+                         <div className={PL.header}>
+                          <div className={`${PL.avatar} bg-primary-foreground/20 backdrop-blur flex items-center justify-center overflow-hidden`}>
+                            {profile.avatar_url ? (
+                              <img src={profile.avatar_url} alt={profile.title} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-xl font-bold text-primary-foreground">
+                                {profile.username[0]?.toUpperCase()}
+                              </span>
+                            )}
+                          </div>
+                          <div className={PL.headerText}>
+                            <h2 className={`${PL.name} ${headingClassFor(cs)}`}>{profile.title}</h2>
+                            {profile.bio && (
+                              <p className={`${PL.bio} ${bioClassFor(cs)}`}>{profile.bio}</p>
+                            )}
+                            <SocialIcons socialLinks={profile.social_links || {}} className={cs.socialColor} order={cs.socialOrder} />
+                          </div>
+                         </div>
+                         {cs.layout === "social" && cs.stats && (
+                          <div className="relative z-10 mb-3 grid grid-cols-3 gap-1 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 p-2">
+                            {cs.stats.map((item, index) => <div key={`${item.label}-${index}`} className="text-center"><div className={`text-[11px] font-bold ${headingClassFor(cs)}`}>{item.value}</div><div className={`text-[8px] uppercase ${bioClassFor(cs)}`}>{item.label}</div></div>)}
+                          </div>
+                         )}
+                         {cs.layout === "biodata" && cs.facts && (
+                          <div className="relative z-10 mb-3 divide-y divide-primary-foreground/15 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10">
+                            {cs.facts.map((item, index) => <div key={`${item.label}-${index}`} className="flex justify-between gap-2 px-2 py-1.5"><span className={`text-[8px] uppercase ${bioClassFor(cs)}`}>{item.label}</span><span className={`text-[9px] text-right ${headingClassFor(cs)}`}>{item.value}</span></div>)}
+                          </div>
+                         )}
+                         <div className={PL.links}>
+                          {links.filter(l => l.visible).map((link, index) => {
+                            const t = detectLinkType(link.url || "", link.title);
+                            const def = getLinkTypeDef(t);
+                            const iconName = def.icon || (t === "website" ? "Globe" : "Link2");
+                            const Ico = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[iconName] || LucideIcons.Link2;
+                            return (
+                              <ProfileLinkButton key={link.id} title={link.title || "Untitled Link"} url={link.url} motionStyle={link.motion} linkStyle={link.style} cardStyle={cs} reducedMotion={profile.motion_enabled === false} index={index} onActivate={() => undefined} icon={link.thumbnail_url ? (
+                                  <img src={link.thumbnail_url} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
+                                ) : (
+                                  <Ico className="w-4 h-4 shrink-0" />
+                                )} />
+                            );
+                          })}
+                         </div>
                         </div>
-                        <h2 className={`text-sm ${headingClassFor(parseCardStyle(profile.card_style))}`}>{profile.title}</h2>
-                        {profile.bio && (
-                          <p className={`text-[11px] mt-1 px-2 ${bioClassFor(parseCardStyle(profile.card_style))}`}>{profile.bio}</p>
-                        )}
-                        <SocialIcons socialLinks={profile.social_links || {}} className={parseCardStyle(profile.card_style).socialColor} order={parseCardStyle(profile.card_style).socialOrder} />
-                      </div>
-                      {parseCardStyle(profile.card_style).layout === "social" && parseCardStyle(profile.card_style).stats && (
-                        <div className="relative z-10 mb-3 grid grid-cols-3 gap-1 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 p-2">
-                          {parseCardStyle(profile.card_style).stats?.map((item, index) => <div key={`${item.label}-${index}`} className="text-center"><div className={`text-[11px] font-bold ${headingClassFor(parseCardStyle(profile.card_style))}`}>{item.value}</div><div className={`text-[8px] uppercase ${bioClassFor(parseCardStyle(profile.card_style))}`}>{item.label}</div></div>)}
-                        </div>
-                      )}
-                      {parseCardStyle(profile.card_style).layout === "biodata" && parseCardStyle(profile.card_style).facts && (
-                        <div className="relative z-10 mb-3 divide-y divide-primary-foreground/15 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10">
-                          {parseCardStyle(profile.card_style).facts?.map((item, index) => <div key={`${item.label}-${index}`} className="flex justify-between gap-2 px-2 py-1.5"><span className={`text-[8px] uppercase ${bioClassFor(parseCardStyle(profile.card_style))}`}>{item.label}</span><span className={`text-[9px] text-right ${headingClassFor(parseCardStyle(profile.card_style))}`}>{item.value}</span></div>)}
-                        </div>
-                      )}
-                      <div className="space-y-2 relative z-10">
-                        {links.filter(l => l.visible).map((link, index) => {
-                          const t = detectLinkType(link.url || "", link.title);
-                          const def = getLinkTypeDef(t);
-                          const iconName = def.icon || (t === "website" ? "Globe" : "Link2");
-                          const Ico = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[iconName] || LucideIcons.Link2;
-                          return (
-                            <ProfileLinkButton key={link.id} title={link.title || "Untitled Link"} url={link.url} motionStyle={link.motion} linkStyle={link.style} cardStyle={parseCardStyle(profile.card_style)} reducedMotion={profile.motion_enabled === false} index={index} onActivate={() => undefined} icon={link.thumbnail_url ? (
-                                <img src={link.thumbnail_url} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
-                              ) : (
-                                <Ico className="w-4 h-4 shrink-0" />
-                              )} />
-                          );
-                        })}
-                      </div>
+                       );
+                     })()}
                     </div>
+
 
                     {/* Home indicator */}
                     <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-24 h-1 rounded-full bg-primary-foreground/70 z-30" />

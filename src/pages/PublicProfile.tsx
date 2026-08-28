@@ -12,6 +12,7 @@ import { EmailSignup } from "@/components/profile/EmailSignup";
 import { SaveContactButton } from "@/components/profile/SaveContactButton";
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
+import { layoutClasses } from "@/lib/template-layout";
 import { getBrandLogo } from "@/lib/brand-logos";
 
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
@@ -336,6 +337,7 @@ export default function PublicProfile() {
   // Auto-icon for every link based on the detected type. Custom/website links
   // fall back to a generic icon so every button has a visual anchor.
   const cardStyle = parseCardStyle(profile?.card_style);
+  const L = layoutClasses(cardStyle.layout, "full");
   const reduceLinkMotion = profile?.motion_enabled === false;
 
   const renderAutoIcon = (url: string, size = "w-5 h-5", title?: string) => {
@@ -446,13 +448,14 @@ export default function PublicProfile() {
             )}
 
 
-            <div className="max-w-md mx-auto relative z-10">
+            <div className={L.wrapper}>
+             <div className={L.panel}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-5 sm:mb-6"
+                className={L.header}
               >
-                <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-full bg-primary-foreground/20 backdrop-blur mb-3 flex items-center justify-center overflow-hidden ring-2 ring-primary-foreground/20">
+                <div className={`${L.avatar} bg-primary-foreground/20 backdrop-blur flex items-center justify-center overflow-hidden`}>
                   {profile.avatar_url ? (
                     <img src={profile.avatar_url} alt={profile.title} className="w-full h-full object-cover" />
                   ) : (
@@ -461,12 +464,15 @@ export default function PublicProfile() {
                     </span>
                   )}
                 </div>
-                <h1 className={`text-xl sm:text-2xl leading-tight ${headingClassFor(cardStyle)}`}>{profile.title}</h1>
-                {profile.bio && (
-                  <p className={`text-sm mt-1.5 max-w-xs mx-auto leading-snug ${bioClassFor(cardStyle)}`}>{profile.bio}</p>
-                )}
-                <SocialIcons socialLinks={profile.social_links || {}} className={cardStyle.socialColor} order={cardStyle.socialOrder} />
+                <div className={L.headerText}>
+                  <h1 className={`${L.name} ${headingClassFor(cardStyle)}`}>{profile.title}</h1>
+                  {profile.bio && (
+                    <p className={`${L.bio} ${bioClassFor(cardStyle)}`}>{profile.bio}</p>
+                  )}
+                  <SocialIcons socialLinks={profile.social_links || {}} className={cardStyle.socialColor} order={cardStyle.socialOrder} />
+                </div>
               </motion.div>
+
 
               {cardStyle.layout === "social" && cardStyle.stats && cardStyle.stats.length > 0 && (
                 <div className="mb-4 grid grid-cols-3 gap-1 rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 px-2 py-2 backdrop-blur">
@@ -522,7 +528,8 @@ export default function PublicProfile() {
                 )}
 
                 {links.filter((l) => !l.group_id && !l.is_featured).length > 0 && (
-                  <div className="space-y-2.5">
+                  <div className={L.links}>
+
                     {links.filter((l) => !l.group_id && !l.is_featured).map((link, index) => (
                       <ProfileLinkButton
                         key={link.id}
@@ -557,7 +564,8 @@ export default function PublicProfile() {
                       transition={{ delay: 0.2 + groupIndex * 0.1 }}
                     >
                       <p className="text-primary-foreground/60 text-sm font-medium mb-3 text-center">{group.name}</p>
-                      <div className="space-y-3">
+                      <div className={L.links}>
+
                         {groupLinks.map((link, index) => (
                           <ProfileLinkButton
                             key={link.id}
@@ -583,6 +591,8 @@ export default function PublicProfile() {
                   );
                 })}
               </div>
+             </div>
+
 
               {/* Save contact + Subscribe — compact side-by-side pill row */}
               <motion.div
