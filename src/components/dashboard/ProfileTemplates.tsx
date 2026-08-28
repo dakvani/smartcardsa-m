@@ -84,7 +84,11 @@ interface ProfileTemplatesProps {
   /** Live profile values previewed inside the confirm step. */
   previewIdentity?: { name?: string; bio?: string; username?: string };
   /** Load a SmartLink template plus its elements into the editor for editing. */
-  onEditTemplateInBuilder?: (t: TemplateProfile) => Promise<void> | void;
+  onEditTemplateInBuilder?: (t: TemplateProfile, keepExistingLinks: boolean) => Promise<void> | void;
+  /** Import a template's link buttons / socials when publishing it directly. */
+  onImportTemplateContent?: (t: TemplateProfile, keepExistingLinks: boolean) => Promise<void> | void;
+  /** Number of links the user currently has — powers the "keep my links" option. */
+  existingLinkCount?: number;
   initialAnimationSpeed?: number;
   initialMotionEnabled?: boolean;
   onPersist?: (updates: {
@@ -140,6 +144,8 @@ export function ProfileTemplates({
   currentTheme,
   previewIdentity,
   onEditTemplateInBuilder,
+  onImportTemplateContent,
+  existingLinkCount = 0,
 }: ProfileTemplatesProps) {
   const effectivePlan: UserPlan = plan ?? (isPro ? "pro" : "free");
   const isProTier = isPro || PRO_TIERS.includes(effectivePlan);
@@ -383,7 +389,7 @@ export function ProfileTemplates({
   };
 
   /** Step 2: publish the previewed template, saving a rollback point first. */
-  const confirmSmartlinkTemplate = async () => {
+  const confirmSmartlinkTemplate = async (keepExistingLinks = true) => {
     const t = previewTemplate;
     if (!t) return;
     setPublishingSmartlink(true);
@@ -416,6 +422,9 @@ export function ProfileTemplates({
         custom_background_url: patch.custom_background_url,
         custom_background_type: "image",
       } as any);
+
+      // Bring the template's own buttons/socials in as editable content.
+      await onImportTemplateContent?.(t, keepExistingLinks);
 
       setPreviewTemplate(null);
       toast.success(`Published "${t.name}" — you can revert to your previous look`);
@@ -740,14 +749,15 @@ export function ProfileTemplates({
         template={previewTemplate}
         overrides={previewIdentity}
         publishing={publishingSmartlink}
-        onConfirm={confirmSmartlinkTemplate}
+        existingLinkCount={existingLinkCount}
+        onConfirm={(keepLinks) => confirmSmartlinkTemplate(keepLinks)}
         onKeepEditing={
           onEditTemplateInBuilder && previewTemplate
-            ? async () => {
+            ? async (keepLinks) => {
                 const t = previewTemplate;
                 setPublishingSmartlink(true);
                 try {
-                  await onEditTemplateInBuilder(t);
+                  await onEditTemplateInBuilder(t, keepLinks);
                   setPreviewTemplate(null);
                 } finally {
                   setPublishingSmartlink(false);
