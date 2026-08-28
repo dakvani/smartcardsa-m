@@ -47,6 +47,7 @@ import { PlanWelcomeDialog } from "@/components/dashboard/PlanWelcomeDialog";
 import { OnboardingConfirmDialog } from "@/components/dashboard/OnboardingConfirmDialog";
 import { MobileTabBar } from "@/components/dashboard/MobileTabBar";
 import { computeOnboardingPrefill, trackOnboarding, type OnboardingPrefill } from "@/lib/onboarding";
+import { readPendingBio, clearPendingBio, findSmartlinkTemplate, smartlinkTemplateToProfilePatch } from "@/lib/smartlink-handoff";
 
 interface Profile {
   id: string;
