@@ -688,8 +688,48 @@ export function ProfileTemplates({
             </p>
           </div>
         </div>
+
+        {/* Search + category filters */}
+        <div className="space-y-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            <input
+              type="search"
+              value={slQuery}
+              onChange={(e) => setSlQuery(e.target.value)}
+              placeholder="Search templates, e.g. fashion, tech, real estate…"
+              aria-label="Search SmartLink templates"
+              className="w-full h-8 pl-8 pr-2 rounded-md border border-border bg-background text-xs outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {smartlinkCategories.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setSlCategory(c)}
+                aria-pressed={slCategory === c}
+                className={`px-2 py-1 rounded-full text-[10px] font-medium border transition-colors ${
+                  slCategory === c
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "border-border text-muted-foreground hover:border-primary/50"
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {filteredSmartlinkTemplates.length === 0 && (
+          <p className="text-[11px] text-muted-foreground py-4 text-center">
+            No templates match “{slQuery}”.
+          </p>
+        )}
+
         <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
-          {smartlinkTemplates.map((t) => {
+          {filteredSmartlinkTemplates.map((t) => {
+
             const active = currentThemeName === t.name;
             const tier = smartlinkTemplateTier(t);
             const locked = smartlinkLocked(t);
