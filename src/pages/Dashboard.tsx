@@ -1204,11 +1204,12 @@ export default function Dashboard() {
                         type="button"
                         onClick={() => setAppearanceTab(s.id)}
                         aria-pressed={appearanceTab === s.id}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                        className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                           appearanceTab === s.id
                             ? "bg-primary text-primary-foreground"
                             : "bg-secondary/60 text-muted-foreground hover:text-foreground"
                         }`}
+
                       >
                         {s.label}
                       </button>
