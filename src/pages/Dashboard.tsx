@@ -63,6 +63,7 @@ import {
 } from "@/lib/template-fields";
 import { TemplateFieldsDialog } from "@/components/dashboard/TemplateFieldsDialog";
 import { TemplateDesignEditor } from "@/components/dashboard/TemplateDesignEditor";
+import type { LinkStyle } from "@/lib/link-style";
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
@@ -105,7 +106,7 @@ interface LinkItem {
   group_id: string | null;
   is_featured: boolean;
   motion?: string | null;
-  style?: unknown;
+  style?: LinkStyle | null;
 }
 
 const tabs = [
@@ -740,7 +741,7 @@ export default function Dashboard() {
   const updateLink = async (id: string, updates: Partial<LinkItem>) => {
     const { error } = await supabase
       .from("links")
-      .update(updates)
+      .update(updates as never)
       .eq("id", id);
 
     if (error) {
@@ -793,7 +794,7 @@ export default function Dashboard() {
   const updateGroup = async (id: string, updates: Partial<LinkGroup>) => {
     const { error } = await supabase
       .from("link_groups")
-      .update(updates)
+      .update(updates as never)
       .eq("id", id);
 
     if (error) {
