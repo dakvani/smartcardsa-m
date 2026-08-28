@@ -81,7 +81,9 @@ export function AnimatedRoutes() {
             <Route path="/~oauth/*" element={<Navigate to="/login" replace />} />
             <Route path="/marketing-unsubscribe" element={<PageTransition><MarketingUnsubscribe /></PageTransition>} />
             <Route path="/qr/:username" element={<QRRedirect />} />
+            <Route path="/u/:username" element={<PageTransition><PublicProfile /></PageTransition>} />
             <Route path="/:username" element={<PageTransition><PublicProfile /></PageTransition>} />
+
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
         </Suspense>
