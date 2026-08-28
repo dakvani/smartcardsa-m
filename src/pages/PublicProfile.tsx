@@ -437,11 +437,12 @@ export default function PublicProfile() {
               </div>
             )}
             {profile.motion_enabled !== false && (
-              <AnimatedBackground
+              <LazyAnimatedBackground
                 animationType={profile.animation_type}
                 config={{ speed: profile.animation_speed || 1, intensity: profile.animation_intensity || 1 }}
               />
             )}
+
 
             <div className="max-w-md mx-auto relative z-10">
               <motion.div
