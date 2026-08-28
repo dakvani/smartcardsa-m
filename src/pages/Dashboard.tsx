@@ -1188,7 +1188,7 @@ export default function Dashboard() {
                   <SocialLinksEditor
                     socialLinks={profile.social_links || {}}
                     onChange={(links) => setProfile({ ...profile, social_links: links })}
-                    onBlur={() => updateProfile({ social_links: profile.social_links })}
+                    onBlur={(socialLinks) => updateProfile({ social_links: socialLinks ?? profile.social_links })}
                     order={parseCardStyle(profile.card_style).socialOrder}
                     onOrderChange={(socialOrder) => updateProfile({ card_style: { ...parseCardStyle(profile.card_style), socialOrder } })}
                   />

@@ -23,7 +23,7 @@ export interface SocialLinks {
 interface SocialLinksEditorProps {
   socialLinks: SocialLinks;
   onChange: (links: SocialLinks) => void;
-  onBlur: () => void;
+  onBlur: (links?: SocialLinks) => void;
   order?: string[];
   onOrderChange?: (order: string[]) => void;
 }
@@ -66,7 +66,7 @@ export function SocialLinksEditor({ socialLinks, onChange, onBlur, order = [], o
       });
       return;
     }
-    onBlur();
+    onBlur(socialLinks);
   };
   const orderedPlatforms = [...socialPlatforms].sort(
     (a, b) => (order.indexOf(a.key) < 0 ? 999 : order.indexOf(a.key)) - (order.indexOf(b.key) < 0 ? 999 : order.indexOf(b.key)),
@@ -124,7 +124,7 @@ export function SocialLinksEditor({ socialLinks, onChange, onBlur, order = [], o
                 <div className="flex shrink-0">
                   <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => move(key, -1)} disabled={index === 0} aria-label={`Move ${label} up`}><ArrowUp className="h-3.5 w-3.5" /></Button>
                   <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => move(key, 1)} disabled={index === orderedPlatforms.length - 1} aria-label={`Move ${label} down`}><ArrowDown className="h-3.5 w-3.5" /></Button>
-                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => { handleChange(key, ""); queueMicrotask(onBlur); }} disabled={!hasValue} aria-label={`Delete ${label}`}><Trash2 className="h-3.5 w-3.5" /></Button>
+                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => { const next = { ...socialLinks, [key]: "" }; onChange(next); onBlur(next); }} disabled={!hasValue} aria-label={`Delete ${label}`}><Trash2 className="h-3.5 w-3.5" /></Button>
                 </div>
               </div>
               {hasValue && !result.valid && result.message && (
