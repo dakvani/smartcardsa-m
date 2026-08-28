@@ -85,27 +85,32 @@ export function ProfileShareCard({ username, stats }: ProfileShareCardProps) {
   };
 
   return (
-    <div className="bg-background rounded-xl border border-border p-4 mb-4">
+    <div className="relative overflow-hidden bg-card rounded-xl border border-border/70 shadow-[0_1px_2px_hsl(var(--foreground)/0.04),0_8px_24px_-12px_hsl(var(--foreground)/0.12)] p-4 sm:p-5 mb-4">
+      {/* subtle top accent */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold flex items-center gap-1.5">
-          <Link2 className="w-4 h-4 text-primary" />
+        <h3 className="text-sm font-semibold tracking-tight flex items-center gap-1.5">
+          <span className="w-6 h-6 rounded-md bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <Link2 className="w-3.5 h-3.5 text-primary" />
+          </span>
           Your Profile Link
         </h3>
         <a
           href={profileUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline underline-offset-2"
         >
           <ExternalLink className="w-3 h-3" />
           Open
         </a>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         {/* QR Code */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="bg-white p-1.5 rounded-lg shadow-sm">
+        <div className="flex items-center justify-center sm:justify-start gap-2 shrink-0">
+          <div className="bg-white p-1.5 rounded-lg ring-1 ring-border/60 shadow-sm">
             <QRCodeSVG
               id="share-card-qr"
               value={qrUrl}
@@ -116,7 +121,7 @@ export function ProfileShareCard({ username, stats }: ProfileShareCardProps) {
               fgColor="#000000"
             />
           </div>
-          <Button variant="outline" size="icon" onClick={downloadQRCode} title="Download QR" className="h-8 w-8">
+          <Button variant="outline" size="icon" onClick={downloadQRCode} title="Download QR" className="h-8 w-8 shrink-0">
             <Download className="w-3.5 h-3.5" />
           </Button>
         </div>
@@ -124,10 +129,10 @@ export function ProfileShareCard({ username, stats }: ProfileShareCardProps) {
         {/* URL & domain config */}
         <div className="flex-1 min-w-0 space-y-2">
           <div className="flex items-center gap-1.5">
-            <div className="flex-1 min-w-0 bg-muted rounded-md px-2.5 py-1.5 font-mono text-xs truncate border border-border">
+            <div className="flex-1 min-w-0 bg-muted/70 rounded-md px-2.5 py-1.5 font-mono text-xs leading-5 truncate border border-border/60">
               {profileUrl}
             </div>
-            <Button variant="gradient" size="sm" onClick={copyUrl} className="shrink-0 gap-1 h-7 px-2.5 text-xs">
+            <Button variant="gradient" size="sm" onClick={copyUrl} className="shrink-0 gap-1 h-8 px-2.5 text-xs font-medium">
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               {copied ? "Copied" : "Copy"}
             </Button>
@@ -135,7 +140,7 @@ export function ProfileShareCard({ username, stats }: ProfileShareCardProps) {
 
           {/* Custom domain config */}
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs text-muted-foreground flex items-center gap-1 min-w-0 truncate">
+            <p className="text-xs leading-4 text-muted-foreground flex items-center gap-1 min-w-0 truncate">
               <Globe className="w-3 h-3 shrink-0" />
               {customDomain ? <span className="font-mono truncate">{customDomain}</span> : "Using default domain"}
             </p>
@@ -154,9 +159,9 @@ export function ProfileShareCard({ username, stats }: ProfileShareCardProps) {
                 value={domainInput}
                 onChange={(e) => setDomainInput(e.target.value)}
                 placeholder="https://yourdomain.com"
-                className="text-xs h-7"
+                className="text-xs h-8"
               />
-              <Button size="sm" onClick={saveDomain} className="h-7 px-2.5 text-xs">
+              <Button size="sm" onClick={saveDomain} className="h-8 px-2.5 text-xs shrink-0">
                 Save
               </Button>
             </div>
@@ -164,7 +169,7 @@ export function ProfileShareCard({ username, stats }: ProfileShareCardProps) {
         </div>
       </div>
 
-      {stats && <div className="mt-3 border-t border-border pt-3">{stats}</div>}
+      {stats && <div className="mt-3 border-t border-border/60 pt-3">{stats}</div>}
     </div>
 
   );
