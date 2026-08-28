@@ -426,9 +426,14 @@ export function ProfileTemplates({
         : null
     );
     await persist({
+      theme_name: snapshot.theme_name,
+      theme_gradient: snapshot.theme_gradient,
+      gradient_direction: snapshot.gradient_direction || "to-b",
+      animation_type: snapshot.animation_type,
       custom_background_url: snapshot.custom_background_url,
       custom_background_type: snapshot.custom_background_type,
-    });
+    } as any);
+
     clearThemeSnapshot(userId);
     setSnapshot(null);
     toast.success("Reverted to your previous published template");
