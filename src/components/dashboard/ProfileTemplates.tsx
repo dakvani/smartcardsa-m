@@ -389,7 +389,7 @@ export function ProfileTemplates({
   };
 
   /** Step 2: publish the previewed template, saving a rollback point first. */
-  const confirmSmartlinkTemplate = async () => {
+  const confirmSmartlinkTemplate = async (keepExistingLinks = true) => {
     const t = previewTemplate;
     if (!t) return;
     setPublishingSmartlink(true);
