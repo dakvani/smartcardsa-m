@@ -423,6 +423,9 @@ export function ProfileTemplates({
         custom_background_type: "image",
       } as any);
 
+      // Bring the template's own buttons/socials in as editable content.
+      await onImportTemplateContent?.(t, keepExistingLinks);
+
       setPreviewTemplate(null);
       toast.success(`Published "${t.name}" — you can revert to your previous look`);
     } finally {
