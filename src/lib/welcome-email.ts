@@ -2,6 +2,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 const MAX_ATTEMPTS = 3;
 
+/**
+ * Managed email sending is not configured for this project yet (no sender
+ * domain). Until it is, welcome emails are skipped instead of repeatedly
+ * calling an email function that no longer exists in this project.
+ */
+const MANAGED_EMAIL_READY = false;
+
+
 export interface WelcomeSendResult {
   ok: boolean;
   error?: string;
