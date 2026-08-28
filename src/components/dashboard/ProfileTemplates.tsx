@@ -416,7 +416,10 @@ export function ProfileTemplates({
       custom_bg_color: null,
       custom_accent_color: null,
       animation_type: snapshot.animation_type,
+      custom_background_url: snapshot.custom_background_url,
+      custom_background_type: snapshot.custom_background_type,
     });
+
     setCustomMedia(
       snapshot.custom_background_url
         ? { url: snapshot.custom_background_url, type: snapshot.custom_background_type || "image" }
