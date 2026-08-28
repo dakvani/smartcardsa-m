@@ -131,6 +131,9 @@ export default function Dashboard() {
   const [session, setSession] = useState<Session | null>(null);
   const initialTab = searchParams.get("tab") || "links";
   const [activeTab, setActiveTab] = useState(initialTab);
+  /** Sub-sections of the Appearance tab, split so each editor gets its own space. */
+  const [appearanceTab, setAppearanceTab] = useState<"profile" | "theme" | "buttons" | "templates">("profile");
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
