@@ -400,7 +400,7 @@ export default function Dashboard() {
     setHandoff({ pending, template });
   }, [profile, user]);
 
-  const publishHandoff = async () => {
+  const publishHandoff = async (keepExistingLinks = true) => {
     if (!handoff || !profile || !user) return;
     const { pending, template } = handoff;
 
