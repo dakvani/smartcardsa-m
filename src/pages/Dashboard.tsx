@@ -940,43 +940,15 @@ export default function Dashboard() {
       </header>
 
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-5">
-        {/* Compact Stats Bar */}
-        <div className="grid grid-cols-4 md:grid-cols-4 gap-1.5 sm:gap-2.5 mb-3 sm:mb-4">
-          {[
-            { label: "Views", value: analytics.views, icon: Eye, color: "text-blue-400", bg: "from-blue-500/10 to-blue-500/0" },
-            { label: "Clicks", value: analytics.clicks, icon: MousePointerClick, color: "text-pink-400", bg: "from-pink-500/10 to-pink-500/0" },
-            { label: "Links", value: visibleLinks, icon: Link2, color: "text-emerald-400", bg: "from-emerald-500/10 to-emerald-500/0" },
-            { label: "Groups", value: groups.length, icon: Folder, color: "text-amber-400", bg: "from-amber-500/10 to-amber-500/0" },
-          ].map((stat) => (
-            <motion.div
-              key={stat.label}
-              whileHover={{ y: -2 }}
-              className={`relative overflow-hidden rounded-lg sm:rounded-xl border border-border/60 bg-gradient-to-br ${stat.bg} bg-background/40 backdrop-blur-sm px-2 py-2 sm:p-3`}
-            >
-              <div className="flex items-center justify-between gap-1">
-                <div className="min-w-0">
-                  <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-muted-foreground font-medium truncate">{stat.label}</p>
-                  <p className="text-base sm:text-xl font-bold mt-0.5 tabular-nums leading-none">{stat.value.toLocaleString()}</p>
-                </div>
-                <div className={`hidden sm:flex w-8 h-8 rounded-lg bg-background/60 border border-border/40 items-center justify-center ${stat.color}`}>
-                  <stat.icon className="w-4 h-4" />
-                </div>
-                <stat.icon className={`sm:hidden w-3.5 h-3.5 shrink-0 ${stat.color}`} />
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-
         {/* Profile Share Card — desktop/tablet only; reduces mobile clutter */}
         <div className="hidden md:block">
           <ProfileShareCard username={profile.username} />
         </div>
 
-        {/* Builder Layout: Left Nav | Edit Panel | Live Preview (static 3-column shell on desktop) */}
-        <div className="flex flex-col lg:flex-row lg:items-stretch gap-4 mt-4 pb-20 md:pb-0 lg:h-[calc(100vh-7.5rem)]">
+        {/* Builder Layout: Left Nav | Edit Panel | Live Preview (static 3-column shell on tablet + desktop) */}
+        <div className="flex flex-col md:flex-row md:items-stretch gap-3 lg:gap-4 mt-4 pb-20 md:pb-0 md:h-[calc(100vh-9rem)] lg:h-[calc(100vh-7.5rem)]">
           {/* Left: Vertical Builder Nav — hidden on mobile (replaced by bottom tab bar) */}
-          <aside className="hidden md:flex lg:w-20 lg:flex-col gap-1.5 p-2 bg-background/60 backdrop-blur-sm rounded-2xl border border-border/60 shadow-sm lg:h-full lg:shrink-0 lg:overflow-y-auto scrollbar-hide lg:justify-center">
+          <aside className="hidden md:flex md:w-16 lg:w-20 md:flex-col gap-1.5 p-2 bg-background/60 backdrop-blur-sm rounded-2xl border border-border/60 shadow-sm md:h-full md:shrink-0 md:overflow-y-auto scrollbar-hide md:justify-center">
 
             {tabs.map(tab => {
               const active = activeTab === tab.id;
@@ -985,7 +957,7 @@ export default function Dashboard() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   title={tab.label}
-                  className={`group relative flex-1 lg:flex-none flex flex-col items-center justify-center gap-1.5 py-4 px-2 rounded-xl transition-all ${
+                  className={`group relative md:flex-none flex flex-col items-center justify-center gap-1.5 h-16 px-1 rounded-xl transition-all ${
                     active
                       ? "bg-primary/10 text-primary shadow-[0_0_15px_rgba(59,130,246,0.1)]"
                       : "text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
@@ -998,18 +970,19 @@ export default function Dashboard() {
                     />
                   )}
                   <tab.icon className={`w-5 h-5 ${active ? "text-primary" : ""}`} />
-                  <span className={`text-[9px] font-bold uppercase tracking-widest ${active ? "text-primary" : ""}`}>{tab.label}</span>
+                  <span className={`text-[8px] lg:text-[9px] font-bold uppercase tracking-widest ${active ? "text-primary" : ""}`}>{tab.label}</span>
                 </button>
               );
             })}
           </aside>
 
-          {/* Middle: Edit / Builder Panel — only this column scrolls on desktop */}
-          <div className="flex-1 min-w-0 lg:h-full lg:min-h-0">
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 shadow-sm overflow-hidden lg:h-full lg:flex lg:flex-col lg:min-h-0">
+          {/* Middle: Edit / Builder Panel — only this column scrolls on tablet/desktop */}
+          <div className="flex-1 min-w-0 md:h-full md:min-h-0">
+            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 shadow-sm overflow-hidden md:h-full md:flex md:flex-col md:min-h-0">
 
               {/* Panel Header */}
-              <div className="flex items-center justify-between px-3 sm:px-6 py-4 border-b border-border/60 bg-secondary/30 gap-4 lg:shrink-0">
+              <div className="flex items-center justify-between px-3 sm:px-6 h-16 border-b border-border/60 bg-secondary/30 gap-4 md:shrink-0">
+
                 <div className="flex items-center gap-3 min-w-0">
                   {(() => {
                     const t = tabs.find(x => x.id === activeTab)!;
