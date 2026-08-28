@@ -407,7 +407,7 @@ export default function Dashboard() {
 
       const { error } = await supabase
         .from("profiles")
-        .update(patch)
+        .update(patch as any)
         .eq("user_id", user.id);
       clearPendingBio();
       if (error) {
