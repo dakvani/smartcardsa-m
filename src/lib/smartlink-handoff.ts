@@ -161,3 +161,9 @@ export function readThemeSnapshot(userId?: string): ThemeSnapshot | null {
 export function clearThemeSnapshot(userId?: string): void {
   try { window.localStorage.removeItem(snapshotKey(userId)); } catch { /* noop */ }
 }
+
+const PRO_PLANS = ["pro", "pro_plus", "business", "enterprise", "lifetime"];
+
+/** Can this plan apply a template of the given tier? */
+export const canUseTemplateTier = (tier: TemplateTier, plan?: string): boolean =>
+  tier === "free" || PRO_PLANS.includes(plan || "free");
