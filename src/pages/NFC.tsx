@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { SEO } from "@/components/SEO";
 import { checkNfcAvailability, readTag, writeUrl } from "@/lib/nfc";
+import { profilePath } from "@/lib/profile-url";
 
 type Mode = "idle" | "reading" | "writing" | "success" | "error";
 
@@ -38,7 +39,7 @@ export default function NFCPage() {
         .eq("id", user.id)
         .maybeSingle();
       if (profile?.username) {
-        setWriteUrlValue(`${window.location.origin}/${profile.username}`);
+        setWriteUrlValue(`${window.location.origin}${profilePath(profile.username)}`);
       }
     })();
   }, []);

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { profilePath } from "@/lib/profile-url";
 
 /**
  * QR scan landing endpoint. Records a profile_view tagged as a QR scan,
@@ -37,6 +38,6 @@ export default function QRRedirect() {
 
   const ua = typeof navigator !== "undefined" ? navigator.userAgent : "";
   const isMobile = /android|iphone|ipod|ipad|mobile|blackberry|windows phone/i.test(ua);
-  const target = isMobile ? `/${username}?mobile=1` : `/${username}`;
+  const target = isMobile ? `${profilePath(username)}?mobile=1` : profilePath(username);
   return <Navigate to={target} replace />;
 }
