@@ -54,6 +54,12 @@ import {
 import type { TemplateProfile } from "@/lib/smartlink-templates";
 import { SmartlinkPublishDialog } from "@/components/dashboard/SmartlinkPublishDialog";
 import { profilePath } from "@/lib/profile-url";
+import { cardStyleFromTemplate, type CardStyle } from "@/lib/template-card-style";
+import {
+  templateFieldKeys, prefillFields, missingFields,
+  type TemplateFieldKey, type TemplateFieldValues,
+} from "@/lib/template-fields";
+import { TemplateFieldsDialog } from "@/components/dashboard/TemplateFieldsDialog";
 
 interface Profile {
   id: string;
@@ -75,6 +81,7 @@ interface Profile {
   custom_background_url?: string | null;
   custom_background_type?: "image" | "video" | null;
   motion_enabled?: boolean;
+  card_style?: CardStyle;
 }
 
 interface LinkItem {
@@ -90,6 +97,7 @@ interface LinkItem {
   scheduled_end: string | null;
   group_id: string | null;
   is_featured: boolean;
+  motion?: string | null;
 }
 
 const tabs = [
@@ -471,9 +479,13 @@ export default function Dashboard() {
    * When `keepExistingLinks` is true the current buttons are preserved and the
    * template's buttons are appended below them; otherwise they are replaced.
    */
-  const importTemplateContent = async (template: TemplateProfile, keepExistingLinks = true) => {
+  const importTemplateContent = async (
+    template: TemplateProfile,
+    keepExistingLinks = true,
+    values: TemplateFieldValues = {},
+  ) => {
     if (!user || !profile) return;
-    const content = templateContent(template);
+    const content = templateContent(template, values);
     try {
       let existing: any[] = links;
       if (!keepExistingLinks) {
@@ -485,6 +497,7 @@ export default function Dashboard() {
         user_id: user.id,
         title: l.title,
         url: l.url,
+        motion: l.motion,
         position: offset + l.position,
       }));
       let inserted: any[] = [];
@@ -498,6 +511,9 @@ export default function Dashboard() {
       const profilePatch = {
         social_links: { ...(profile.social_links || {}), ...content.social_links },
         avatar_url: profile.avatar_url || content.avatar_url,
+        // The template's element design (buttons, fonts, colours, layout) —
+        // not just its background — so the profile really looks like it.
+        card_style: cardStyleFromTemplate(template),
       };
       await supabase.from("profiles").update(profilePatch as any).eq("user_id", user.id);
       setProfile((p) => (p ? ({ ...p, ...profilePatch } as Profile) : p));
