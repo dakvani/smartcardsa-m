@@ -9,13 +9,14 @@ import {
   Stethoscope, Home, Trophy, Music, UtensilsCrossed, Dumbbell,
   Code, Star, GraduationCap, Gauge, Eye, EyeOff, Upload, X, Crown, Trash2, Undo2, Search,
 } from "lucide-react";
+import { useBuilderSettings } from "@/hooks/use-builder-settings";
 import { toast } from "sonner";
 import { UnlockProDialog } from "./UnlockProDialog";
 import { TemplatePreview } from "./TemplatePreview";
 import { templates as smartlinkTemplates, templateCategories, linkLabel } from "@/lib/smartlink-templates";
 
 import {
-  smartlinkTemplateToProfilePatch, smartlinkTemplateTier, canUseTemplateTier,
+  smartlinkTemplateToProfilePatch, canUseTemplateTier,
   saveThemeSnapshot, readThemeSnapshot, clearThemeSnapshot, type ThemeSnapshot,
 } from "@/lib/smartlink-handoff";
 import { SmartlinkPublishDialog } from "./SmartlinkPublishDialog";
@@ -178,7 +179,9 @@ export function ProfileTemplates({
   const [slCategory, setSlCategory] = useState<string>("All templates");
   const smartlinkCategories = templateCategories;
   const slq = slQuery.trim().toLowerCase();
+  const { templateEnabled, templateTier } = useBuilderSettings();
   const filteredSmartlinkTemplates = smartlinkTemplates.filter((t) => {
+    if (!templateEnabled(t)) return false; // hidden by an admin
     const inCat = slCategory === "All templates" || t.category === slCategory;
     if (!inCat) return false;
     if (!slq) return true;
@@ -392,7 +395,7 @@ export function ProfileTemplates({
   };
 
   const smartlinkLocked = (t: TemplateProfile) =>
-    !canUseTemplateTier(smartlinkTemplateTier(t), effectivePlan);
+    !canUseTemplateTier(templateTier(t), effectivePlan);
 
   /** Step 1: gate by plan, then open the live preview confirmation. */
   const requestSmartlinkTemplate = (t: TemplateProfile) => {
@@ -748,7 +751,7 @@ export function ProfileTemplates({
           {filteredSmartlinkTemplates.map((t) => {
 
             const active = currentThemeName === t.name;
-            const tier = smartlinkTemplateTier(t);
+            const tier = templateTier(t);
             const locked = smartlinkLocked(t);
             return (
               <button
