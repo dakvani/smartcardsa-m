@@ -69,7 +69,11 @@ interface ProfileTemplatesProps {
     custom_bg_color: null;
     custom_accent_color: null;
     animation_type: string | null;
+    /** Optional background media applied together with the theme. */
+    custom_background_url?: string | null;
+    custom_background_type?: "image" | "video" | null;
   }) => void;
+
   currentThemeName: string;
   isPro?: boolean;
   plan?: UserPlan;
@@ -229,6 +233,7 @@ export function ProfileTemplates({
     }
     setApplying(template.id);
     try {
+      // Clear any SmartLink background so the chosen theme is actually visible.
       onApply({
         theme_name: template.theme_name,
         theme_gradient: template.theme_gradient,
@@ -236,7 +241,21 @@ export function ProfileTemplates({
         custom_bg_color: null,
         custom_accent_color: null,
         animation_type: template.animation_type,
+        custom_background_url: null,
+        custom_background_type: null,
       });
+      setCustomMedia(null);
+      await persist({
+        theme_name: template.theme_name,
+        theme_gradient: template.theme_gradient,
+        gradient_direction: template.gradient_direction || "to-b",
+        custom_bg_color: null,
+        custom_accent_color: null,
+        animation_type: template.animation_type,
+        custom_background_url: null,
+        custom_background_type: null,
+      } as any);
+
       // Optimistic local bump + persist count
       setTemplates((prev) =>
         prev.map((t) =>
@@ -371,6 +390,8 @@ export function ProfileTemplates({
         setSnapshot(readThemeSnapshot(userId));
       }
       const patch = smartlinkTemplateToProfilePatch(t);
+      // Theme + background must go out in ONE update: the dashboard debounces a
+      // full-profile save, so a separate background write would be overwritten.
       onApply({
         theme_name: patch.theme_name,
         theme_gradient: patch.theme_gradient,
@@ -378,12 +399,21 @@ export function ProfileTemplates({
         custom_bg_color: null,
         custom_accent_color: null,
         animation_type: null,
-      });
-      setCustomMedia({ url: patch.custom_background_url, type: "image" });
-      await persist({
         custom_background_url: patch.custom_background_url,
         custom_background_type: "image",
       });
+      setCustomMedia({ url: patch.custom_background_url, type: "image" });
+      await persist({
+        theme_name: patch.theme_name,
+        theme_gradient: patch.theme_gradient,
+        gradient_direction: patch.gradient_direction,
+        custom_bg_color: null,
+        custom_accent_color: null,
+        animation_type: null,
+        custom_background_url: patch.custom_background_url,
+        custom_background_type: "image",
+      } as any);
+
       setPreviewTemplate(null);
       toast.success(`Published "${t.name}" — you can revert to your previous look`);
     } finally {
@@ -401,16 +431,24 @@ export function ProfileTemplates({
       custom_bg_color: null,
       custom_accent_color: null,
       animation_type: snapshot.animation_type,
+      custom_background_url: snapshot.custom_background_url,
+      custom_background_type: snapshot.custom_background_type,
     });
+
     setCustomMedia(
       snapshot.custom_background_url
         ? { url: snapshot.custom_background_url, type: snapshot.custom_background_type || "image" }
         : null
     );
     await persist({
+      theme_name: snapshot.theme_name,
+      theme_gradient: snapshot.theme_gradient,
+      gradient_direction: snapshot.gradient_direction || "to-b",
+      animation_type: snapshot.animation_type,
       custom_background_url: snapshot.custom_background_url,
       custom_background_type: snapshot.custom_background_type,
-    });
+    } as any);
+
     clearThemeSnapshot(userId);
     setSnapshot(null);
     toast.success("Reverted to your previous published template");
