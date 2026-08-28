@@ -589,6 +589,8 @@ export default function PublicProfile() {
                   );
                 })}
               </div>
+             </div>
+
 
               {/* Save contact + Subscribe — compact side-by-side pill row */}
               <motion.div
