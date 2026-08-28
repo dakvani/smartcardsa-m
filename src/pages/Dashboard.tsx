@@ -376,6 +376,51 @@ export default function Dashboard() {
     await persistProfile(profile);
   };
 
+  // Apply a SmartLink Bio template chosen on the public builder before signup.
+  const handoffApplied = useRef(false);
+  useEffect(() => {
+    if (!profile || !user || handoffApplied.current) return;
+    const pending = readPendingBio();
+    if (!pending) return;
+    const template = findSmartlinkTemplate(pending.template);
+    if (!template) { clearPendingBio(); return; }
+    handoffApplied.current = true;
+
+    (async () => {
+      const patch: Record<string, any> = {
+        ...smartlinkTemplateToProfilePatch(template),
+        title: pending.name || profile.title,
+        bio: (pending.bio || profile.bio || "").slice(0, 160),
+      };
+
+      // Try to claim the handle picked in the builder; ignore if it's taken.
+      const desired = pending.handle?.trim().toLowerCase();
+      if (desired && desired !== profile.username) {
+        const { data: taken } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("username", desired)
+          .maybeSingle();
+        if (!taken) patch.username = desired;
+      }
+
+      const { error } = await supabase
+        .from("profiles")
+        .update(patch)
+        .eq("user_id", user.id);
+      clearPendingBio();
+      if (error) {
+        toast.error("Could not apply your SmartLink template: " + error.message);
+        return;
+      }
+      setProfile((p) => (p ? ({ ...p, ...patch } as Profile) : p));
+      setActiveTab("appearance");
+      toast.success(`"${template.name}" template applied — your bio is live`);
+    })();
+  }, [profile, user]);
+
+
+
 
   // Link operations
   const addLink = async (type: LinkType = "custom") => {
