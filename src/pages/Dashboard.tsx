@@ -503,6 +503,10 @@ export default function Dashboard() {
       toast.error(`"${template.name}" is a Pro template — upgrade to edit it.`);
       return;
     }
+    // Importing a template replaces the current buttons — never silently.
+    if (links.length > 0 && !window.confirm(
+      `Load "${template.name}" into the builder? Your ${links.length} current link${links.length === 1 ? "" : "s"} will be replaced by this template's elements (you can edit or delete them after).`
+    )) return;
     setHandoffPublishing(true);
     try {
       const patch: Record<string, any> = {
