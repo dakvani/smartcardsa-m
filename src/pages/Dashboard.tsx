@@ -65,6 +65,7 @@ import { TemplateFieldsDialog } from "@/components/dashboard/TemplateFieldsDialo
 import { TemplateDesignEditor } from "@/components/dashboard/TemplateDesignEditor";
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
+import { layoutClasses } from "@/lib/template-layout";
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
 import { DeferredProfileMedia } from "@/components/profile/DeferredProfileMedia";
 
