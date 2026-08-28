@@ -1433,21 +1433,21 @@ export default function Dashboard() {
           </div>
 
 
-          {/* Preview Panel - iPhone Frame (mobile: collapsible, desktop: fixed right column) */}
-          <details open className="w-full lg:w-[360px] lg:shrink-0 lg:h-full lg:min-h-0 lg:flex lg:flex-col group [&_summary::-webkit-details-marker]:hidden">
-            <summary className="lg:hidden mb-2 flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-background/60 backdrop-blur-sm border border-border/60 cursor-pointer list-none">
+          {/* Preview Panel - iPhone Frame (mobile: collapsible, tablet/desktop: fixed right column) */}
+          <details open className={`w-full ${previewColumnClass} md:shrink-0 md:h-full md:min-h-0 md:flex md:flex-col group [&_summary::-webkit-details-marker]:hidden`}>
+            <summary className="md:hidden mb-2 flex items-center justify-between gap-2 h-10 px-3 rounded-lg bg-background/60 backdrop-blur-sm border border-border/60 cursor-pointer list-none">
               <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider">
                 <Eye className="w-3.5 h-3.5 text-primary" /> Live Preview
               </span>
               <span className="text-[10px] text-muted-foreground group-open:hidden">Tap to show</span>
               <span className="text-[10px] text-muted-foreground hidden group-open:inline">Tap to hide</span>
             </summary>
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm lg:h-[calc(100vh-7.5rem)] lg:overflow-y-auto scrollbar-hide lg:flex lg:flex-col">
+            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm md:h-full md:min-h-0 md:overflow-hidden scrollbar-hide md:flex md:flex-col">
 
-              <div className="flex items-center justify-between mb-3 px-1">
+              <div className="flex items-center justify-between gap-2 mb-3 px-1 h-8 shrink-0">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Live Preview</p>
                 <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
+                  <span className="hidden sm:flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live
                   </span>
                   <Link to={profilePath(profile.username)} target="_blank" className="text-[10px] text-primary hover:underline flex items-center gap-1">
@@ -1456,10 +1456,32 @@ export default function Dashboard() {
                 </div>
               </div>
 
+              {/* Preview device size — persisted across refreshes */}
+              <div className="flex items-center gap-1 mb-3 p-1 rounded-lg bg-secondary/40 border border-border/50 shrink-0">
+                {([
+                  { id: "sm", label: "S" },
+                  { id: "md", label: "M" },
+                  { id: "lg", label: "L" },
+                ] as const).map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setPreviewSize(s.id)}
+                    aria-pressed={previewSize === s.id}
+                    title={`Preview size ${s.label}`}
+                    className={`flex-1 h-7 rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                      previewSize === s.id ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+
               {/* iPhone Frame */}
-              <div className="mx-auto w-[220px] lg:w-auto lg:flex-1 lg:min-h-0 lg:flex lg:items-center lg:justify-center">
-                <div className="relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 lg:w-auto lg:aspect-[9/19.5] lg:h-[min(100%,calc((360px-2rem)*19.5/9))] lg:max-w-full">
+              <div className={`mx-auto ${previewSize === "sm" ? "w-[190px]" : previewSize === "lg" ? "w-[250px]" : "w-[220px]"} md:w-auto md:flex-1 md:min-h-0 md:flex md:items-center md:justify-center`}>
+                <div className={`relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 md:w-auto md:aspect-[9/19.5] ${previewFrameClass} md:max-w-full`}>
                   {/* Side buttons */}
+
                   <div className="absolute -left-[3px] top-24 w-[3px] h-8 rounded-l-md bg-neutral-700" />
                   <div className="absolute -left-[3px] top-36 w-[3px] h-12 rounded-l-md bg-neutral-700" />
                   <div className="absolute -left-[3px] top-52 w-[3px] h-12 rounded-l-md bg-neutral-700" />
