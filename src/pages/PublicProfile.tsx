@@ -413,11 +413,14 @@ export default function PublicProfile() {
           )}
 
           <div
-            className={`relative h-full overflow-y-auto pt-8 pb-10 px-4 ${
+            ref={scrollRef}
+            onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 24)}
+            className={`relative h-full overflow-y-auto scrollbar-hide pt-8 pb-10 px-4 ${
               isCompact ? "" : "sm:pt-12"
             } ${bgClass}`}
             style={bgStyle}
           >
+
             {profile.custom_background_url && (
               <DeferredProfileMedia
                 url={profile.custom_background_url}
