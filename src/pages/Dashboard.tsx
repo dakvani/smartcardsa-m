@@ -132,7 +132,20 @@ export default function Dashboard() {
   const initialTab = searchParams.get("tab") || "links";
   const [activeTab, setActiveTab] = useState(initialTab);
   /** Sub-sections of the Appearance tab, split so each editor gets its own space. */
-  const [appearanceTab, setAppearanceTab] = useState<"profile" | "theme" | "buttons" | "templates">("profile");
+  const APPEARANCE_TAB_KEY = "smartcard:appearanceTab";
+  const [appearanceTab, setAppearanceTab] = useState<"profile" | "theme" | "buttons" | "templates">(() => {
+    try {
+      const stored = localStorage.getItem(APPEARANCE_TAB_KEY);
+      if (stored === "profile" || stored === "theme" || stored === "buttons" || stored === "templates") return stored;
+    } catch { /* storage unavailable */ }
+    return "profile";
+  });
+
+  // Remember the last Appearance sub-tab across refreshes and sessions
+  useEffect(() => {
+    try { localStorage.setItem(APPEARANCE_TAB_KEY, appearanceTab); } catch { /* storage unavailable */ }
+  }, [appearanceTab]);
+
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -938,10 +951,11 @@ export default function Dashboard() {
           <ProfileShareCard username={profile.username} />
         </div>
 
-        {/* Builder Layout: Left Nav | Edit Panel | Live Preview */}
-        <div className="flex flex-col lg:flex-row gap-4 mt-4 pb-20 md:pb-0">
+        {/* Builder Layout: Left Nav | Edit Panel | Live Preview (static 3-column shell on desktop) */}
+        <div className="flex flex-col lg:flex-row lg:items-stretch gap-4 mt-4 pb-20 md:pb-0 lg:h-[calc(100vh-7.5rem)]">
           {/* Left: Vertical Builder Nav — hidden on mobile (replaced by bottom tab bar) */}
-          <aside className="hidden md:flex lg:w-20 lg:flex-col gap-1.5 p-2 bg-background/60 backdrop-blur-sm rounded-2xl border border-border/60 lg:sticky lg:top-20 lg:h-fit shadow-sm">
+          <aside className="hidden md:flex lg:w-20 lg:flex-col gap-1.5 p-2 bg-background/60 backdrop-blur-sm rounded-2xl border border-border/60 shadow-sm lg:h-full lg:shrink-0 lg:overflow-y-auto scrollbar-hide">
+
             {tabs.map(tab => {
               const active = activeTab === tab.id;
               return (
@@ -968,11 +982,12 @@ export default function Dashboard() {
             })}
           </aside>
 
-          {/* Middle: Edit / Builder Panel */}
-          <div className="flex-1 min-w-0">
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 shadow-sm overflow-hidden">
+          {/* Middle: Edit / Builder Panel — only this column scrolls on desktop */}
+          <div className="flex-1 min-w-0 lg:h-full lg:min-h-0">
+            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 shadow-sm overflow-hidden lg:h-full lg:flex lg:flex-col lg:min-h-0">
+
               {/* Panel Header */}
-              <div className="flex items-center justify-between px-3 sm:px-6 py-4 border-b border-border/60 bg-secondary/30 gap-4">
+              <div className="flex items-center justify-between px-3 sm:px-6 py-4 border-b border-border/60 bg-secondary/30 gap-4 lg:shrink-0">
                 <div className="flex items-center gap-3 min-w-0">
                   {(() => {
                     const t = tabs.find(x => x.id === activeTab)!;
@@ -1060,7 +1075,7 @@ export default function Dashboard() {
                 </div>
 
               </div>
-              <div className="p-3 sm:p-4">
+              <div className="p-3 sm:p-4 lg:flex-1 lg:min-h-0 lg:overflow-y-auto scrollbar-hide">
 
               {activeTab === "links" && (
                 <div className="space-y-4 sm:space-y-6">
@@ -1177,7 +1192,7 @@ export default function Dashboard() {
               {activeTab === "appearance" && (
                 <div className="space-y-4 sm:space-y-6">
                   {/* Appearance sub-tabs — every editor keeps its own space */}
-                  <div className="flex flex-wrap gap-1.5 border-b border-border pb-2">
+                  <div className="sticky -top-3 sm:-top-4 z-20 -mx-3 sm:-mx-4 -mt-3 sm:-mt-4 px-3 sm:px-4 pt-3 sm:pt-4 pb-2 bg-background/85 backdrop-blur-md border-b border-border flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
                     {([
                       { id: "profile", label: "Profile & socials" },
                       { id: "theme", label: "Colors & animation" },
@@ -1189,11 +1204,12 @@ export default function Dashboard() {
                         type="button"
                         onClick={() => setAppearanceTab(s.id)}
                         aria-pressed={appearanceTab === s.id}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                        className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                           appearanceTab === s.id
                             ? "bg-primary text-primary-foreground"
                             : "bg-secondary/60 text-muted-foreground hover:text-foreground"
                         }`}
+
                       >
                         {s.label}
                       </button>
@@ -1395,8 +1411,8 @@ export default function Dashboard() {
           </div>
 
 
-          {/* Preview Panel - iPhone Frame (mobile: collapsible & compact, desktop: sticky) */}
-          <details open className="w-full lg:w-[360px] lg:sticky lg:top-20 lg:h-fit group [&_summary::-webkit-details-marker]:hidden">
+          {/* Preview Panel - iPhone Frame (mobile: collapsible, desktop: fixed right column) */}
+          <details open className="w-full lg:w-[360px] lg:shrink-0 lg:h-full lg:min-h-0 group [&_summary::-webkit-details-marker]:hidden">
             <summary className="lg:hidden mb-2 flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-background/60 backdrop-blur-sm border border-border/60 cursor-pointer list-none">
               <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider">
                 <Eye className="w-3.5 h-3.5 text-primary" /> Live Preview
@@ -1404,7 +1420,8 @@ export default function Dashboard() {
               <span className="text-[10px] text-muted-foreground group-open:hidden">Tap to show</span>
               <span className="text-[10px] text-muted-foreground hidden group-open:inline">Tap to hide</span>
             </summary>
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm">
+            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm lg:h-full lg:overflow-y-auto scrollbar-hide">
+
               <div className="flex items-center justify-between mb-3 px-1">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Live Preview</p>
                 <div className="flex items-center gap-2">
