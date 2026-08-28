@@ -83,11 +83,9 @@ export function CheckoutAuth({ onAuthSuccess }: CheckoutAuthProps) {
         toast.error("You appear to be offline. Please check your connection.");
         return;
       }
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google" as any,
-        options: { redirectTo: `${window.location.origin}/nfc-products` },
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}/nfc-products`,
       });
-      const result = { error, redirected: !error };
 
       if (result.error) {
         toast.error(result.error.message || "Failed to sign in with Google");
@@ -109,11 +107,9 @@ export function CheckoutAuth({ onAuthSuccess }: CheckoutAuthProps) {
         toast.error("You appear to be offline. Please check your connection.");
         return;
       }
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "microsoft" as any,
-        options: { redirectTo: `${window.location.origin}/nfc-products` },
+      const result = await lovable.auth.signInWithOAuth("microsoft", {
+        redirect_uri: `${window.location.origin}/nfc-products`,
       });
-      const result = { error, redirected: !error };
 
       if (result.error) {
         toast.error(result.error.message || "Failed to sign in with Microsoft");
