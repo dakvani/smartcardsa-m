@@ -236,7 +236,7 @@ export function templateContent(t: TemplateProfile): TemplateContent {
       key === "website" ? `https://${handle.replace(/[^a-z0-9]/gi, "")}.com` : handle;
   }
   return {
-    links: t.links.map((title, i) => ({ title, url: "", position: i })),
+    links: t.links.map((l, i) => ({ title: linkLabel(l), url: linkUrl(l), position: i })),
     social_links,
     avatar_url: t.avatarImage,
   };
