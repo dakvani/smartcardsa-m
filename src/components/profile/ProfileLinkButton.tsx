@@ -63,7 +63,7 @@ export function ProfileLinkButton({
       <motion.span className="contents" {...(move ?? {})}>
         {icon}
         <span
-          className={`flex-1 text-center ${featured ? "font-bold text-lg" : "font-semibold"} text-primary-foreground`}
+          className={`flex-1 text-center ${featured ? "font-bold text-lg" : "font-semibold"}`}
         >
           {title}
         </span>

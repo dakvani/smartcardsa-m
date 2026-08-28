@@ -19,6 +19,7 @@ interface SocialLinks {
 
 interface SocialIconsProps {
   socialLinks: SocialLinks;
+  className?: string;
 }
 
 const socialConfig = [
@@ -36,7 +37,7 @@ const socialConfig = [
   { key: "spotify", label: "Spotify", icon: Music2, getUrl: (v: string) => v.startsWith("http") ? v : `https://open.spotify.com/${v}` },
 ] as const;
 
-export function SocialIcons({ socialLinks }: SocialIconsProps) {
+export function SocialIcons({ socialLinks, className = "text-primary-foreground" }: SocialIconsProps) {
   const activeLinks = socialConfig.filter(
     ({ key }) => (socialLinks as Record<string, string>)[key]
   );
@@ -62,7 +63,7 @@ export function SocialIcons({ socialLinks }: SocialIconsProps) {
             rel="noopener noreferrer"
             aria-label={label}
             title={label}
-            className="w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center hover:bg-white/20 hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg"
+            className={`w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/15 flex items-center justify-center hover:bg-white/20 hover:scale-110 active:scale-95 transition-all duration-200 shadow-lg ${className}`}
           >
             {brandLogo ? (
               <img
@@ -73,7 +74,7 @@ export function SocialIcons({ socialLinks }: SocialIconsProps) {
                 className="w-[22px] h-[22px] object-contain drop-shadow-sm"
               />
             ) : (
-              <Icon className="w-5 h-5 text-primary-foreground" aria-hidden="true" />
+              <Icon className="w-5 h-5" aria-hidden="true" />
             )}
           </a>
         );

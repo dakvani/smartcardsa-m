@@ -12,6 +12,7 @@ import { EmailSignup } from "@/components/profile/EmailSignup";
 import { SaveContactButton } from "@/components/profile/SaveContactButton";
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
+import { ThreeDLayer } from "@/components/smartlink/ThreeDLayer";
 import { getBrandLogo } from "@/lib/brand-logos";
 
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
@@ -449,6 +450,9 @@ export default function PublicProfile() {
                 config={{ speed: profile.animation_speed || 1, intensity: profile.animation_intensity || 1 }}
               />
             )}
+            {profile.motion_enabled !== false && cardStyle.threeD && cardStyle.threeDVariant && cardStyle.threeDVariant !== "tilt" && (
+              <ThreeDLayer variant={cardStyle.threeDVariant} speed={profile.animation_speed || 1} />
+            )}
 
 
             <div className="max-w-md mx-auto relative z-10">
@@ -466,12 +470,34 @@ export default function PublicProfile() {
                     </span>
                   )}
                 </div>
-                <h1 className={`text-xl sm:text-2xl leading-tight text-primary-foreground ${headingClassFor(cardStyle)}`}>{profile.title}</h1>
+                <h1 className={`text-xl sm:text-2xl leading-tight ${headingClassFor(cardStyle)}`}>{profile.title}</h1>
                 {profile.bio && (
-                  <p className="text-sm text-primary-foreground/70 mt-1.5 max-w-xs mx-auto leading-snug">{profile.bio}</p>
+                  <p className={`text-sm mt-1.5 max-w-xs mx-auto leading-snug ${bioClassFor(cardStyle)}`}>{profile.bio}</p>
                 )}
-                <SocialIcons socialLinks={profile.social_links || {}} />
+                <SocialIcons socialLinks={profile.social_links || {}} className={cardStyle.socialColor} />
               </motion.div>
+
+              {cardStyle.layout === "social" && cardStyle.stats && cardStyle.stats.length > 0 && (
+                <div className="mb-4 grid grid-cols-3 gap-1 rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 px-2 py-2 backdrop-blur">
+                  {cardStyle.stats.map((stat, index) => (
+                    <div key={`${stat.label}-${index}`} className="text-center">
+                      <div className={`text-sm font-bold ${headingClassFor(cardStyle)}`}>{stat.value}</div>
+                      <div className={`text-[9px] uppercase ${bioClassFor(cardStyle)}`}>{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {cardStyle.layout === "biodata" && cardStyle.facts && cardStyle.facts.length > 0 && (
+                <div className="mb-4 divide-y divide-primary-foreground/15 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 backdrop-blur">
+                  {cardStyle.facts.map((fact, index) => (
+                    <div key={`${fact.label}-${index}`} className="flex items-center justify-between gap-3 px-3 py-2">
+                      <span className={`text-[10px] uppercase ${bioClassFor(cardStyle)}`}>{fact.label}</span>
+                      <span className={`text-xs text-right ${headingClassFor(cardStyle)}`}>{fact.value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="space-y-2.5">
                 {links.filter((l) => l.is_featured).length > 0 && (
