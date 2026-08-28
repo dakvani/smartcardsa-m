@@ -49,7 +49,7 @@ import { MobileTabBar } from "@/components/dashboard/MobileTabBar";
 import { computeOnboardingPrefill, trackOnboarding, type OnboardingPrefill } from "@/lib/onboarding";
 import {
   readPendingBio, clearPendingBio, findSmartlinkTemplate, smartlinkTemplateToProfilePatch,
-  saveThemeSnapshot, smartlinkTemplateTier, canUseTemplateTier, type PendingBio,
+  saveThemeSnapshot, smartlinkTemplateTier, canUseTemplateTier, templateContent, type PendingBio,
 } from "@/lib/smartlink-handoff";
 import type { TemplateProfile } from "@/lib/smartlink-templates";
 import { SmartlinkPublishDialog } from "@/components/dashboard/SmartlinkPublishDialog";
