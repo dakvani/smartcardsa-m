@@ -147,7 +147,73 @@ export default function Dashboard() {
   }, [appearanceTab]);
 
 
+
   const [loading, setLoading] = useState(true);
+
+  /** Preview fit mode: "contain" locks the builder to the phone aspect ratio, "full" fills the viewport. */
+  const PREVIEW_FIT_KEY = "smartcard:previewFit";
+  const [previewFit, setPreviewFit] = useState<"contain" | "full">(() => {
+    try {
+      const stored = localStorage.getItem(PREVIEW_FIT_KEY);
+      if (stored === "contain" || stored === "full") return stored;
+    } catch { /* storage unavailable */ }
+    return "contain";
+  });
+  useEffect(() => {
+    try { localStorage.setItem(PREVIEW_FIT_KEY, previewFit); } catch { /* storage unavailable */ }
+  }, [previewFit]);
+
+  // Desktop-only height locking (inline styles can't be media-queried)
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(min-width: 1024px)").matches : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => setIsDesktop(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  // Measure the preview card so the builder row + editor scroll area match it exactly
+  const previewCardRef = useRef<HTMLDivElement>(null);
+  const [builderHeight, setBuilderHeight] = useState<number | null>(null);
+  useEffect(() => {
+    if (!isDesktop || previewFit === "full") { setBuilderHeight(null); return; }
+    const el = previewCardRef.current;
+    if (!el) return;
+    const update = () => setBuilderHeight(el.offsetHeight);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [isDesktop, previewFit, loading]);
+
+  const builderStyle = isDesktop
+    ? previewFit === "full"
+      ? { height: "calc(100vh - 7.5rem)" }
+      : builderHeight
+        ? { height: builderHeight }
+        : undefined
+    : undefined;
+
+  // Remember editor scroll position per builder section
+  const editorScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = editorScrollRef.current;
+    if (!el) return;
+    const key = `smartcard:scroll:${activeTab}`;
+    let saved = 0;
+    try { saved = Number(localStorage.getItem(key) || 0); } catch { /* ignore */ }
+    const raf = requestAnimationFrame(() => { el.scrollTop = saved; });
+    const onScroll = () => {
+      try { localStorage.setItem(key, String(el.scrollTop)); } catch { /* ignore */ }
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("scroll", onScroll);
+    };
+  }, [activeTab, loading]);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [onboarding, setOnboarding] = useState<{ open: boolean; prefill: OnboardingPrefill | null; saving: boolean }>({ open: false, prefill: null, saving: false });
@@ -952,7 +1018,7 @@ export default function Dashboard() {
         </div>
 
         {/* Builder Layout: Left Nav | Edit Panel | Live Preview (static 3-column shell on desktop) */}
-        <div className="flex flex-col lg:flex-row lg:items-stretch gap-4 mt-4 pb-20 md:pb-0">
+        <div className="flex flex-col lg:flex-row lg:items-stretch lg:min-h-0 gap-4 mt-4 pb-20 md:pb-0" style={builderStyle}>
           {/* Left: Vertical Builder Nav — hidden on mobile (replaced by bottom tab bar) */}
           <aside className="hidden md:flex lg:w-20 lg:flex-col gap-1.5 p-2 bg-background/60 backdrop-blur-sm rounded-2xl border border-border/60 shadow-sm lg:shrink-0 lg:overflow-y-auto scrollbar-hide lg:justify-center">
 
@@ -983,8 +1049,8 @@ export default function Dashboard() {
           </aside>
 
           {/* Middle: Edit / Builder Panel — only this column scrolls on desktop */}
-          <div className="flex-1 min-w-0">
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 shadow-sm overflow-hidden">
+          <div className="flex-1 min-w-0 lg:h-full lg:min-h-0 lg:flex lg:flex-col">
+            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 shadow-sm overflow-hidden lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
 
               {/* Panel Header */}
               <div className="flex items-center justify-between px-3 sm:px-6 py-4 border-b border-border/60 bg-secondary/30 gap-4 lg:shrink-0">
@@ -1075,7 +1141,7 @@ export default function Dashboard() {
                 </div>
 
               </div>
-              <div className="p-3 sm:p-4 lg:flex-1 lg:min-h-0 lg:overflow-y-auto scrollbar-hide">
+              <div ref={editorScrollRef} className="p-3 sm:p-4 lg:flex-1 lg:min-h-0 lg:overflow-y-auto scrollbar-hide">
 
               {activeTab === "links" && (
                 <div className="space-y-4 sm:space-y-6">
@@ -1420,11 +1486,19 @@ export default function Dashboard() {
               <span className="text-[10px] text-muted-foreground group-open:hidden">Tap to show</span>
               <span className="text-[10px] text-muted-foreground hidden group-open:inline">Tap to hide</span>
             </summary>
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm lg:flex lg:flex-col">
+            <div ref={previewCardRef} className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm lg:h-full lg:min-h-0 lg:flex lg:flex-col">
 
               <div className="flex items-center justify-between mb-3 px-1">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Live Preview</p>
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewFit(previewFit === "contain" ? "full" : "contain")}
+                    title={previewFit === "contain" ? "Switch to full-height preview" : "Switch to contained preview"}
+                    className="hidden lg:inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors"
+                  >
+                    {previewFit === "contain" ? "Contain" : "Full height"}
+                  </button>
                   <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live
                   </span>
@@ -1435,8 +1509,8 @@ export default function Dashboard() {
               </div>
 
               {/* iPhone Frame */}
-              <div className="mx-auto w-[220px] lg:w-auto lg:flex lg:items-center lg:justify-center">
-                <div className="relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 w-[260px] lg:w-[300px] aspect-[9/19.5]">
+              <div className="mx-auto w-[220px] lg:w-auto lg:flex-1 lg:min-h-0 lg:flex lg:items-center lg:justify-center">
+                <div className={`relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 w-[260px] aspect-[9/19.5] ${previewFit === "full" ? "lg:w-auto lg:h-full lg:max-w-full" : "lg:w-[300px]"}`}>
                   {/* Side buttons */}
                   <div className="absolute -left-[3px] top-24 w-[3px] h-8 rounded-l-md bg-neutral-700" />
                   <div className="absolute -left-[3px] top-36 w-[3px] h-12 rounded-l-md bg-neutral-700" />
