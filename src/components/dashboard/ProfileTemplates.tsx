@@ -749,14 +749,15 @@ export function ProfileTemplates({
         template={previewTemplate}
         overrides={previewIdentity}
         publishing={publishingSmartlink}
-        onConfirm={confirmSmartlinkTemplate}
+        existingLinkCount={existingLinkCount}
+        onConfirm={(keepLinks) => confirmSmartlinkTemplate(keepLinks)}
         onKeepEditing={
           onEditTemplateInBuilder && previewTemplate
-            ? async () => {
+            ? async (keepLinks) => {
                 const t = previewTemplate;
                 setPublishingSmartlink(true);
                 try {
-                  await onEditTemplateInBuilder(t);
+                  await onEditTemplateInBuilder(t, keepLinks);
                   setPreviewTemplate(null);
                 } finally {
                   setPublishingSmartlink(false);
