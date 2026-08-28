@@ -1,4 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
+import { ensureProfile } from "@/lib/ensure-profile";
+
 
 /**
  * Returns the route a user should land on after signing in.
