@@ -118,12 +118,16 @@ export default function SmartLinkBio() {
   const selected: TemplateProfile =
     templates.find((t) => t.username === editor.username) ?? templates[0];
 
-  const filteredTemplates = useMemo(
-    () => (activeCategory === "All templates"
-      ? templates
-      : templates.filter((t) => t.category === activeCategory)),
-    [activeCategory],
-  );
+  const filteredTemplates = useMemo(() => {
+    const q = templateQuery.trim().toLowerCase();
+    return templates.filter((t) => {
+      if (activeCategory !== "All templates" && t.category !== activeCategory) return false;
+      if (!q) return true;
+      return [t.name, t.username, t.category, t.bio, ...t.links.map(linkLabel)]
+        .join(" ").toLowerCase().includes(q);
+    });
+  }, [activeCategory, templateQuery]);
+
 
   const location = useLocation();
   const navigate = useNavigate();
