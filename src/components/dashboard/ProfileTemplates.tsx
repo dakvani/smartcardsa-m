@@ -69,7 +69,11 @@ interface ProfileTemplatesProps {
     custom_bg_color: null;
     custom_accent_color: null;
     animation_type: string | null;
+    /** Optional background media applied together with the theme. */
+    custom_background_url?: string | null;
+    custom_background_type?: "image" | "video" | null;
   }) => void;
+
   currentThemeName: string;
   isPro?: boolean;
   plan?: UserPlan;
