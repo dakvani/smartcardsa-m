@@ -12,6 +12,8 @@ import {
 import { toast } from "sonner";
 import { UnlockProDialog } from "./UnlockProDialog";
 import { TemplatePreview } from "./TemplatePreview";
+import { templates as smartlinkTemplates } from "@/lib/smartlink-templates";
+import { smartlinkTemplateToProfilePatch } from "@/lib/smartlink-handoff";
 import type { UserPlan } from "@/hooks/use-plan";
 
 export type CustomBackground = { url: string; type: "image" | "video" } | null;
@@ -327,6 +329,24 @@ export function ProfileTemplates({
     toast.success("Custom background removed — reverted to default theme");
   };
 
+  const applySmartlinkTemplate = async (t: (typeof smartlinkTemplates)[number]) => {
+    const patch = smartlinkTemplateToProfilePatch(t);
+    onApply({
+      theme_name: patch.theme_name,
+      theme_gradient: patch.theme_gradient,
+      gradient_direction: patch.gradient_direction,
+      custom_bg_color: null,
+      custom_accent_color: null,
+      animation_type: null,
+    });
+    setCustomMedia({ url: patch.custom_background_url, type: "image" });
+    await persist({
+      custom_background_url: patch.custom_background_url,
+      custom_background_type: "image",
+    });
+    toast.success(`Applied "${t.name}" — edit anything you like`);
+  };
+
   const commitSpeed = (v: number) => {
     setSpeed(v);
     persist({ animation_speed: v });
@@ -520,6 +540,52 @@ export function ProfileTemplates({
         className="hidden"
         onChange={handleFile}
       />
+
+      {/* SmartLink Bio templates — every template from the public builder,
+          editable by any plan once signed in. */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <h4 className="text-sm font-semibold">SmartLink Bio templates</h4>
+            <p className="text-[11px] text-muted-foreground">
+              All {smartlinkTemplates.length} designs from the public builder — free to apply and fully editable.
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+          {smartlinkTemplates.map((t) => {
+            const active = currentThemeName === t.name;
+            return (
+              <button
+                key={t.username}
+                type="button"
+                onClick={() => applySmartlinkTemplate(t)}
+                className={`group relative rounded-xl overflow-hidden border text-left transition-all ${
+                  active ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"
+                }`}
+              >
+                <div className="aspect-[9/16] w-full overflow-hidden bg-muted">
+                  <img
+                    src={t.bgImage}
+                    alt={`${t.name} SmartLink template`}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                  />
+                </div>
+                <div className="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent">
+                  <p className="text-[10px] font-semibold text-white truncate">{t.name}</p>
+                  <p className="text-[9px] text-white/70 truncate">{t.category}</p>
+                </div>
+                {active && (
+                  <span className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                    <Check className="w-3 h-3 text-primary-foreground" />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Templates Grid */}
       <div className="grid grid-cols-4 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-3">

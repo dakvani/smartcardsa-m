@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -20,6 +20,8 @@ import {
 } from "@/lib/smartlink-templates";
 import { TemplatePhoneCard } from "@/components/smartlink/TemplatePhoneCard";
 import { useHistoryState, useDebouncedCommit } from "@/hooks/use-history-state";
+import { savePendingBio } from "@/lib/smartlink-handoff";
+import { supabase } from "@/integrations/supabase/client";
 
 const features = [
   { icon: Layers, title: "Link Management", description: "Unlimited links with drag-and-drop reordering and scheduling." },
@@ -123,6 +125,7 @@ export default function SmartLinkBio() {
   );
 
   const location = useLocation();
+  const navigate = useNavigate();
   const pricingRef = useRef<HTMLElement | null>(null);
   const previewRef = useRef<HTMLDivElement | null>(null);
 
@@ -187,6 +190,21 @@ export default function SmartLinkBio() {
   };
 
   const updateDraft = (patch: Partial<EditorState>) => setDraft((d) => ({ ...d, ...patch }));
+
+  // Publish: stash the chosen template + edits, then send the visitor through
+  // auth. The dashboard applies the handoff to their real profile on arrival.
+  const handlePublish = async () => {
+    if (!validation.success) return;
+    savePendingBio({
+      template: selected.username,
+      name: draft.name,
+      bio: draft.bio,
+      handle: draft.handle,
+    });
+    trackEvent("smartlink_publish_clicked", { template: selected.username });
+    const { data } = await supabase.auth.getSession();
+    navigate(data.session ? "/dashboard?tab=appearance" : "/signup?next=/dashboard");
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -344,11 +362,16 @@ export default function SmartLinkBio() {
                 <div className="rounded-lg bg-secondary/40 px-2 py-1 sm:px-3 sm:py-2 text-[10px] sm:text-xs text-muted-foreground truncate">
                   Template: <span className="font-semibold text-foreground">{selected.name}</span> · {selected.category}
                 </div>
-                <Link to="/signup" className="block">
-                  <Button variant="gradient" size="sm" className="w-full h-9 text-xs sm:h-11 sm:text-base" disabled={!validation.success}>
-                    {validation.success ? "Publish this bio" : "Fix errors to publish"}
-                  </Button>
-                </Link>
+                <Button
+                  variant="gradient"
+                  size="sm"
+                  className="w-full h-9 text-xs sm:h-11 sm:text-base"
+                  disabled={!validation.success}
+                  onClick={handlePublish}
+                >
+                  {validation.success ? "Publish this bio" : "Fix errors to publish"}
+                </Button>
+
               </div>
 
               {/* Live preview — second on mobile (below editor), first on desktop (right) */}
