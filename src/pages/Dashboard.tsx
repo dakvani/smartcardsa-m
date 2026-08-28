@@ -132,7 +132,20 @@ export default function Dashboard() {
   const initialTab = searchParams.get("tab") || "links";
   const [activeTab, setActiveTab] = useState(initialTab);
   /** Sub-sections of the Appearance tab, split so each editor gets its own space. */
-  const [appearanceTab, setAppearanceTab] = useState<"profile" | "theme" | "buttons" | "templates">("profile");
+  const APPEARANCE_TAB_KEY = "smartcard:appearanceTab";
+  const [appearanceTab, setAppearanceTab] = useState<"profile" | "theme" | "buttons" | "templates">(() => {
+    try {
+      const stored = localStorage.getItem(APPEARANCE_TAB_KEY);
+      if (stored === "profile" || stored === "theme" || stored === "buttons" || stored === "templates") return stored;
+    } catch { /* storage unavailable */ }
+    return "profile";
+  });
+
+  // Remember the last Appearance sub-tab across refreshes and sessions
+  useEffect(() => {
+    try { localStorage.setItem(APPEARANCE_TAB_KEY, appearanceTab); } catch { /* storage unavailable */ }
+  }, [appearanceTab]);
+
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
