@@ -1552,7 +1552,32 @@ export default function Dashboard() {
             </div>
           </details>
         </div>
+
+        {/* Compact Stats Bar — below the builder, aligned 1 2 3 4 */}
+        <div className="grid grid-cols-4 gap-2 mt-3 md:mt-4 mb-20 md:mb-0">
+          {[
+            { label: "Views", value: analytics.views, icon: Eye, color: "text-blue-400", bg: "from-blue-500/10 to-blue-500/0" },
+            { label: "Clicks", value: analytics.clicks, icon: MousePointerClick, color: "text-pink-400", bg: "from-pink-500/10 to-pink-500/0" },
+            { label: "Links", value: visibleLinks, icon: Link2, color: "text-emerald-400", bg: "from-emerald-500/10 to-emerald-500/0" },
+            { label: "Groups", value: groups.length, icon: Folder, color: "text-amber-400", bg: "from-amber-500/10 to-amber-500/0" },
+          ].map((stat) => (
+            <motion.div
+              key={stat.label}
+              whileHover={{ y: -2 }}
+              className={`relative overflow-hidden rounded-lg border border-border/60 bg-gradient-to-br ${stat.bg} bg-background/40 backdrop-blur-sm h-12 px-2 flex items-center`}
+            >
+              <div className="flex items-center justify-between gap-1 w-full">
+                <div className="min-w-0">
+                  <p className="text-[8px] uppercase tracking-wider text-muted-foreground font-medium truncate">{stat.label}</p>
+                  <p className="text-sm font-bold tabular-nums leading-none mt-0.5">{stat.value.toLocaleString()}</p>
+                </div>
+                <stat.icon className={`w-3.5 h-3.5 shrink-0 ${stat.color}`} />
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
+
       <MobileTabBar activeTab={activeTab} onChange={setActiveTab} />
 
       <TemplateFieldsDialog
