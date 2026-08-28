@@ -758,57 +758,68 @@ export function ProfileTemplates({
           </p>
         )}
 
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
           {filteredSmartlinkTemplates.map((t) => {
 
             const active = currentThemeName === t.name;
             const tier = templateTier(t);
             const locked = smartlinkLocked(t);
             return (
-              <button
-                key={t.username}
-                type="button"
-                aria-label={locked ? `${t.name} — Pro template, upgrade to use` : `Preview ${t.name} template`}
-                onClick={() => requestSmartlinkTemplate(t)}
-                className={`group relative rounded-xl overflow-hidden border text-left transition-all ${
-                  active ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"
-                }`}
-              >
-                <div className={`aspect-[9/16] w-full overflow-hidden bg-muted ${locked ? "opacity-70" : ""}`}>
+              <div key={t.username} className="group min-w-0">
+                <button
+                  type="button"
+                  aria-label={locked ? `${t.name} — Pro template, upgrade to use` : `Preview ${t.name} template`}
+                  onClick={() => requestSmartlinkTemplate(t)}
+                  className="relative block w-full rounded-[26px] overflow-hidden text-left"
+                >
                   <TemplatePhoneCard
                     template={t}
-                    className="!rounded-none !aspect-[9/16] w-full shadow-none ring-0 transition-transform group-hover:scale-[1.02]"
+                    className={`transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-glow ${
+                      active ? "ring-2 ring-primary shadow-glow" : ""
+                    } ${locked ? "opacity-80" : ""}`}
                   />
-                </div>
-                <span
-                  className={`absolute top-1 left-1 px-1.5 py-0.5 rounded text-[8px] font-bold ${
-                    tier === "pro"
-                      ? "bg-amber-500/90 text-amber-950"
-                      : "bg-emerald-500/90 text-emerald-950"
-                  }`}
-                >
-                  {tier === "pro" ? "PRO" : "FREE"}
-                </span>
-                {locked && (
-                  <span className="absolute inset-0 flex items-center justify-center">
-                    <Lock className="w-4 h-4 text-white drop-shadow" />
+                  <span
+                    className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wide shadow ${
+                      tier === "pro"
+                        ? "bg-amber-500/95 text-amber-950"
+                        : "bg-emerald-500/95 text-emerald-950"
+                    }`}
+                  >
+                    {tier === "pro" ? "PRO" : "FREE"}
                   </span>
-                )}
-                <div className="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent">
-                  <p className="text-[10px] font-semibold text-white truncate">{t.name}</p>
-                  <p className="text-[9px] text-white/70 truncate">
-                    {locked ? "Pro plan required" : t.category}
-                  </p>
+                  {locked && (
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/25">
+                      <Lock className="w-5 h-5 text-white drop-shadow" />
+                    </span>
+                  )}
+                  {active && !locked && (
+                    <span className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow">
+                      <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                    </span>
+                  )}
+                </button>
+
+                <div className="mt-2.5 flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold truncate">{t.name}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">
+                      {locked ? "Pro plan required" : t.category}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant={active ? "secondary" : "outline"}
+                    className="shrink-0 h-7 text-[10px] px-2"
+                    onClick={() => requestSmartlinkTemplate(t)}
+                  >
+                    {active ? "Applied" : locked ? "Unlock" : "Use"}
+                  </Button>
                 </div>
-                {active && !locked && (
-                  <span className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                    <Check className="w-3 h-3 text-primary-foreground" />
-                  </span>
-                )}
-              </button>
+              </div>
             );
           })}
         </div>
+
       </div>
 
       <SmartlinkPublishDialog
