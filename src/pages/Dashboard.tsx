@@ -1192,7 +1192,7 @@ export default function Dashboard() {
               {activeTab === "appearance" && (
                 <div className="space-y-4 sm:space-y-6">
                   {/* Appearance sub-tabs — every editor keeps its own space */}
-                  <div className="flex flex-wrap gap-1.5 border-b border-border pb-2">
+                  <div className="sticky -top-3 sm:-top-4 z-20 -mx-3 sm:-mx-4 -mt-3 sm:-mt-4 px-3 sm:px-4 pt-3 sm:pt-4 pb-2 bg-background/85 backdrop-blur-md border-b border-border flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
                     {([
                       { id: "profile", label: "Profile & socials" },
                       { id: "theme", label: "Colors & animation" },
