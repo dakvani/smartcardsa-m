@@ -63,7 +63,6 @@ import {
 } from "@/lib/template-fields";
 import { TemplateFieldsDialog } from "@/components/dashboard/TemplateFieldsDialog";
 import { TemplateDesignEditor } from "@/components/dashboard/TemplateDesignEditor";
-import type { LinkStyle } from "@/lib/link-style";
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
@@ -106,7 +105,7 @@ interface LinkItem {
   group_id: string | null;
   is_featured: boolean;
   motion?: string | null;
-  style?: LinkStyle | null;
+  style?: unknown;
 }
 
 const tabs = [
@@ -1337,7 +1336,7 @@ export default function Dashboard() {
                     onChange={(cardStyle) => updateProfile({ card_style: cardStyle })}
                     buttons={links.map((l) => ({ id: l.id, title: l.title, url: l.url, motion: l.motion, style: l.style }))}
                     onAddButton={() => addLink("custom")}
-                    onUpdateButton={(id, patch) => updateLink(id, patch as Partial<LinkItem>)}
+                    onUpdateButton={(id, patch) => updateLink(id, patch)}
                     onDeleteButton={(id) => deleteLink(id)}
                     onMoveButton={(id, direction) => moveLink(id, direction)}
                   />
