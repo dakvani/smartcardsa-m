@@ -7,13 +7,18 @@ import { Label } from "@/components/ui/label";
 import {
   Loader2, Check, Palette, Briefcase, Camera, Sparkles, Lock,
   Stethoscope, Home, Trophy, Music, UtensilsCrossed, Dumbbell,
-  Code, Star, GraduationCap, Gauge, Eye, EyeOff, Upload, X, Crown, Trash2,
+  Code, Star, GraduationCap, Gauge, Eye, EyeOff, Upload, X, Crown, Trash2, Undo2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { UnlockProDialog } from "./UnlockProDialog";
 import { TemplatePreview } from "./TemplatePreview";
 import { templates as smartlinkTemplates } from "@/lib/smartlink-templates";
-import { smartlinkTemplateToProfilePatch } from "@/lib/smartlink-handoff";
+import {
+  smartlinkTemplateToProfilePatch, smartlinkTemplateTier, canUseTemplateTier,
+  saveThemeSnapshot, readThemeSnapshot, clearThemeSnapshot, type ThemeSnapshot,
+} from "@/lib/smartlink-handoff";
+import { SmartlinkPublishDialog } from "./SmartlinkPublishDialog";
+import type { TemplateProfile } from "@/lib/smartlink-templates";
 import type { UserPlan } from "@/hooks/use-plan";
 
 export type CustomBackground = { url: string; type: "image" | "video" } | null;
@@ -70,6 +75,10 @@ interface ProfileTemplatesProps {
   plan?: UserPlan;
   userId?: string;
   initialCustomBackground?: CustomBackground;
+  /** Current published look — snapshotted so a wrong template can be rolled back. */
+  currentTheme?: Omit<ThemeSnapshot, "saved_at">;
+  /** Live profile values previewed inside the confirm step. */
+  previewIdentity?: { name?: string; bio?: string; username?: string };
   initialAnimationSpeed?: number;
   initialMotionEnabled?: boolean;
   onPersist?: (updates: {
@@ -122,6 +131,8 @@ export function ProfileTemplates({
   initialAnimationSpeed = 1,
   initialMotionEnabled = true,
   onPersist,
+  currentTheme,
+  previewIdentity,
 }: ProfileTemplatesProps) {
   const effectivePlan: UserPlan = plan ?? (isPro ? "pro" : "free");
   const isProTier = isPro || PRO_TIERS.includes(effectivePlan);
@@ -141,6 +152,12 @@ export function ProfileTemplates({
   const [customMedia, setCustomMedia] = useState<CustomBackground>(initialCustomBackground);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // SmartLink Bio gallery: preview-before-publish + rollback state
+  const [previewTemplate, setPreviewTemplate] = useState<TemplateProfile | null>(null);
+  const [publishingSmartlink, setPublishingSmartlink] = useState(false);
+  const [snapshot, setSnapshot] = useState<ThemeSnapshot | null>(() => readThemeSnapshot(userId));
+  useEffect(() => { setSnapshot(readThemeSnapshot(userId)); }, [userId]);
 
   // Per-user hidden templates (UI-only) — persisted to localStorage
   const hiddenKey = `tpl_hidden:${userId || "anon"}`;
@@ -329,22 +346,74 @@ export function ProfileTemplates({
     toast.success("Custom background removed — reverted to default theme");
   };
 
-  const applySmartlinkTemplate = async (t: (typeof smartlinkTemplates)[number]) => {
-    const patch = smartlinkTemplateToProfilePatch(t);
+  const smartlinkLocked = (t: TemplateProfile) =>
+    !canUseTemplateTier(smartlinkTemplateTier(t), effectivePlan);
+
+  /** Step 1: gate by plan, then open the live preview confirmation. */
+  const requestSmartlinkTemplate = (t: TemplateProfile) => {
+    if (smartlinkLocked(t)) {
+      toast.error(`"${t.name}" is a Pro template — upgrade to edit and publish it.`);
+      setUnlockFeature(`${t.name} (Pro template)`);
+      setUnlockOpen(true);
+      return;
+    }
+    setPreviewTemplate(t);
+  };
+
+  /** Step 2: publish the previewed template, saving a rollback point first. */
+  const confirmSmartlinkTemplate = async () => {
+    const t = previewTemplate;
+    if (!t) return;
+    setPublishingSmartlink(true);
+    try {
+      if (currentTheme) {
+        saveThemeSnapshot(userId, currentTheme);
+        setSnapshot(readThemeSnapshot(userId));
+      }
+      const patch = smartlinkTemplateToProfilePatch(t);
+      onApply({
+        theme_name: patch.theme_name,
+        theme_gradient: patch.theme_gradient,
+        gradient_direction: patch.gradient_direction,
+        custom_bg_color: null,
+        custom_accent_color: null,
+        animation_type: null,
+      });
+      setCustomMedia({ url: patch.custom_background_url, type: "image" });
+      await persist({
+        custom_background_url: patch.custom_background_url,
+        custom_background_type: "image",
+      });
+      setPreviewTemplate(null);
+      toast.success(`Published "${t.name}" — you can revert to your previous look`);
+    } finally {
+      setPublishingSmartlink(false);
+    }
+  };
+
+  /** Roll back to the look that was live before the last template publish. */
+  const revertToPrevious = async () => {
+    if (!snapshot) return;
     onApply({
-      theme_name: patch.theme_name,
-      theme_gradient: patch.theme_gradient,
-      gradient_direction: patch.gradient_direction,
+      theme_name: snapshot.theme_name,
+      theme_gradient: snapshot.theme_gradient,
+      gradient_direction: snapshot.gradient_direction || "to-b",
       custom_bg_color: null,
       custom_accent_color: null,
-      animation_type: null,
+      animation_type: snapshot.animation_type,
     });
-    setCustomMedia({ url: patch.custom_background_url, type: "image" });
+    setCustomMedia(
+      snapshot.custom_background_url
+        ? { url: snapshot.custom_background_url, type: snapshot.custom_background_type || "image" }
+        : null
+    );
     await persist({
-      custom_background_url: patch.custom_background_url,
-      custom_background_type: "image",
+      custom_background_url: snapshot.custom_background_url,
+      custom_background_type: snapshot.custom_background_type,
     });
-    toast.success(`Applied "${t.name}" — edit anything you like`);
+    clearThemeSnapshot(userId);
+    setSnapshot(null);
+    toast.success("Reverted to your previous published template");
   };
 
   const commitSpeed = (v: number) => {
@@ -541,25 +610,44 @@ export function ProfileTemplates({
         onChange={handleFile}
       />
 
-      {/* SmartLink Bio templates — every template from the public builder,
-          editable by any plan once signed in. */}
+      {/* Rollback bar — revert a wrong publish in one click. */}
+      {snapshot && (
+        <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-medium">Published the wrong template?</p>
+            <p className="text-[11px] text-muted-foreground truncate">
+              Revert to “{snapshot.theme_name}”, live before {new Date(snapshot.saved_at).toLocaleString()}.
+            </p>
+          </div>
+          <Button size="sm" variant="outline" className="h-7 text-[11px] shrink-0" onClick={revertToPrevious}>
+            <Undo2 className="w-3 h-3" /> Revert
+          </Button>
+        </div>
+      )}
+
+      {/* SmartLink Bio templates — the public builder gallery, with free and
+          Pro tiers enforced per plan. */}
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <div>
             <h4 className="text-sm font-semibold">SmartLink Bio templates</h4>
             <p className="text-[11px] text-muted-foreground">
-              All {smartlinkTemplates.length} designs from the public builder — free to apply and fully editable.
+              All {smartlinkTemplates.length} designs from the public builder — preview before publishing.
+              {!isProTier && " Pro designs need an upgrade."}
             </p>
           </div>
         </div>
         <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
           {smartlinkTemplates.map((t) => {
             const active = currentThemeName === t.name;
+            const tier = smartlinkTemplateTier(t);
+            const locked = smartlinkLocked(t);
             return (
               <button
                 key={t.username}
                 type="button"
-                onClick={() => applySmartlinkTemplate(t)}
+                aria-label={locked ? `${t.name} — Pro template, upgrade to use` : `Preview ${t.name} template`}
+                onClick={() => requestSmartlinkTemplate(t)}
                 className={`group relative rounded-xl overflow-hidden border text-left transition-all ${
                   active ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"
                 }`}
@@ -569,14 +657,32 @@ export function ProfileTemplates({
                     src={t.bgImage}
                     alt={`${t.name} SmartLink template`}
                     loading="lazy"
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                    className={`w-full h-full object-cover transition-transform group-hover:scale-105 ${
+                      locked ? "blur-[1px] opacity-70" : ""
+                    }`}
                   />
                 </div>
+                <span
+                  className={`absolute top-1 left-1 px-1.5 py-0.5 rounded text-[8px] font-bold ${
+                    tier === "pro"
+                      ? "bg-amber-500/90 text-amber-950"
+                      : "bg-emerald-500/90 text-emerald-950"
+                  }`}
+                >
+                  {tier === "pro" ? "PRO" : "FREE"}
+                </span>
+                {locked && (
+                  <span className="absolute inset-0 flex items-center justify-center">
+                    <Lock className="w-4 h-4 text-white drop-shadow" />
+                  </span>
+                )}
                 <div className="absolute inset-x-0 bottom-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent">
                   <p className="text-[10px] font-semibold text-white truncate">{t.name}</p>
-                  <p className="text-[9px] text-white/70 truncate">{t.category}</p>
+                  <p className="text-[9px] text-white/70 truncate">
+                    {locked ? "Pro plan required" : t.category}
+                  </p>
                 </div>
-                {active && (
+                {active && !locked && (
                   <span className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
                     <Check className="w-3 h-3 text-primary-foreground" />
                   </span>
@@ -586,6 +692,15 @@ export function ProfileTemplates({
           })}
         </div>
       </div>
+
+      <SmartlinkPublishDialog
+        open={!!previewTemplate}
+        onOpenChange={(o) => { if (!o) setPreviewTemplate(null); }}
+        template={previewTemplate}
+        overrides={previewIdentity}
+        publishing={publishingSmartlink}
+        onConfirm={confirmSmartlinkTemplate}
+      />
 
       {/* Templates Grid */}
       <div className="grid grid-cols-4 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-3">

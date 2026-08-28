@@ -47,7 +47,12 @@ import { PlanWelcomeDialog } from "@/components/dashboard/PlanWelcomeDialog";
 import { OnboardingConfirmDialog } from "@/components/dashboard/OnboardingConfirmDialog";
 import { MobileTabBar } from "@/components/dashboard/MobileTabBar";
 import { computeOnboardingPrefill, trackOnboarding, type OnboardingPrefill } from "@/lib/onboarding";
-import { readPendingBio, clearPendingBio, findSmartlinkTemplate, smartlinkTemplateToProfilePatch } from "@/lib/smartlink-handoff";
+import {
+  readPendingBio, clearPendingBio, findSmartlinkTemplate, smartlinkTemplateToProfilePatch,
+  saveThemeSnapshot, smartlinkTemplateTier, canUseTemplateTier, type PendingBio,
+} from "@/lib/smartlink-handoff";
+import type { TemplateProfile } from "@/lib/smartlink-templates";
+import { SmartlinkPublishDialog } from "@/components/dashboard/SmartlinkPublishDialog";
 
 interface Profile {
   id: string;
@@ -378,7 +383,12 @@ export default function Dashboard() {
   };
 
   // Apply a SmartLink Bio template chosen on the public builder before signup.
+  // The selection survives signup/login; we show a live preview step first and
+  // only publish once the user confirms.
   const handoffApplied = useRef(false);
+  const [handoff, setHandoff] = useState<{ pending: PendingBio; template: TemplateProfile } | null>(null);
+  const [handoffPublishing, setHandoffPublishing] = useState(false);
+
   useEffect(() => {
     if (!profile || !user || handoffApplied.current) return;
     const pending = readPendingBio();
@@ -386,8 +396,35 @@ export default function Dashboard() {
     const template = findSmartlinkTemplate(pending.template);
     if (!template) { clearPendingBio(); return; }
     handoffApplied.current = true;
+    setActiveTab("appearance");
+    setHandoff({ pending, template });
+  }, [profile, user]);
 
-    (async () => {
+  const publishHandoff = async () => {
+    if (!handoff || !profile || !user) return;
+    const { pending, template } = handoff;
+
+    if (!canUseTemplateTier(smartlinkTemplateTier(template), plan)) {
+      toast.error(`"${template.name}" is a Pro template — upgrade to publish it, or pick a free design below.`);
+      setHandoff(null);
+      clearPendingBio();
+      return;
+    }
+
+    setHandoffPublishing(true);
+    try {
+      // Remember the current look so a wrong publish can be rolled back.
+      saveThemeSnapshot(user.id, {
+        theme_name: profile.theme_name,
+        theme_gradient: profile.theme_gradient,
+        gradient_direction: profile.gradient_direction || "to-b",
+        custom_bg_color: profile.custom_bg_color ?? null,
+        custom_accent_color: profile.custom_accent_color ?? null,
+        animation_type: profile.animation_type ?? null,
+        custom_background_url: profile.custom_background_url ?? null,
+        custom_background_type: (profile.custom_background_type as "image" | "video" | null) ?? null,
+      });
+
       const patch: Record<string, any> = {
         ...smartlinkTemplateToProfilePatch(template),
         title: pending.name || profile.title,
@@ -415,10 +452,12 @@ export default function Dashboard() {
         return;
       }
       setProfile((p) => (p ? ({ ...p, ...patch } as Profile) : p));
-      setActiveTab("appearance");
-      toast.success(`"${template.name}" template applied — your bio is live`);
-    })();
-  }, [profile, user]);
+      setHandoff(null);
+      toast.success(`"${template.name}" template published — you can revert it in Appearance`);
+    } finally {
+      setHandoffPublishing(false);
+    }
+  };
 
 
 
@@ -1065,6 +1104,21 @@ export default function Dashboard() {
                           ? { url: profile.custom_background_url, type: (profile.custom_background_type as "image" | "video") || "image" }
                           : null
                       }
+                      previewIdentity={{
+                        name: profile.title,
+                        bio: profile.bio || undefined,
+                        username: profile.username,
+                      }}
+                      currentTheme={{
+                        theme_name: profile.theme_name,
+                        theme_gradient: profile.theme_gradient,
+                        gradient_direction: profile.gradient_direction || "to-b",
+                        custom_bg_color: profile.custom_bg_color ?? null,
+                        custom_accent_color: profile.custom_accent_color ?? null,
+                        animation_type: profile.animation_type ?? null,
+                        custom_background_url: profile.custom_background_url ?? null,
+                        custom_background_type: (profile.custom_background_type as "image" | "video" | null) ?? null,
+                      }}
                       onPersist={(u) => setProfile({ ...profile, ...u } as Profile)}
                       onApply={(updates) => {
                         setProfile({ ...profile, ...updates } as Profile);
@@ -1262,6 +1316,21 @@ export default function Dashboard() {
         </div>
       </div>
       <MobileTabBar activeTab={activeTab} onChange={setActiveTab} />
+
+      <SmartlinkPublishDialog
+        open={!!handoff}
+        onOpenChange={(o) => {
+          if (!o) { setHandoff(null); clearPendingBio(); }
+        }}
+        template={handoff?.template ?? null}
+        overrides={{
+          name: handoff?.pending.name,
+          bio: handoff?.pending.bio,
+          username: handoff?.pending.handle,
+        }}
+        publishing={handoffPublishing}
+        onConfirm={publishHandoff}
+      />
     </div>
   );
 }
