@@ -20,7 +20,11 @@ function requestedNext(): string | null {
 
 export async function getPostLoginRedirect(userId: string): Promise<string> {
   try {
+    // New OAuth/email users may not have a profile row yet — create it now
+    // so they land in an editable dashboard.
+    await ensureProfile(userId);
     const { data } = await supabase
+
       .from("user_roles")
       .select("role")
       .eq("user_id", userId)
