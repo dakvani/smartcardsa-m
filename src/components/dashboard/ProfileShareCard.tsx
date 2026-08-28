@@ -85,95 +85,86 @@ export function ProfileShareCard({ username, stats }: ProfileShareCardProps) {
   };
 
   return (
-    <div className="bg-background rounded-2xl border border-border p-6 mb-6">
-      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-        <Link2 className="w-5 h-5 text-primary" />
-        Your Profile Link
-      </h3>
+    <div className="bg-background rounded-xl border border-border p-4 mb-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold flex items-center gap-1.5">
+          <Link2 className="w-4 h-4 text-primary" />
+          Your Profile Link
+        </h3>
+        <a
+          href={profileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+        >
+          <ExternalLink className="w-3 h-3" />
+          Open
+        </a>
+      </div>
 
-      <div className="flex flex-col sm:flex-row gap-6">
+      <div className="flex items-center gap-4">
         {/* QR Code */}
-        <div className="flex flex-col items-center gap-3">
-          <div className="bg-white p-3 rounded-xl shadow-sm">
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="bg-white p-1.5 rounded-lg shadow-sm">
             <QRCodeSVG
               id="share-card-qr"
               value={qrUrl}
-              size={140}
+              size={72}
               level="H"
               includeMargin
               bgColor="#ffffff"
               fgColor="#000000"
             />
           </div>
-          <Button variant="outline" size="sm" onClick={downloadQRCode} className="gap-1.5 w-full">
+          <Button variant="outline" size="icon" onClick={downloadQRCode} title="Download QR" className="h-8 w-8">
             <Download className="w-3.5 h-3.5" />
-            Download QR
           </Button>
         </div>
 
-        {/* URL & Actions */}
-        <div className="flex-1 space-y-4">
-          {/* Profile URL display */}
-          <div className="flex items-center gap-2">
-            <div className="flex-1 bg-muted rounded-lg px-4 py-3 font-mono text-sm truncate border border-border">
+        {/* URL & domain config */}
+        <div className="flex-1 min-w-0 space-y-2">
+          <div className="flex items-center gap-1.5">
+            <div className="flex-1 min-w-0 bg-muted rounded-md px-2.5 py-1.5 font-mono text-xs truncate border border-border">
               {profileUrl}
             </div>
-            <Button variant="gradient" size="sm" onClick={copyUrl} className="shrink-0 gap-1.5">
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copied ? "Copied!" : "Copy"}
+            <Button variant="gradient" size="sm" onClick={copyUrl} className="shrink-0 gap-1 h-7 px-2.5 text-xs">
+              {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? "Copied" : "Copy"}
             </Button>
           </div>
 
-          {/* View profile link */}
-          <a
-            href={profileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
-          >
-            <ExternalLink className="w-3.5 h-3.5" />
-            Open profile in new tab
-          </a>
-
           {/* Custom domain config */}
-          <div className="border-t border-border pt-4">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5" />
-                {customDomain ? "Custom domain" : "Using default domain"}
-              </p>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => { setEditingDomain(!editingDomain); setDomainInput(customDomain); }}
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs text-muted-foreground flex items-center gap-1 min-w-0 truncate">
+              <Globe className="w-3 h-3 shrink-0" />
+              {customDomain ? <span className="font-mono truncate">{customDomain}</span> : "Using default domain"}
+            </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setEditingDomain(!editingDomain); setDomainInput(customDomain); }}
+              className="text-xs h-6 px-2 shrink-0"
+            >
+              {editingDomain ? "Cancel" : customDomain ? "Change" : "Set domain"}
+            </Button>
+          </div>
+          {editingDomain && (
+            <div className="flex gap-1.5">
+              <Input
+                value={domainInput}
+                onChange={(e) => setDomainInput(e.target.value)}
+                placeholder="https://yourdomain.com"
                 className="text-xs h-7"
-              >
-                {editingDomain ? "Cancel" : customDomain ? "Change" : "Set custom domain"}
+              />
+              <Button size="sm" onClick={saveDomain} className="h-7 px-2.5 text-xs">
+                Save
               </Button>
             </div>
-            {editingDomain && (
-              <div className="flex gap-2">
-                <Input
-                  value={domainInput}
-                  onChange={(e) => setDomainInput(e.target.value)}
-                  placeholder="https://yourdomain.com"
-                  className="text-sm"
-                />
-                <Button size="sm" onClick={saveDomain}>
-                  Save
-                </Button>
-              </div>
-            )}
-            {customDomain && !editingDomain && (
-              <p className="text-xs text-muted-foreground">
-                QR code and links point to: <span className="font-mono">{customDomain}</span>
-              </p>
-            )}
-          </div>
+          )}
         </div>
       </div>
 
-      {stats && <div className="mt-6 border-t border-border pt-5">{stats}</div>}
+      {stats && <div className="mt-3 border-t border-border pt-3">{stats}</div>}
     </div>
 
   );
