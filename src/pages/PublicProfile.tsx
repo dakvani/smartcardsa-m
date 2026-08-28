@@ -526,7 +526,8 @@ export default function PublicProfile() {
                 )}
 
                 {links.filter((l) => !l.group_id && !l.is_featured).length > 0 && (
-                  <div className="space-y-2.5">
+                  <div className={L.links}>
+
                     {links.filter((l) => !l.group_id && !l.is_featured).map((link, index) => (
                       <ProfileLinkButton
                         key={link.id}
