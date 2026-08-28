@@ -182,7 +182,7 @@ export default function Dashboard() {
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [isDesktop, previewFit, loading]);
+  }, [isDesktop, previewFit]);
 
   const builderStyle = isDesktop
     ? previewFit === "full"
@@ -209,7 +209,7 @@ export default function Dashboard() {
       cancelAnimationFrame(raf);
       el.removeEventListener("scroll", onScroll);
     };
-  }, [activeTab, loading]);
+  }, [activeTab]);
 
 
   const [loading, setLoading] = useState(true);
