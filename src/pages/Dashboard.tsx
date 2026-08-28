@@ -47,7 +47,12 @@ import { PlanWelcomeDialog } from "@/components/dashboard/PlanWelcomeDialog";
 import { OnboardingConfirmDialog } from "@/components/dashboard/OnboardingConfirmDialog";
 import { MobileTabBar } from "@/components/dashboard/MobileTabBar";
 import { computeOnboardingPrefill, trackOnboarding, type OnboardingPrefill } from "@/lib/onboarding";
-import { readPendingBio, clearPendingBio, findSmartlinkTemplate, smartlinkTemplateToProfilePatch } from "@/lib/smartlink-handoff";
+import {
+  readPendingBio, clearPendingBio, findSmartlinkTemplate, smartlinkTemplateToProfilePatch,
+  saveThemeSnapshot, smartlinkTemplateTier, canUseTemplateTier, type PendingBio,
+} from "@/lib/smartlink-handoff";
+import type { TemplateProfile } from "@/lib/smartlink-templates";
+import { SmartlinkPublishDialog } from "@/components/dashboard/SmartlinkPublishDialog";
 
 interface Profile {
   id: string;
