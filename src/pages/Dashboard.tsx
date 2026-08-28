@@ -105,6 +105,7 @@ interface LinkItem {
   group_id: string | null;
   is_featured: boolean;
   motion?: string | null;
+  style?: unknown;
 }
 
 const tabs = [
@@ -1591,7 +1592,7 @@ export default function Dashboard() {
                           const iconName = def.icon || (t === "website" ? "Globe" : "Link2");
                           const Ico = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[iconName] || LucideIcons.Link2;
                           return (
-                            <ProfileLinkButton key={link.id} title={link.title || "Untitled Link"} url={link.url} motionStyle={link.motion} cardStyle={parseCardStyle(profile.card_style)} reducedMotion={profile.motion_enabled === false} index={index} onActivate={() => undefined} icon={link.thumbnail_url ? (
+                            <ProfileLinkButton key={link.id} title={link.title || "Untitled Link"} url={link.url} motionStyle={link.motion} linkStyle={link.style} cardStyle={parseCardStyle(profile.card_style)} reducedMotion={profile.motion_enabled === false} index={index} onActivate={() => undefined} icon={link.thumbnail_url ? (
                                 <img src={link.thumbnail_url} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
                               ) : (
                                 <Ico className="w-4 h-4 shrink-0" />
