@@ -146,6 +146,71 @@ export default function Dashboard() {
     try { localStorage.setItem(APPEARANCE_TAB_KEY, appearanceTab); } catch { /* storage unavailable */ }
   }, [appearanceTab]);
 
+  /** Preview fit mode: "contain" locks the builder to the phone aspect ratio, "full" fills the viewport. */
+  const PREVIEW_FIT_KEY = "smartcard:previewFit";
+  const [previewFit, setPreviewFit] = useState<"contain" | "full">(() => {
+    try {
+      const stored = localStorage.getItem(PREVIEW_FIT_KEY);
+      if (stored === "contain" || stored === "full") return stored;
+    } catch { /* storage unavailable */ }
+    return "contain";
+  });
+  useEffect(() => {
+    try { localStorage.setItem(PREVIEW_FIT_KEY, previewFit); } catch { /* storage unavailable */ }
+  }, [previewFit]);
+
+  // Desktop-only height locking (inline styles can't be media-queried)
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(min-width: 1024px)").matches : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => setIsDesktop(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  // Measure the preview card so the builder row + editor scroll area match it exactly
+  const previewCardRef = useRef<HTMLDivElement>(null);
+  const [builderHeight, setBuilderHeight] = useState<number | null>(null);
+  useEffect(() => {
+    if (!isDesktop || previewFit === "full") { setBuilderHeight(null); return; }
+    const el = previewCardRef.current;
+    if (!el) return;
+    const update = () => setBuilderHeight(el.offsetHeight);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [isDesktop, previewFit, loading]);
+
+  const builderStyle = isDesktop
+    ? previewFit === "full"
+      ? { height: "calc(100vh - 7.5rem)" }
+      : builderHeight
+        ? { height: builderHeight }
+        : undefined
+    : undefined;
+
+  // Remember editor scroll position per builder section
+  const editorScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = editorScrollRef.current;
+    if (!el) return;
+    const key = `smartcard:scroll:${activeTab}`;
+    let saved = 0;
+    try { saved = Number(localStorage.getItem(key) || 0); } catch { /* ignore */ }
+    const raf = requestAnimationFrame(() => { el.scrollTop = saved; });
+    const onScroll = () => {
+      try { localStorage.setItem(key, String(el.scrollTop)); } catch { /* ignore */ }
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("scroll", onScroll);
+    };
+  }, [activeTab, loading]);
+
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
