@@ -40,7 +40,10 @@ export type SocialIcon = (typeof SOCIAL_ICONS)[number];
 export const BUTTON_SHAPES = ["pill", "square", "torn", "outline", "shadow-hard"] as const;
 export type ButtonShape = (typeof BUTTON_SHAPES)[number];
 
-export const FONT_FAMILIES = ["sans", "serif", "mono", "display"] as const;
+export const FONT_FAMILIES = [
+  "sans", "serif", "mono", "display",
+  "grotesk", "playfair", "handwritten", "bebas",
+] as const;
 export type FontFamily = (typeof FONT_FAMILIES)[number];
 
 export const TEXT_TONE = ["light", "dark"] as const;
@@ -171,7 +174,23 @@ export const fontClassFor = (f: FontFamily): string => {
     case "mono": return "font-mono tracking-tighter";
     case "display": return "font-black uppercase tracking-wide";
     case "sans": return "font-semibold";
+    case "grotesk": return "font-['Space_Grotesk',sans-serif] font-medium tracking-tight";
+    case "playfair": return "font-['Playfair_Display',serif] font-semibold tracking-tight";
+    case "handwritten": return "font-['Dancing_Script',cursive] font-bold";
+    case "bebas": return "font-['Bebas_Neue',sans-serif] uppercase tracking-widest";
   }
+};
+
+/** Human labels for the typography picker. */
+export const FONT_LABELS: Record<FontFamily, string> = {
+  sans: "Sans",
+  serif: "Serif",
+  mono: "Mono",
+  display: "Display",
+  grotesk: "Grotesk",
+  playfair: "Playfair (elegant)",
+  handwritten: "Handwritten",
+  bebas: "Bebas (condensed)",
 };
 
 /* ---------------- Templates ---------------- */
