@@ -219,14 +219,29 @@ const SOCIAL_KEY_MAP: Record<string, "instagram" | "twitter" | "youtube" | "face
 
 export interface TemplateContent {
   /** Link buttons, in template order — inserted as editable rows. */
-  links: { title: string; url: string; position: number }[];
+  links: { title: string; url: string; position: number; motion: string }[];
   /** Values for the social inputs the editor supports. */
   social_links: Record<string, string>;
   avatar_url: string;
 }
 
-/** Everything from a template that becomes editable content in the editor. */
-export function templateContent(t: TemplateProfile): TemplateContent {
+/** Default per-link movement for a template button, by action kind. */
+const MOTION_FOR_ACTION: Record<string, string> = {
+  call: "slide-action",
+  whatsapp: "pulse",
+  email: "float",
+  map: "slide-right",
+  booking: "bounce",
+  shop: "pop",
+  link: "none",
+};
+
+/**
+ * Everything from a template that becomes editable content in the editor.
+ * `values` fills the template's action buttons (call, WhatsApp, email, map,
+ * booking, shop) with the user's own details.
+ */
+export function templateContent(t: TemplateProfile, values: TemplateFieldValues = {}): TemplateContent {
   const handle = t.username.replace(/^@/, "");
   const social_links: Record<string, string> = {};
   for (const icon of t.socials) {
@@ -236,8 +251,19 @@ export function templateContent(t: TemplateProfile): TemplateContent {
       key === "website" ? `https://${handle.replace(/[^a-z0-9]/gi, "")}.com` : handle;
   }
   return {
-    links: t.links.map((l, i) => ({ title: linkLabel(l), url: linkUrl(l), position: i })),
+    links: t.links.map((l, i) => {
+      const action = linkAction(l);
+      const fieldKey = fieldForAction(action);
+      const filled = fieldKey && values[fieldKey] ? urlForField(fieldKey, values[fieldKey] as string) : "";
+      return {
+        title: linkLabel(l),
+        url: filled || linkUrl(l),
+        position: i,
+        motion: MOTION_FOR_ACTION[action] ?? "none",
+      };
+    }),
     social_links,
     avatar_url: t.avatarImage,
   };
 }
+
