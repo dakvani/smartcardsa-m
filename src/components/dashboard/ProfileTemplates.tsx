@@ -84,7 +84,11 @@ interface ProfileTemplatesProps {
   /** Live profile values previewed inside the confirm step. */
   previewIdentity?: { name?: string; bio?: string; username?: string };
   /** Load a SmartLink template plus its elements into the editor for editing. */
-  onEditTemplateInBuilder?: (t: TemplateProfile) => Promise<void> | void;
+  onEditTemplateInBuilder?: (t: TemplateProfile, keepExistingLinks: boolean) => Promise<void> | void;
+  /** Import a template's link buttons / socials when publishing it directly. */
+  onImportTemplateContent?: (t: TemplateProfile, keepExistingLinks: boolean) => Promise<void> | void;
+  /** Number of links the user currently has — powers the "keep my links" option. */
+  existingLinkCount?: number;
   initialAnimationSpeed?: number;
   initialMotionEnabled?: boolean;
   onPersist?: (updates: {
