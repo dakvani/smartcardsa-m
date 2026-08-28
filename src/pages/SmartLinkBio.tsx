@@ -401,6 +401,7 @@ export default function SmartLinkBio() {
                 <p className="sm:hidden text-center text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
                   <Eye className="w-3 h-3 inline -mt-0.5 mr-1" />Live preview
                 </p>
+                <div className="lg:flex-1 lg:flex lg:items-center">
                 <div className={previewMode === "phone" ? "mx-auto w-full max-w-[150px] sm:max-w-[300px]" : "mx-auto w-full max-w-[180px] sm:max-w-[420px]"}>
                   <TemplatePhoneCard
                     template={selected}
