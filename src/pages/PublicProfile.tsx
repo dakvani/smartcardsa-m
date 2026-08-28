@@ -244,8 +244,30 @@ export default function PublicProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-indigo-900 via-purple-900 to-pink-900">
-        <Loader2 className="w-8 h-8 animate-spin text-primary-foreground" />
+      <div className="min-h-screen relative overflow-hidden flex flex-col items-center justify-center bg-gradient-to-b from-slate-900 via-slate-950 to-black">
+        {/* Soft ambient glow so the wait feels like part of the card, not a spinner */}
+        <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-primary/20 blur-3xl animate-pulse" aria-hidden />
+        <div className="absolute -bottom-24 -right-24 w-72 h-72 rounded-full bg-fuchsia-500/15 blur-3xl animate-pulse [animation-delay:600ms]" aria-hidden />
+
+        {/* Skeleton of the profile card being loaded */}
+        <div className="relative w-full max-w-sm px-6 flex flex-col items-center gap-4" role="status" aria-label="Loading profile">
+          <div className="w-24 h-24 rounded-full bg-white/10 animate-pulse" />
+          <div className="h-5 w-40 rounded-md bg-white/10 animate-pulse" />
+          <div className="h-3 w-56 rounded-md bg-white/[0.07] animate-pulse" />
+          <div className="mt-2 w-full space-y-3">
+            {[0, 1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-12 w-full rounded-xl bg-white/[0.07] animate-pulse"
+                style={{ animationDelay: `${i * 120}ms` }}
+              />
+            ))}
+          </div>
+          <div className="mt-4 flex items-center gap-2 text-xs text-white/50">
+            <SmartCardLogo className="h-4 w-auto opacity-70" />
+            <span>Loading @{username}…</span>
+          </div>
+        </div>
       </div>
     );
   }
