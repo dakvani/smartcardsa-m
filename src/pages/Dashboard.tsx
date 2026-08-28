@@ -1435,8 +1435,8 @@ export default function Dashboard() {
               </div>
 
               {/* iPhone Frame */}
-              <div className="mx-auto w-[220px] lg:w-auto lg:flex-1 lg:min-h-0 lg:flex lg:items-center lg:justify-center">
-                <div className="relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 lg:w-auto lg:aspect-[9/19.5] lg:h-[min(100%,calc((360px-2rem)*19.5/9))] lg:max-w-full">
+              <div className="mx-auto w-[220px] lg:w-auto lg:flex lg:items-center lg:justify-center">
+                <div className="relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 w-[260px] lg:w-[300px] aspect-[9/19.5]">
                   {/* Side buttons */}
                   <div className="absolute -left-[3px] top-24 w-[3px] h-8 rounded-l-md bg-neutral-700" />
                   <div className="absolute -left-[3px] top-36 w-[3px] h-12 rounded-l-md bg-neutral-700" />
