@@ -140,8 +140,12 @@ const FREE_TEMPLATES = new Set<string>([
   "adam.learns",
   "lina.bakes",
   "rania.moves",
-
+  "yara.daily",
+  "hala.biodata",
+  "zaytun.kitchen",
+  "noor.academy",
 ]);
+
 
 export const smartlinkTemplateTier = (t: TemplateProfile): TemplateTier =>
   FREE_TEMPLATES.has(t.username) ? "free" : "pro";
