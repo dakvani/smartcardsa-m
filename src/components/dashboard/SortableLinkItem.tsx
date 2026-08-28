@@ -13,7 +13,10 @@ import {
   AlertCircle,
   MoreVertical,
   Search,
+  Sparkles,
 } from "lucide-react";
+import { LINK_MOTIONS, normalizeMotion } from "@/lib/link-motion";
+
 import { LinkThumbnailUpload } from "./LinkThumbnailUpload";
 import { LinkScheduler } from "./LinkScheduler";
 import { LinkOgPreview } from "./LinkOgPreview";
