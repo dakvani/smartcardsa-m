@@ -1420,7 +1420,7 @@ export default function Dashboard() {
               <span className="text-[10px] text-muted-foreground group-open:hidden">Tap to show</span>
               <span className="text-[10px] text-muted-foreground hidden group-open:inline">Tap to hide</span>
             </summary>
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm lg:flex-1 lg:min-h-0 lg:overflow-y-auto scrollbar-hide lg:flex lg:flex-col">
+            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm lg:h-[calc(100vh-7.5rem)] lg:overflow-y-auto scrollbar-hide lg:flex lg:flex-col">
 
               <div className="flex items-center justify-between mb-3 px-1">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Live Preview</p>
