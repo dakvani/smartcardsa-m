@@ -1104,6 +1104,21 @@ export default function Dashboard() {
                           ? { url: profile.custom_background_url, type: (profile.custom_background_type as "image" | "video") || "image" }
                           : null
                       }
+                      previewIdentity={{
+                        name: profile.title,
+                        bio: profile.bio || undefined,
+                        username: profile.username,
+                      }}
+                      currentTheme={{
+                        theme_name: profile.theme_name,
+                        theme_gradient: profile.theme_gradient,
+                        gradient_direction: profile.gradient_direction || "to-b",
+                        custom_bg_color: profile.custom_bg_color ?? null,
+                        custom_accent_color: profile.custom_accent_color ?? null,
+                        animation_type: profile.animation_type ?? null,
+                        custom_background_url: profile.custom_background_url ?? null,
+                        custom_background_type: (profile.custom_background_type as "image" | "video" | null) ?? null,
+                      }}
                       onPersist={(u) => setProfile({ ...profile, ...u } as Profile)}
                       onApply={(updates) => {
                         setProfile({ ...profile, ...updates } as Profile);
