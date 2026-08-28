@@ -1485,11 +1485,19 @@ export default function Dashboard() {
               <span className="text-[10px] text-muted-foreground group-open:hidden">Tap to show</span>
               <span className="text-[10px] text-muted-foreground hidden group-open:inline">Tap to hide</span>
             </summary>
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm lg:flex lg:flex-col">
+            <div ref={previewCardRef} className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm lg:h-full lg:min-h-0 lg:flex lg:flex-col">
 
               <div className="flex items-center justify-between mb-3 px-1">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Live Preview</p>
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewFit(previewFit === "contain" ? "full" : "contain")}
+                    title={previewFit === "contain" ? "Switch to full-height preview" : "Switch to contained preview"}
+                    className="hidden lg:inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-colors"
+                  >
+                    {previewFit === "contain" ? "Contain" : "Full height"}
+                  </button>
                   <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live
                   </span>
@@ -1500,8 +1508,8 @@ export default function Dashboard() {
               </div>
 
               {/* iPhone Frame */}
-              <div className="mx-auto w-[220px] lg:w-auto lg:flex lg:items-center lg:justify-center">
-                <div className="relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 w-[260px] lg:w-[300px] aspect-[9/19.5]">
+              <div className="mx-auto w-[220px] lg:w-auto lg:flex-1 lg:min-h-0 lg:flex lg:items-center lg:justify-center">
+                <div className={`relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 w-[260px] aspect-[9/19.5] ${previewFit === "full" ? "lg:w-auto lg:h-full lg:max-w-full" : "lg:w-[300px]"}`}>
                   {/* Side buttons */}
                   <div className="absolute -left-[3px] top-24 w-[3px] h-8 rounded-l-md bg-neutral-700" />
                   <div className="absolute -left-[3px] top-36 w-[3px] h-12 rounded-l-md bg-neutral-700" />
