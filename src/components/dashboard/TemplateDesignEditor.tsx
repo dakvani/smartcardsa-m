@@ -6,18 +6,39 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { CardStyle } from "@/lib/template-card-style";
 import type { ButtonShape, FontFamily, TemplateLayout } from "@/lib/smartlink-templates";
 
+export interface DesignButton {
+  id: string;
+  title: string;
+  url: string;
+}
+
 interface Props {
   value?: CardStyle;
   onChange: (next: CardStyle) => void;
+  /** Profile buttons (links), managed inline alongside the element design. */
+  buttons?: DesignButton[];
+  onAddButton?: () => void;
+  onUpdateButton?: (id: string, patch: { title?: string; url?: string }) => void;
+  onDeleteButton?: (id: string) => void;
+  onMoveButton?: (id: string, direction: -1 | 1) => void;
 }
 
 type DetailKey = "stats" | "facts";
 
-export function TemplateDesignEditor({ value = {}, onChange }: Props) {
+export function TemplateDesignEditor({
+  value = {},
+  onChange,
+  buttons,
+  onAddButton,
+  onUpdateButton,
+  onDeleteButton,
+  onMoveButton,
+}: Props) {
   const update = (patch: Partial<CardStyle>) => onChange({ ...value, ...patch });
   const layout = value.layout ?? "classic";
   const detailKey: DetailKey | null = layout === "social" ? "stats" : layout === "biodata" ? "facts" : null;
   const details = detailKey ? value[detailKey] ?? [] : [];
+
 
   const updateDetail = (index: number, patch: { label?: string; value?: string }) => {
     if (!detailKey) return;
@@ -110,6 +131,49 @@ export function TemplateDesignEditor({ value = {}, onChange }: Props) {
           </Select>
         </div>
       </div>
+
+      {buttons && (
+        <div className="space-y-2 border-t border-border/60 pt-3">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <Label className="text-xs">Buttons</Label>
+              <p className="text-[11px] text-muted-foreground">Add, rename, reorder or remove the template buttons.</p>
+            </div>
+            {onAddButton && (
+              <Button type="button" size="sm" variant="outline" className="h-7 text-[11px]" onClick={onAddButton}>
+                <Plus className="h-3 w-3" /> Add
+              </Button>
+            )}
+          </div>
+          {buttons.length === 0 && (
+            <p className="text-[11px] text-muted-foreground">No buttons yet — add your first one.</p>
+          )}
+          {buttons.map((b, index) => (
+            <div key={b.id} className="grid grid-cols-[1fr_1fr_auto] items-center gap-1.5">
+              <Input
+                className="h-8 text-xs"
+                value={b.title}
+                placeholder="Label"
+                aria-label={`Button label ${index + 1}`}
+                onChange={(e) => onUpdateButton?.(b.id, { title: e.target.value })}
+              />
+              <Input
+                className="h-8 text-xs"
+                value={b.url}
+                placeholder="https://…"
+                aria-label={`Button URL ${index + 1}`}
+                onChange={(e) => onUpdateButton?.(b.id, { url: e.target.value })}
+              />
+              <div className="flex">
+                <Button type="button" size="icon" variant="ghost" className="h-7 w-7" disabled={index === 0} onClick={() => onMoveButton?.(b.id, -1)} aria-label="Move button up"><ArrowUp className="h-3 w-3" /></Button>
+                <Button type="button" size="icon" variant="ghost" className="h-7 w-7" disabled={index === buttons.length - 1} onClick={() => onMoveButton?.(b.id, 1)} aria-label="Move button down"><ArrowDown className="h-3 w-3" /></Button>
+                <Button type="button" size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => onDeleteButton?.(b.id)} aria-label="Delete button"><Trash2 className="h-3 w-3" /></Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
 
       {detailKey && (
         <div className="space-y-2 border-t border-border/60 pt-3">

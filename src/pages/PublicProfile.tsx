@@ -1,8 +1,8 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { motion } from "framer-motion";
-import { Star, Smartphone, Maximize2, icons as LucideIcons } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Star, Smartphone, Maximize2, ChevronDown, icons as LucideIcons } from "lucide-react";
 import { detectLinkType, getLinkTypeDef } from "@/lib/link-types";
 import { SmartCardLogo } from "@/components/brand/SmartCardLogo";
 import { QRCodeSVG } from "qrcode.react";
@@ -133,6 +133,8 @@ export default function PublicProfile() {
   const forceMobile = searchParams.get("mobile") === "1" || searchParams.get("m") === "1";
   const [previewMode, setPreviewMode] = useState<PreviewMode>("phone");
   const [claimOpen, setClaimOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const accessibilityScopeRef = useRef<HTMLDivElement | null>(null);
 
   // Apply the saved accessibility preferences within the public bio profile
@@ -413,11 +415,14 @@ export default function PublicProfile() {
           )}
 
           <div
-            className={`relative h-full overflow-y-auto pt-8 pb-10 px-4 ${
+            ref={scrollRef}
+            onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 24)}
+            className={`relative h-full overflow-y-auto scrollbar-hide pt-8 pb-10 px-4 ${
               isCompact ? "" : "sm:pt-12"
             } ${bgClass}`}
             style={bgStyle}
           >
+
             {profile.custom_background_url && (
               <DeferredProfileMedia
                 url={profile.custom_background_url}
@@ -624,6 +629,30 @@ export default function PublicProfile() {
               </motion.div>
             </div>
           </div>
+
+          {/* Subtle scroll hint — fades out once the visitor starts scrolling */}
+          <AnimatePresence>
+            {!scrolled && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.35 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex flex-col items-center gap-1"
+              >
+                <motion.span
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                  className="flex flex-col items-center text-primary-foreground"
+                >
+                  <span className="text-[9px] uppercase tracking-[0.2em]">Scroll</span>
+                  <ChevronDown className="w-4 h-4 -mt-0.5" />
+                </motion.span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+
 
           {/* Side QR badge — only phone mode on sm+ */}
           {!isCompact && (
