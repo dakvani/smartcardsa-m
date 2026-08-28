@@ -413,6 +413,7 @@ export default function SmartLinkBio() {
                     }}
                   />
                 </div>
+                </div>
                 <p className="mt-1 sm:mt-3 text-center text-[10px] sm:text-xs text-muted-foreground">
                   Saved automatically
                 </p>
