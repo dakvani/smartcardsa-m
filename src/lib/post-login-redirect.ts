@@ -24,8 +24,8 @@ export async function getPostLoginRedirect(userId: string): Promise<string> {
       .eq("user_id", userId)
       .eq("role", "admin")
       .maybeSingle();
-    return data ? "/admin" : "/dashboard";
+    return data ? "/admin" : requestedNext() || "/dashboard";
   } catch {
-    return "/dashboard";
+    return requestedNext() || "/dashboard";
   }
 }
