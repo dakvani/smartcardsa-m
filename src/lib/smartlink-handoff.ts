@@ -100,3 +100,64 @@ export function clearPendingBio(): void {
     /* noop */
   }
 }
+
+/* ------------------------------------------------------------------ *
+ * Plan-based access for SmartLink Bio templates
+ * ------------------------------------------------------------------ */
+
+export type TemplateTier = "free" | "pro";
+
+/** Templates available on every plan; everything else needs a Pro tier. */
+const FREE_TEMPLATES = new Set<string>([
+  "matthew.skates",
+  "timothy.teo",
+  "gabby.hoops",
+  "sara.designs",
+  "omar.dev",
+  "hana.tutor",
+]);
+
+export const smartlinkTemplateTier = (t: TemplateProfile): TemplateTier =>
+  FREE_TEMPLATES.has(t.username) ? "free" : "pro";
+
+/* ------------------------------------------------------------------ *
+ * Rollback: remember the previously published look so a wrong publish
+ * can be reverted in one click.
+ * ------------------------------------------------------------------ */
+
+export interface ThemeSnapshot {
+  theme_name: string;
+  theme_gradient: string;
+  gradient_direction: string;
+  custom_bg_color: string | null;
+  custom_accent_color: string | null;
+  animation_type: string | null;
+  custom_background_url: string | null;
+  custom_background_type: "image" | "video" | null;
+  /** ISO timestamp of when this look was replaced. */
+  saved_at: string;
+}
+
+const snapshotKey = (userId?: string) => `smartlink.previous-theme:${userId || "anon"}`;
+
+export function saveThemeSnapshot(userId: string | undefined, snap: Omit<ThemeSnapshot, "saved_at">): void {
+  try {
+    window.localStorage.setItem(
+      snapshotKey(userId),
+      JSON.stringify({ ...snap, saved_at: new Date().toISOString() } satisfies ThemeSnapshot)
+    );
+  } catch { /* noop */ }
+}
+
+export function readThemeSnapshot(userId?: string): ThemeSnapshot | null {
+  try {
+    const raw = window.localStorage.getItem(snapshotKey(userId));
+    return raw ? (JSON.parse(raw) as ThemeSnapshot) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function clearThemeSnapshot(userId?: string): void {
+  try { window.localStorage.removeItem(snapshotKey(userId)); } catch { /* noop */ }
+}
