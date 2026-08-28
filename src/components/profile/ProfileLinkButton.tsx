@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { ChevronsRight } from "lucide-react";
 import { linkMotionProps, normalizeMotion, slideActionLabel } from "@/lib/link-motion";
 import { buttonClassFor, type CardStyle } from "@/lib/template-card-style";
+import { linkStyleCss, parseLinkStyle, type LinkStyle } from "@/lib/link-style";
 
 interface Props {
   title: string;
@@ -10,12 +11,15 @@ interface Props {
   motionStyle?: string | null;
   featured?: boolean;
   cardStyle?: CardStyle;
+  /** Per-button colour / shadow overrides (links.style). */
+  linkStyle?: LinkStyle | unknown;
   /** Disable movement (reduced motion / profile setting). */
   reducedMotion?: boolean;
   icon?: React.ReactNode;
   index?: number;
   onActivate: () => void;
 }
+
 
 /**
  * A public-profile link button. Renders the template's element design
