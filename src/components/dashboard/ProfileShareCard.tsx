@@ -172,6 +172,9 @@ export function ProfileShareCard({ username, stats }: ProfileShareCardProps) {
           </div>
         </div>
       </div>
+
+      {stats && <div className="mt-6 border-t border-border pt-5">{stats}</div>}
     </div>
+
   );
 }
