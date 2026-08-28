@@ -35,7 +35,7 @@ function getQrUrl(username: string, customDomain?: string): string {
   return `${cleanBase}/qr/${username}`;
 }
 
-export function ProfileShareCard({ username }: ProfileShareCardProps) {
+export function ProfileShareCard({ username, stats }: ProfileShareCardProps) {
   const [copied, setCopied] = useState(false);
   const [customDomain, setCustomDomain] = useState(getStoredDomain);
   const [editingDomain, setEditingDomain] = useState(false);
