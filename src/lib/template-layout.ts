@@ -75,7 +75,7 @@ export function layoutClasses(
         ...common,
         links: m
           ? "grid grid-cols-2 gap-2 relative z-10"
-          : "grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-2.5",
+          : "grid grid-cols-2 gap-2.5",
       };
     case "hero":
       return {
