@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { CardStyle } from "@/lib/template-card-style";
-import type { ButtonShape, FontFamily, TemplateLayout } from "@/lib/smartlink-templates";
+import { FONT_FAMILIES, FONT_LABELS, fontClassFor, type ButtonShape, type FontFamily, type TemplateLayout } from "@/lib/smartlink-templates";
 import { LINK_MOTIONS } from "@/lib/link-motion";
 import { LINK_SHADOWS, parseLinkStyle, type LinkShadow, type LinkStyle } from "@/lib/link-style";
 
@@ -97,10 +97,11 @@ export function TemplateDesignEditor({
           <Select value={value.font ?? "sans"} onValueChange={(v) => update({ font: v as FontFamily })}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="sans">Sans</SelectItem>
-              <SelectItem value="serif">Serif</SelectItem>
-              <SelectItem value="mono">Mono</SelectItem>
-              <SelectItem value="display">Display</SelectItem>
+              {FONT_FAMILIES.map((f) => (
+                <SelectItem key={f} value={f}>
+                  <span className={fontClassFor(f)}>{FONT_LABELS[f]}</span>
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
