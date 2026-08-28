@@ -1075,7 +1075,7 @@ export default function Dashboard() {
                 </div>
 
               </div>
-              <div className="p-3 sm:p-4">
+              <div className="p-3 sm:p-4 lg:flex-1 lg:min-h-0 lg:overflow-y-auto scrollbar-hide">
 
               {activeTab === "links" && (
                 <div className="space-y-4 sm:space-y-6">
