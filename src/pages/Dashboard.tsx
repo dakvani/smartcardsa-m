@@ -987,38 +987,48 @@ export default function Dashboard() {
       </header>
 
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-5">
-        {/* Compact Stats Bar */}
-        <div className="grid grid-cols-4 md:grid-cols-4 gap-1.5 sm:gap-2.5 mb-3 sm:mb-4">
-          {[
-            { label: "Views", value: analytics.views, icon: Eye, color: "text-blue-400", bg: "from-blue-500/10 to-blue-500/0" },
-            { label: "Clicks", value: analytics.clicks, icon: MousePointerClick, color: "text-pink-400", bg: "from-pink-500/10 to-pink-500/0" },
-            { label: "Links", value: visibleLinks, icon: Link2, color: "text-emerald-400", bg: "from-emerald-500/10 to-emerald-500/0" },
-            { label: "Groups", value: groups.length, icon: Folder, color: "text-amber-400", bg: "from-amber-500/10 to-amber-500/0" },
-          ].map((stat) => (
-            <motion.div
-              key={stat.label}
-              whileHover={{ y: -2 }}
-              className={`relative overflow-hidden rounded-lg sm:rounded-xl border border-border/60 bg-gradient-to-br ${stat.bg} bg-background/40 backdrop-blur-sm px-2 py-2 sm:p-3`}
-            >
-              <div className="flex items-center justify-between gap-1">
-                <div className="min-w-0">
-                  <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-muted-foreground font-medium truncate">{stat.label}</p>
-                  <p className="text-base sm:text-xl font-bold mt-0.5 tabular-nums leading-none">{stat.value.toLocaleString()}</p>
-                </div>
-                <div className={`hidden sm:flex w-8 h-8 rounded-lg bg-background/60 border border-border/40 items-center justify-center ${stat.color}`}>
-                  <stat.icon className="w-4 h-4" />
-                </div>
-                <stat.icon className={`sm:hidden w-3.5 h-3.5 shrink-0 ${stat.color}`} />
+        {/* Compact Stats Bar — inside the profile link card on desktop, standalone on mobile */}
+        {(() => {
+          const statsBar = (
+            <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5">
+              {[
+                { label: "Views", value: analytics.views, icon: Eye, color: "text-blue-400", bg: "from-blue-500/10 to-blue-500/0" },
+                { label: "Clicks", value: analytics.clicks, icon: MousePointerClick, color: "text-pink-400", bg: "from-pink-500/10 to-pink-500/0" },
+                { label: "Links", value: visibleLinks, icon: Link2, color: "text-emerald-400", bg: "from-emerald-500/10 to-emerald-500/0" },
+                { label: "Groups", value: groups.length, icon: Folder, color: "text-amber-400", bg: "from-amber-500/10 to-amber-500/0" },
+              ].map((stat) => (
+                <motion.div
+                  key={stat.label}
+                  whileHover={{ y: -2 }}
+                  className={`relative overflow-hidden rounded-lg sm:rounded-xl border border-border/60 bg-gradient-to-br ${stat.bg} bg-background/40 backdrop-blur-sm px-2 py-2 sm:p-3`}
+                >
+                  <div className="flex items-center justify-between gap-1">
+                    <div className="min-w-0">
+                      <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-muted-foreground font-medium truncate">{stat.label}</p>
+                      <p className="text-base sm:text-xl font-bold mt-0.5 tabular-nums leading-none">{stat.value.toLocaleString()}</p>
+                    </div>
+                    <div className={`hidden sm:flex w-8 h-8 rounded-lg bg-background/60 border border-border/40 items-center justify-center ${stat.color}`}>
+                      <stat.icon className="w-4 h-4" />
+                    </div>
+                    <stat.icon className={`sm:hidden w-3.5 h-3.5 shrink-0 ${stat.color}`} />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          );
+          return (
+            <>
+              {/* Mobile: stats stay above (share card is desktop-only) */}
+              <div className="md:hidden mb-3">{statsBar}</div>
+
+              {/* Profile Share Card — desktop/tablet only; now hosts the stats row */}
+              <div className="hidden md:block">
+                <ProfileShareCard username={profile.username} stats={statsBar} />
               </div>
-            </motion.div>
-          ))}
-        </div>
+            </>
+          );
+        })()}
 
-
-        {/* Profile Share Card — desktop/tablet only; reduces mobile clutter */}
-        <div className="hidden md:block">
-          <ProfileShareCard username={profile.username} />
-        </div>
 
         {/* Builder Layout: Left Nav | Edit Panel | Live Preview (static 3-column shell on desktop) */}
         <div className="flex flex-col lg:flex-row lg:items-stretch lg:min-h-0 gap-4 mt-4 pb-20 md:pb-0" style={builderStyle}>
