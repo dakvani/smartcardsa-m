@@ -146,28 +146,6 @@ export default function Dashboard() {
     try { localStorage.setItem(APPEARANCE_TAB_KEY, appearanceTab); } catch { /* storage unavailable */ }
   }, [appearanceTab]);
 
-  /** Live preview device size, persisted so the preview stays consistent across refreshes. */
-  const PREVIEW_SIZE_KEY = "smartcard:previewSize";
-  const [previewSize, setPreviewSize] = useState<"sm" | "md" | "lg">(() => {
-    try {
-      const stored = localStorage.getItem(PREVIEW_SIZE_KEY);
-      if (stored === "sm" || stored === "md" || stored === "lg") return stored;
-    } catch { /* storage unavailable */ }
-    return "md";
-  });
-  useEffect(() => {
-    try { localStorage.setItem(PREVIEW_SIZE_KEY, previewSize); } catch { /* storage unavailable */ }
-  }, [previewSize]);
-  const previewColumnClass =
-    previewSize === "sm" ? "md:w-[260px] lg:w-[300px]" : previewSize === "lg" ? "md:w-[320px] lg:w-[420px]" : "md:w-[290px] lg:w-[360px]";
-  const previewFrameClass =
-    previewSize === "sm"
-      ? "md:h-[min(100%,calc((300px-2rem)*19.5/9))]"
-      : previewSize === "lg"
-      ? "md:h-[min(100%,calc((420px-2rem)*19.5/9))]"
-      : "md:h-[min(100%,calc((360px-2rem)*19.5/9))]";
-
-
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -940,15 +918,43 @@ export default function Dashboard() {
       </header>
 
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-5">
+        {/* Compact Stats Bar */}
+        <div className="grid grid-cols-4 md:grid-cols-4 gap-1.5 sm:gap-2.5 mb-3 sm:mb-4">
+          {[
+            { label: "Views", value: analytics.views, icon: Eye, color: "text-blue-400", bg: "from-blue-500/10 to-blue-500/0" },
+            { label: "Clicks", value: analytics.clicks, icon: MousePointerClick, color: "text-pink-400", bg: "from-pink-500/10 to-pink-500/0" },
+            { label: "Links", value: visibleLinks, icon: Link2, color: "text-emerald-400", bg: "from-emerald-500/10 to-emerald-500/0" },
+            { label: "Groups", value: groups.length, icon: Folder, color: "text-amber-400", bg: "from-amber-500/10 to-amber-500/0" },
+          ].map((stat) => (
+            <motion.div
+              key={stat.label}
+              whileHover={{ y: -2 }}
+              className={`relative overflow-hidden rounded-lg sm:rounded-xl border border-border/60 bg-gradient-to-br ${stat.bg} bg-background/40 backdrop-blur-sm px-2 py-2 sm:p-3`}
+            >
+              <div className="flex items-center justify-between gap-1">
+                <div className="min-w-0">
+                  <p className="text-[9px] sm:text-[10px] uppercase tracking-wider text-muted-foreground font-medium truncate">{stat.label}</p>
+                  <p className="text-base sm:text-xl font-bold mt-0.5 tabular-nums leading-none">{stat.value.toLocaleString()}</p>
+                </div>
+                <div className={`hidden sm:flex w-8 h-8 rounded-lg bg-background/60 border border-border/40 items-center justify-center ${stat.color}`}>
+                  <stat.icon className="w-4 h-4" />
+                </div>
+                <stat.icon className={`sm:hidden w-3.5 h-3.5 shrink-0 ${stat.color}`} />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+
         {/* Profile Share Card — desktop/tablet only; reduces mobile clutter */}
         <div className="hidden md:block">
           <ProfileShareCard username={profile.username} />
         </div>
 
-        {/* Builder Layout: Left Nav | Edit Panel | Live Preview (static 3-column shell on tablet + desktop) */}
-        <div className="flex flex-col md:flex-row md:items-stretch gap-3 lg:gap-4 mt-4 pb-20 md:pb-0 md:h-[calc(100vh-9rem)] lg:h-[calc(100vh-7.5rem)]">
+        {/* Builder Layout: Left Nav | Edit Panel | Live Preview (static 3-column shell on desktop) */}
+        <div className="flex flex-col lg:flex-row lg:items-stretch gap-4 mt-4 pb-20 md:pb-0 lg:h-[calc(100vh-7.5rem)]">
           {/* Left: Vertical Builder Nav — hidden on mobile (replaced by bottom tab bar) */}
-          <aside className="hidden md:flex md:w-16 lg:w-20 md:flex-col gap-1.5 p-2 bg-background/60 backdrop-blur-sm rounded-2xl border border-border/60 shadow-sm md:h-full md:shrink-0 md:overflow-y-auto scrollbar-hide md:justify-center">
+          <aside className="hidden md:flex lg:w-20 lg:flex-col gap-1.5 p-2 bg-background/60 backdrop-blur-sm rounded-2xl border border-border/60 shadow-sm lg:h-full lg:shrink-0 lg:overflow-y-auto scrollbar-hide lg:justify-center">
 
             {tabs.map(tab => {
               const active = activeTab === tab.id;
@@ -957,7 +963,7 @@ export default function Dashboard() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   title={tab.label}
-                  className={`group relative md:flex-none flex flex-col items-center justify-center gap-1.5 h-16 px-1 rounded-xl transition-all ${
+                  className={`group relative flex-1 lg:flex-none flex flex-col items-center justify-center gap-1.5 py-4 px-2 rounded-xl transition-all ${
                     active
                       ? "bg-primary/10 text-primary shadow-[0_0_15px_rgba(59,130,246,0.1)]"
                       : "text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
@@ -970,19 +976,18 @@ export default function Dashboard() {
                     />
                   )}
                   <tab.icon className={`w-5 h-5 ${active ? "text-primary" : ""}`} />
-                  <span className={`text-[8px] lg:text-[9px] font-bold uppercase tracking-widest ${active ? "text-primary" : ""}`}>{tab.label}</span>
+                  <span className={`text-[9px] font-bold uppercase tracking-widest ${active ? "text-primary" : ""}`}>{tab.label}</span>
                 </button>
               );
             })}
           </aside>
 
-          {/* Middle: Edit / Builder Panel — only this column scrolls on tablet/desktop */}
-          <div className="flex-1 min-w-0 md:h-full md:min-h-0">
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 shadow-sm overflow-hidden md:h-full md:flex md:flex-col md:min-h-0">
+          {/* Middle: Edit / Builder Panel — only this column scrolls on desktop */}
+          <div className="flex-1 min-w-0 lg:h-full lg:min-h-0">
+            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 shadow-sm overflow-hidden lg:h-full lg:flex lg:flex-col lg:min-h-0">
 
               {/* Panel Header */}
-              <div className="flex items-center justify-between px-3 sm:px-6 h-16 border-b border-border/60 bg-secondary/30 gap-4 md:shrink-0">
-
+              <div className="flex items-center justify-between px-3 sm:px-6 py-4 border-b border-border/60 bg-secondary/30 gap-4 lg:shrink-0">
                 <div className="flex items-center gap-3 min-w-0">
                   {(() => {
                     const t = tabs.find(x => x.id === activeTab)!;
@@ -1070,7 +1075,7 @@ export default function Dashboard() {
                 </div>
 
               </div>
-              <div className="p-3 sm:p-4 md:flex-1 md:min-h-0 md:overflow-y-auto scrollbar-hide [&_button[role=combobox]]:h-10 [&_select]:h-10 [&_input]:h-10">
+              <div className="p-3 sm:p-4 lg:flex-1 lg:min-h-0 lg:overflow-y-auto scrollbar-hide">
 
               {activeTab === "links" && (
                 <div className="space-y-4 sm:space-y-6">
@@ -1199,7 +1204,7 @@ export default function Dashboard() {
                         type="button"
                         onClick={() => setAppearanceTab(s.id)}
                         aria-pressed={appearanceTab === s.id}
-                        className={`shrink-0 whitespace-nowrap h-9 px-3 inline-flex items-center rounded-full text-xs font-medium transition-colors ${
+                        className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                           appearanceTab === s.id
                             ? "bg-primary text-primary-foreground"
                             : "bg-secondary/60 text-muted-foreground hover:text-foreground"
@@ -1406,21 +1411,21 @@ export default function Dashboard() {
           </div>
 
 
-          {/* Preview Panel - iPhone Frame (mobile: collapsible, tablet/desktop: fixed right column) */}
-          <details open className={`w-full ${previewColumnClass} md:shrink-0 md:h-full md:min-h-0 md:flex md:flex-col group [&_summary::-webkit-details-marker]:hidden`}>
-            <summary className="md:hidden mb-2 flex items-center justify-between gap-2 h-10 px-3 rounded-lg bg-background/60 backdrop-blur-sm border border-border/60 cursor-pointer list-none">
+          {/* Preview Panel - iPhone Frame (mobile: collapsible, desktop: fixed right column) */}
+          <details open className="w-full lg:w-[360px] lg:shrink-0 lg:h-full lg:min-h-0 lg:flex lg:flex-col group [&_summary::-webkit-details-marker]:hidden">
+            <summary className="lg:hidden mb-2 flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-background/60 backdrop-blur-sm border border-border/60 cursor-pointer list-none">
               <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider">
                 <Eye className="w-3.5 h-3.5 text-primary" /> Live Preview
               </span>
               <span className="text-[10px] text-muted-foreground group-open:hidden">Tap to show</span>
               <span className="text-[10px] text-muted-foreground hidden group-open:inline">Tap to hide</span>
             </summary>
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm md:h-full md:min-h-0 md:overflow-hidden scrollbar-hide md:flex md:flex-col">
+            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 p-4 shadow-sm lg:h-[calc(100vh-7.5rem)] lg:overflow-y-auto scrollbar-hide lg:flex lg:flex-col">
 
-              <div className="flex items-center justify-between gap-2 mb-3 px-1 h-8 shrink-0">
+              <div className="flex items-center justify-between mb-3 px-1">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Live Preview</p>
                 <div className="flex items-center gap-2">
-                  <span className="hidden sm:flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
+                  <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live
                   </span>
                   <Link to={profilePath(profile.username)} target="_blank" className="text-[10px] text-primary hover:underline flex items-center gap-1">
@@ -1429,32 +1434,10 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Preview device size — persisted across refreshes */}
-              <div className="flex items-center gap-1 mb-3 p-1 rounded-lg bg-secondary/40 border border-border/50 shrink-0">
-                {([
-                  { id: "sm", label: "S" },
-                  { id: "md", label: "M" },
-                  { id: "lg", label: "L" },
-                ] as const).map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => setPreviewSize(s.id)}
-                    aria-pressed={previewSize === s.id}
-                    title={`Preview size ${s.label}`}
-                    className={`flex-1 h-7 rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors ${
-                      previewSize === s.id ? "bg-primary/15 text-primary" : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-
               {/* iPhone Frame */}
-              <div className={`mx-auto ${previewSize === "sm" ? "w-[190px]" : previewSize === "lg" ? "w-[250px]" : "w-[220px]"} md:w-auto md:flex-1 md:min-h-0 md:flex md:items-center md:justify-center`}>
-                <div className={`relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 md:w-auto md:aspect-[9/19.5] ${previewFrameClass} md:max-w-full`}>
+              <div className="mx-auto w-[220px] lg:w-auto lg:flex-1 lg:min-h-0 lg:flex lg:items-center lg:justify-center">
+                <div className="relative rounded-[2.75rem] bg-neutral-900 p-[10px] shadow-2xl ring-1 ring-white/10 lg:w-auto lg:aspect-[9/19.5] lg:h-[min(100%,calc((360px-2rem)*19.5/9))] lg:max-w-full">
                   {/* Side buttons */}
-
                   <div className="absolute -left-[3px] top-24 w-[3px] h-8 rounded-l-md bg-neutral-700" />
                   <div className="absolute -left-[3px] top-36 w-[3px] h-12 rounded-l-md bg-neutral-700" />
                   <div className="absolute -left-[3px] top-52 w-[3px] h-12 rounded-l-md bg-neutral-700" />
@@ -1462,7 +1445,7 @@ export default function Dashboard() {
 
                   {/* Screen */}
                   <div
-                    className={`relative rounded-[2.25rem] overflow-hidden aspect-[9/19.5] md:aspect-auto md:h-full ${!previewStyle ? `bg-gradient-${profile.gradient_direction || 'to-b'} ${previewGradient}` : ''}`}
+                    className={`relative rounded-[2.25rem] overflow-hidden aspect-[9/19.5] lg:aspect-auto lg:h-full ${!previewStyle ? `bg-gradient-${profile.gradient_direction || 'to-b'} ${previewGradient}` : ''}`}
                     style={previewStyle}
                   >
                     {/* Status bar */}
@@ -1552,32 +1535,7 @@ export default function Dashboard() {
             </div>
           </details>
         </div>
-
-        {/* Compact Stats Bar — below the builder, aligned 1 2 3 4 */}
-        <div className="grid grid-cols-4 gap-2 mt-3 md:mt-4 mb-20 md:mb-0">
-          {[
-            { label: "Views", value: analytics.views, icon: Eye, color: "text-blue-400", bg: "from-blue-500/10 to-blue-500/0" },
-            { label: "Clicks", value: analytics.clicks, icon: MousePointerClick, color: "text-pink-400", bg: "from-pink-500/10 to-pink-500/0" },
-            { label: "Links", value: visibleLinks, icon: Link2, color: "text-emerald-400", bg: "from-emerald-500/10 to-emerald-500/0" },
-            { label: "Groups", value: groups.length, icon: Folder, color: "text-amber-400", bg: "from-amber-500/10 to-amber-500/0" },
-          ].map((stat) => (
-            <motion.div
-              key={stat.label}
-              whileHover={{ y: -2 }}
-              className={`relative overflow-hidden rounded-lg border border-border/60 bg-gradient-to-br ${stat.bg} bg-background/40 backdrop-blur-sm h-12 px-2 flex items-center`}
-            >
-              <div className="flex items-center justify-between gap-1 w-full">
-                <div className="min-w-0">
-                  <p className="text-[8px] uppercase tracking-wider text-muted-foreground font-medium truncate">{stat.label}</p>
-                  <p className="text-sm font-bold tabular-nums leading-none mt-0.5">{stat.value.toLocaleString()}</p>
-                </div>
-                <stat.icon className={`w-3.5 h-3.5 shrink-0 ${stat.color}`} />
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
-
       <MobileTabBar activeTab={activeTab} onChange={setActiveTab} />
 
       <TemplateFieldsDialog
