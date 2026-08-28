@@ -7,12 +7,13 @@ import { Label } from "@/components/ui/label";
 import {
   Loader2, Check, Palette, Briefcase, Camera, Sparkles, Lock,
   Stethoscope, Home, Trophy, Music, UtensilsCrossed, Dumbbell,
-  Code, Star, GraduationCap, Gauge, Eye, EyeOff, Upload, X, Crown, Trash2, Undo2,
+  Code, Star, GraduationCap, Gauge, Eye, EyeOff, Upload, X, Crown, Trash2, Undo2, Search,
 } from "lucide-react";
 import { toast } from "sonner";
 import { UnlockProDialog } from "./UnlockProDialog";
 import { TemplatePreview } from "./TemplatePreview";
-import { templates as smartlinkTemplates } from "@/lib/smartlink-templates";
+import { templates as smartlinkTemplates, templateCategories, linkLabel } from "@/lib/smartlink-templates";
+
 import {
   smartlinkTemplateToProfilePatch, smartlinkTemplateTier, canUseTemplateTier,
   saveThemeSnapshot, readThemeSnapshot, clearThemeSnapshot, type ThemeSnapshot,
@@ -171,6 +172,22 @@ export function ProfileTemplates({
   const [publishingSmartlink, setPublishingSmartlink] = useState(false);
   const [snapshot, setSnapshot] = useState<ThemeSnapshot | null>(() => readThemeSnapshot(userId));
   useEffect(() => { setSnapshot(readThemeSnapshot(userId)); }, [userId]);
+
+  // SmartLink gallery search + category filter
+  const [slQuery, setSlQuery] = useState("");
+  const [slCategory, setSlCategory] = useState<string>("All templates");
+  const smartlinkCategories = templateCategories;
+  const slq = slQuery.trim().toLowerCase();
+  const filteredSmartlinkTemplates = smartlinkTemplates.filter((t) => {
+    const inCat = slCategory === "All templates" || t.category === slCategory;
+    if (!inCat) return false;
+    if (!slq) return true;
+    const haystack = [t.name, t.username, t.category, t.bio, ...t.links.map(linkLabel)]
+      .join(" ")
+      .toLowerCase();
+    return haystack.includes(slq);
+  });
+
 
   // Per-user hidden templates (UI-only) — persisted to localStorage
   const hiddenKey = `tpl_hidden:${userId || "anon"}`;
@@ -688,8 +705,48 @@ export function ProfileTemplates({
             </p>
           </div>
         </div>
+
+        {/* Search + category filters */}
+        <div className="space-y-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            <input
+              type="search"
+              value={slQuery}
+              onChange={(e) => setSlQuery(e.target.value)}
+              placeholder="Search templates, e.g. fashion, tech, real estate…"
+              aria-label="Search SmartLink templates"
+              className="w-full h-8 pl-8 pr-2 rounded-md border border-border bg-background text-xs outline-none focus:ring-2 focus:ring-primary/30"
+            />
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {smartlinkCategories.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setSlCategory(c)}
+                aria-pressed={slCategory === c}
+                className={`px-2 py-1 rounded-full text-[10px] font-medium border transition-colors ${
+                  slCategory === c
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "border-border text-muted-foreground hover:border-primary/50"
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {filteredSmartlinkTemplates.length === 0 && (
+          <p className="text-[11px] text-muted-foreground py-4 text-center">
+            No templates match “{slQuery}”.
+          </p>
+        )}
+
         <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
-          {smartlinkTemplates.map((t) => {
+          {filteredSmartlinkTemplates.map((t) => {
+
             const active = currentThemeName === t.name;
             const tier = smartlinkTemplateTier(t);
             const locked = smartlinkLocked(t);

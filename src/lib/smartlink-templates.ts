@@ -46,6 +46,28 @@ export type FontFamily = (typeof FONT_FAMILIES)[number];
 export const TEXT_TONE = ["light", "dark"] as const;
 export type TextTone = (typeof TEXT_TONE)[number];
 
+/** Kind of action a template button performs (drives icon + default URL). */
+export const LINK_ACTIONS = ["link", "call", "whatsapp", "email", "map", "booking", "shop"] as const;
+export type TemplateLinkAction = (typeof LINK_ACTIONS)[number];
+
+/** A template button: plain label, or a label with a real actionable URL. */
+export type TemplateLink =
+  | string
+  | { label: string; url?: string; action?: TemplateLinkAction };
+
+export const linkLabel = (l: TemplateLink): string => (typeof l === "string" ? l : l.label);
+export const linkUrl = (l: TemplateLink): string => (typeof l === "string" ? "" : l.url ?? "");
+export const linkAction = (l: TemplateLink): TemplateLinkAction =>
+  typeof l === "string" ? "link" : l.action ?? "link";
+
+/** Visual pattern of the card body. */
+export const TEMPLATE_LAYOUTS = ["classic", "social", "biodata"] as const;
+export type TemplateLayout = (typeof TEMPLATE_LAYOUTS)[number];
+
+/** Style of the decorative 3D element rendered over the background. */
+export const THREE_D_VARIANTS = ["tilt", "cube", "orbit", "prism", "rings", "carousel"] as const;
+export type ThreeDVariant = (typeof THREE_D_VARIANTS)[number];
+
 export type TemplateProfile = {
   name: string;
   username: string;
@@ -62,8 +84,14 @@ export type TemplateProfile = {
   buttonShape: ButtonShape;
   buttonBg: string;
   socialColor: string;
-  links: string[];
+  links: TemplateLink[];
   socials: SocialIcon[];
+  /** Card body pattern: classic link list, social profile, or biodata sheet. */
+  layout?: TemplateLayout;
+  /** Extra facts rendered by the biodata layout. */
+  facts?: { label: string; value: string }[];
+  /** Follower-style stats rendered by the social layout. */
+  stats?: { label: string; value: string }[];
   /**
    * Optional animated background layer (matches AnimatedBackground types:
    * aurora, matrix, sparkle, bokeh, particles, orbs, neon, snow, bubbles…).
@@ -73,7 +101,10 @@ export type TemplateProfile = {
   animationIntensity?: number;
   /** Enables the 3D depth/parallax treatment on the phone card. */
   threeD?: boolean;
+  /** Which 3D object to float over the card (defaults to a simple tilt). */
+  threeDVariant?: ThreeDVariant;
 };
+
 
 
 export const iconMap: Record<SocialIcon, LucideIcon> = {
@@ -486,7 +517,237 @@ export const templates: TemplateProfile[] = [
     socials: ["whatsapp", "instagram", "linkedin", "website"],
     animation: "particles", animationSpeed: 1, animationIntensity: 1.2, threeD: true,
   }),
+
+  /* ---------- 3D object templates + new layout patterns ---------- */
+
+  defineTemplate({
+    name: "Orbit Labs", username: "orbit.labs", category: "Tech",
+    bio: "Product engineering studio • shipping fast",
+    bgImage: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&q=70",
+    bgTint: "bg-slate-950/55",
+    avatarImage: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&q=70",
+    font: "mono", textOnDark: "light",
+    nameColor: "text-sky-200", bioColor: "text-sky-100/75",
+    buttonShape: "outline", buttonBg: "bg-white/10 text-sky-100 border border-sky-300/50 backdrop-blur",
+    socialColor: "text-sky-200",
+    links: [
+      { label: "Book a discovery call", action: "call", url: "tel:+966500000000" },
+      { label: "WhatsApp the team", action: "whatsapp", url: "https://wa.me/966500000000" },
+      { label: "Our work", action: "link", url: "https://example.com/work" },
+      { label: "Email us", action: "email", url: "mailto:hello@orbitlabs.io" },
+    ],
+    socials: ["github", "linkedin", "x", "website"],
+    animation: "particles", animationSpeed: 1, animationIntensity: 1,
+    threeD: true, threeDVariant: "cube",
+  }),
+  defineTemplate({
+    name: "Prisma Homes", username: "prisma.homes", category: "Real Estate",
+    bio: "Off-plan & ready villas • virtual 3D walkthroughs",
+    bgImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=70",
+    bgTint: "bg-slate-900/45",
+    avatarImage: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=70",
+    font: "display", textOnDark: "light",
+    nameColor: "text-white", bioColor: "text-white/80",
+    buttonShape: "square", buttonBg: "bg-white/15 text-white backdrop-blur border border-white/30",
+    socialColor: "text-white",
+    links: [
+      { label: "Tap to call agent", action: "call", url: "tel:+966510000000" },
+      { label: "WhatsApp a listing", action: "whatsapp", url: "https://wa.me/966510000000" },
+      { label: "Open in maps", action: "map", url: "https://maps.google.com/?q=Riyadh" },
+      { label: "Book a viewing", action: "booking", url: "https://example.com/viewing" },
+    ],
+    socials: ["whatsapp", "instagram", "linkedin", "website"],
+    animation: "orbs", animationSpeed: 0.9, animationIntensity: 1.1,
+    threeD: true, threeDVariant: "prism",
+  }),
+  defineTemplate({
+    name: "Vega Athletics", username: "vega.fit", category: "Health & Fitness",
+    bio: "Hybrid training • strength, engine, recovery",
+    bgImage: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=70",
+    bgTint: "bg-fuchsia-950/40",
+    avatarImage: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=200&q=70",
+    font: "display", textOnDark: "light",
+    nameColor: "text-white", bioColor: "text-white/80",
+    buttonShape: "pill", buttonBg: "bg-white/15 text-white backdrop-blur border border-white/40",
+    socialColor: "text-white",
+    links: [
+      { label: "Start free trial week", action: "booking", url: "https://example.com/trial" },
+      { label: "WhatsApp your coach", action: "whatsapp", url: "https://wa.me/966520000000" },
+      { label: "Call the gym", action: "call", url: "tel:+966520000000" },
+      { label: "Shop supplements", action: "shop", url: "https://example.com/shop" },
+    ],
+    socials: ["instagram", "youtube", "tiktok", "whatsapp"],
+    animation: "neon", animationSpeed: 1.1, animationIntensity: 1.1,
+    threeD: true, threeDVariant: "rings",
+  }),
+  defineTemplate({
+    name: "Zaytun Kitchen", username: "zaytun.kitchen", category: "Food",
+    bio: "Wood-fired mezze • open daily 5pm–1am",
+    bgImage: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=70",
+    bgTint: "bg-amber-950/45",
+    avatarImage: "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=200&q=70",
+    font: "serif", textOnDark: "light",
+    nameColor: "text-amber-50", bioColor: "text-amber-50/80",
+    buttonShape: "torn", buttonBg: "bg-amber-100/95 text-neutral-900",
+    socialColor: "text-amber-50",
+    links: [
+      { label: "Call to reserve", action: "call", url: "tel:+966530000000" },
+      { label: "Order on WhatsApp", action: "whatsapp", url: "https://wa.me/966530000000" },
+      { label: "Find us", action: "map", url: "https://maps.google.com/?q=Zaytun+Kitchen" },
+      { label: "Tonight's menu", action: "link", url: "https://example.com/menu" },
+    ],
+    socials: ["instagram", "whatsapp", "tiktok", "website"],
+    animation: "bokeh", animationSpeed: 0.9, animationIntensity: 1,
+    threeD: true, threeDVariant: "carousel",
+  }),
+  defineTemplate({
+    name: "Stellar Atelier", username: "stellar.atelier", category: "Fashion",
+    bio: "Couture drops, styled and shipped worldwide.",
+    bgImage: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=70",
+    bgTint: "bg-purple-950/35",
+    avatarImage: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&q=70",
+    font: "serif", textOnDark: "light",
+    nameColor: "text-white", bioColor: "text-white/85",
+    buttonShape: "pill", buttonBg: "bg-white/20 text-white backdrop-blur border border-white/40",
+    socialColor: "text-white",
+    layout: "social",
+    stats: [
+      { label: "Posts", value: "412" },
+      { label: "Followers", value: "184K" },
+      { label: "Following", value: "308" },
+    ],
+    links: [
+      { label: "Shop the drop", action: "shop", url: "https://example.com/shop" },
+      { label: "Styling on WhatsApp", action: "whatsapp", url: "https://wa.me/966540000000" },
+      { label: "Book a fitting", action: "booking", url: "https://example.com/fitting" },
+    ],
+    socials: ["instagram", "tiktok", "youtube", "website"],
+    animation: "sparkle", animationSpeed: 1, animationIntensity: 1.1,
+    threeD: true, threeDVariant: "orbit",
+  }),
+  defineTemplate({
+    name: "Yara Kamal", username: "yara.daily", category: "Social Media",
+    bio: "Everyday content, honest reviews, good coffee.",
+    bgImage: "https://images.unsplash.com/photo-1520975916090-3105956dac38?w=800&q=70",
+    bgTint: "bg-rose-950/30",
+    avatarImage: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&q=70",
+    font: "sans", textOnDark: "light",
+    nameColor: "text-white", bioColor: "text-white/85",
+    buttonShape: "pill", buttonBg: "bg-white/90 text-neutral-900",
+    socialColor: "text-white",
+    layout: "social",
+    stats: [
+      { label: "Posts", value: "1.2K" },
+      { label: "Followers", value: "96.4K" },
+      { label: "Following", value: "512" },
+    ],
+    links: [
+      { label: "Latest reel", action: "link", url: "https://instagram.com" },
+      { label: "Message me", action: "whatsapp", url: "https://wa.me/966550000000" },
+      { label: "Collab enquiries", action: "email", url: "mailto:hi@yara.daily" },
+    ],
+    socials: ["instagram", "tiktok", "youtube", "x"],
+    animation: "shimmer", animationSpeed: 1, animationIntensity: 1,
+  }),
+  defineTemplate({
+    name: "Dr. Samir Nasr", username: "dr.samir", category: "Business",
+    bio: "Consultant cardiologist • clinic hours Sun–Thu",
+    bgImage: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&q=70",
+    bgTint: "bg-slate-900/55",
+    avatarImage: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&q=70",
+    font: "serif", textOnDark: "light",
+    nameColor: "text-white", bioColor: "text-white/80",
+    buttonShape: "square", buttonBg: "bg-white/90 text-neutral-900",
+    socialColor: "text-white",
+    layout: "biodata",
+    facts: [
+      { label: "Speciality", value: "Cardiology" },
+      { label: "Experience", value: "14 years" },
+      { label: "Languages", value: "AR · EN · FR" },
+      { label: "Clinic", value: "Riyadh, KSA" },
+    ],
+    links: [
+      { label: "Tap to call clinic", action: "call", url: "tel:+966560000000" },
+      { label: "WhatsApp reception", action: "whatsapp", url: "https://wa.me/966560000000" },
+      { label: "Book appointment", action: "booking", url: "https://example.com/book" },
+    ],
+    socials: ["linkedin", "email", "website", "whatsapp"],
+    animation: "aurora", animationSpeed: 0.8, animationIntensity: 0.9,
+    threeD: true, threeDVariant: "tilt",
+  }),
+  defineTemplate({
+    name: "Noor Academy", username: "noor.academy", category: "Education",
+    bio: "Tutoring centre • Quran, maths and languages",
+    bgImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=70",
+    bgTint: "bg-emerald-950/45",
+    avatarImage: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&q=70",
+    font: "sans", textOnDark: "light",
+    nameColor: "text-white", bioColor: "text-white/85",
+    buttonShape: "pill", buttonBg: "bg-emerald-400 text-neutral-900",
+    socialColor: "text-white",
+    layout: "biodata",
+    facts: [
+      { label: "Subjects", value: "Maths · English · Quran" },
+      { label: "Ages", value: "6 – 18" },
+      { label: "Format", value: "Online & in-centre" },
+      { label: "Trial", value: "First class free" },
+    ],
+    links: [
+      { label: "Call admissions", action: "call", url: "tel:+966570000000" },
+      { label: "WhatsApp a tutor", action: "whatsapp", url: "https://wa.me/966570000000" },
+      { label: "Reserve a seat", action: "booking", url: "https://example.com/seat" },
+      { label: "Visit the centre", action: "map", url: "https://maps.google.com/?q=Noor+Academy" },
+    ],
+    socials: ["whatsapp", "instagram", "email", "website"],
+    animation: "fireflies", animationSpeed: 0.9, animationIntensity: 1,
+    threeD: true, threeDVariant: "orbit",
+  }),
+  defineTemplate({
+    name: "Cobalt Studio", username: "cobalt.studio", category: "Creator",
+    bio: "3D artist • product renders and motion loops",
+    bgImage: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=70",
+    bgTint: "bg-indigo-950/50",
+    avatarImage: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&q=70",
+    font: "display", textOnDark: "light",
+    nameColor: "text-white", bioColor: "text-white/80",
+    buttonShape: "shadow-hard", buttonBg: "bg-cyan-300 text-neutral-900 border-2 border-neutral-900",
+    socialColor: "text-white",
+    links: [
+      { label: "Showreel", action: "link", url: "https://example.com/reel" },
+      { label: "Start a project", action: "email", url: "mailto:studio@cobalt.io" },
+      { label: "WhatsApp me", action: "whatsapp", url: "https://wa.me/966580000000" },
+      { label: "Asset shop", action: "shop", url: "https://example.com/assets" },
+    ],
+    socials: ["instagram", "youtube", "x", "website"],
+    animation: "bubbles", animationSpeed: 1, animationIntensity: 1,
+    threeD: true, threeDVariant: "cube",
+  }),
+  defineTemplate({
+    name: "Hala Rashed", username: "hala.biodata", category: "Business",
+    bio: "Executive assistant & operations specialist",
+    bgImage: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=800&q=70",
+    bgTint: "bg-neutral-900/55",
+    avatarImage: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=70",
+    font: "sans", textOnDark: "light",
+    nameColor: "text-white", bioColor: "text-white/80",
+    buttonShape: "square", buttonBg: "bg-white/90 text-neutral-900",
+    socialColor: "text-white",
+    layout: "biodata",
+    facts: [
+      { label: "Role", value: "Ops & EA" },
+      { label: "Based in", value: "Riyadh" },
+      { label: "Availability", value: "Part-time" },
+      { label: "Tools", value: "Notion · Slack · HubSpot" },
+    ],
+    links: [
+      { label: "Tap to call", action: "call", url: "tel:+966590000000" },
+      { label: "WhatsApp", action: "whatsapp", url: "https://wa.me/966590000000" },
+      { label: "Download CV", action: "link", url: "https://example.com/cv.pdf" },
+    ],
+    socials: ["linkedin", "email", "website", "x"],
+  }),
 ];
+
 
 
 export const templateCategories = [

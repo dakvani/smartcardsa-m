@@ -7,7 +7,7 @@
  * signup/login, and the dashboard picks it up and applies it to their
  * real profile so the very same design shows up in the editor.
  */
-import { templates, type TemplateProfile } from "@/lib/smartlink-templates";
+import { templates, linkLabel, linkUrl, type TemplateProfile } from "@/lib/smartlink-templates";
 
 export const SMARTLINK_PENDING_KEY = "smartlink.pending.v2";
 
@@ -140,8 +140,12 @@ const FREE_TEMPLATES = new Set<string>([
   "adam.learns",
   "lina.bakes",
   "rania.moves",
-
+  "yara.daily",
+  "hala.biodata",
+  "zaytun.kitchen",
+  "noor.academy",
 ]);
+
 
 export const smartlinkTemplateTier = (t: TemplateProfile): TemplateTier =>
   FREE_TEMPLATES.has(t.username) ? "free" : "pro";
@@ -232,7 +236,7 @@ export function templateContent(t: TemplateProfile): TemplateContent {
       key === "website" ? `https://${handle.replace(/[^a-z0-9]/gi, "")}.com` : handle;
   }
   return {
-    links: t.links.map((title, i) => ({ title, url: "", position: i })),
+    links: t.links.map((l, i) => ({ title: linkLabel(l), url: linkUrl(l), position: i })),
     social_links,
     avatar_url: t.avatarImage,
   };

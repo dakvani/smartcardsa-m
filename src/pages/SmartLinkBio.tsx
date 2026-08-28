@@ -10,14 +10,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BarChart3, CreditCard, Layers, Lock, Palette, Smartphone,
   Check, Sparkles, Wand2, Undo2, Redo2, Monitor, AlertCircle,
-  Home, Grid3x3, Zap, DollarSign, Eye, Pencil,
+  Home, Grid3x3, Zap, DollarSign, Eye, Pencil, Search,
 } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { SEO } from "@/components/SEO";
 import {
-  templates, templateCategories, bioInputSchema,
+  templates, templateCategories, bioInputSchema, linkLabel,
   type TemplateProfile, type BioInput,
 } from "@/lib/smartlink-templates";
+
 import { TemplatePhoneCard } from "@/components/smartlink/TemplatePhoneCard";
 import { useHistoryState, useDebouncedCommit } from "@/hooks/use-history-state";
 import { savePendingBio } from "@/lib/smartlink-handoff";
@@ -78,6 +79,8 @@ type MobileTab = "hero" | "studio" | "templates";
 
 export default function SmartLinkBio() {
   const [activeCategory, setActiveCategory] = useState<string>("All templates");
+  const [templateQuery, setTemplateQuery] = useState("");
+
   const [previewMode, setPreviewMode] = useState<"phone" | "full">("phone");
   const [mobileTab, setMobileTab] = useState<MobileTab>("hero");
 
@@ -117,12 +120,16 @@ export default function SmartLinkBio() {
   const selected: TemplateProfile =
     templates.find((t) => t.username === editor.username) ?? templates[0];
 
-  const filteredTemplates = useMemo(
-    () => (activeCategory === "All templates"
-      ? templates
-      : templates.filter((t) => t.category === activeCategory)),
-    [activeCategory],
-  );
+  const filteredTemplates = useMemo(() => {
+    const q = templateQuery.trim().toLowerCase();
+    return templates.filter((t) => {
+      if (activeCategory !== "All templates" && t.category !== activeCategory) return false;
+      if (!q) return true;
+      return [t.name, t.username, t.category, t.bio, ...t.links.map(linkLabel)]
+        .join(" ").toLowerCase().includes(q);
+    });
+  }, [activeCategory, templateQuery]);
+
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -438,10 +445,22 @@ export default function SmartLinkBio() {
 
             <div className="flex flex-col lg:grid lg:grid-cols-[220px_minmax(0,1fr)] gap-4 sm:gap-10">
               <aside className="lg:sticky lg:top-28 self-start -mx-4 px-4 lg:mx-0 lg:px-0">
+                <label className="relative block mb-3">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="search"
+                    value={templateQuery}
+                    onChange={(e) => setTemplateQuery(e.target.value)}
+                    placeholder="Search templates…"
+                    aria-label="Search templates"
+                    className="w-full h-10 pl-9 pr-3 rounded-full border border-border bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                </label>
                 <p className="hidden lg:block text-xs font-semibold tracking-widest text-muted-foreground mb-4">
                   BROWSE BY CATEGORY
                 </p>
                 <div className="flex lg:flex-col gap-1.5 sm:gap-2 overflow-x-auto lg:overflow-visible scrollbar-hide -mx-1 px-1 pb-1 lg:mx-0 lg:px-0">
+
                   {templateCategories.map((cat) => (
                     <button
                       key={cat}
