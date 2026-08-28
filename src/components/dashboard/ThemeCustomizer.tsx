@@ -89,7 +89,7 @@ export function ThemeCustomizer({
   animationIntensity = 1,
   onUpdate,
 }: ThemeCustomizerProps) {
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(true);
   const [isCustom, setIsCustom] = useState(themeName === "Custom");
 
   const handlePresetSelect = (theme: typeof presetThemes[0]) => {
