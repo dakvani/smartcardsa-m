@@ -628,6 +628,30 @@ export default function PublicProfile() {
             </div>
           </div>
 
+          {/* Subtle scroll hint — fades out once the visitor starts scrolling */}
+          <AnimatePresence>
+            {!scrolled && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.35 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4 }}
+                className="pointer-events-none absolute inset-x-0 bottom-3 z-20 flex flex-col items-center gap-1"
+              >
+                <motion.span
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                  className="flex flex-col items-center text-primary-foreground"
+                >
+                  <span className="text-[9px] uppercase tracking-[0.2em]">Scroll</span>
+                  <ChevronDown className="w-4 h-4 -mt-0.5" />
+                </motion.span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+
+
           {/* Side QR badge — only phone mode on sm+ */}
           {!isCompact && (
             <div className="hidden sm:flex absolute -right-44 top-6 w-40 flex-col items-center gap-2 rounded-2xl border border-white/10 bg-slate-900/70 backdrop-blur p-3 shadow-xl">
