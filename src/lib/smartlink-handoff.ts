@@ -9,6 +9,7 @@
  */
 import { templates, linkLabel, linkUrl, linkAction, type TemplateProfile } from "@/lib/smartlink-templates";
 import { fieldForAction, urlForField, type TemplateFieldValues } from "@/lib/template-fields";
+import { cardStyleFromTemplate, type CardStyle } from "@/lib/template-card-style";
 
 
 export const SMARTLINK_PENDING_KEY = "smartlink.pending.v2";
@@ -33,6 +34,7 @@ export interface SmartlinkProfilePatch {
   animation_intensity: number;
   custom_background_url: string;
   custom_background_type: "image";
+  card_style: CardStyle;
 }
 
 /** Gradient fallback shown behind/around the template background image. */
@@ -84,6 +86,7 @@ export const smartlinkTemplateToProfilePatch = (t: TemplateProfile): SmartlinkPr
   animation_intensity: t.animationIntensity ?? 1,
   custom_background_url: t.bgImage,
   custom_background_type: "image",
+  card_style: cardStyleFromTemplate(t),
 });
 
 
@@ -209,7 +212,7 @@ export const canUseTemplateTier = (tier: TemplateTier, plan?: string): boolean =
  * ------------------------------------------------------------------ */
 
 /** Editor social keys (see SocialLinksEditor) a template icon maps to. */
-const SOCIAL_KEY_MAP: Record<string, "instagram" | "twitter" | "youtube" | "facebook" | "linkedin" | "github" | "website"> = {
+const SOCIAL_KEY_MAP: Record<string, "instagram" | "twitter" | "youtube" | "facebook" | "linkedin" | "github" | "website" | "email" | "whatsapp" | "tiktok" | "twitch" | "spotify"> = {
   instagram: "instagram",
   x: "twitter",
   youtube: "youtube",
@@ -217,6 +220,11 @@ const SOCIAL_KEY_MAP: Record<string, "instagram" | "twitter" | "youtube" | "face
   linkedin: "linkedin",
   github: "github",
   website: "website",
+  email: "email",
+  whatsapp: "whatsapp",
+  tiktok: "tiktok",
+  twitch: "twitch",
+  spotify: "spotify",
 };
 
 export interface TemplateContent {
@@ -249,8 +257,11 @@ export function templateContent(t: TemplateProfile, values: TemplateFieldValues 
   for (const icon of t.socials) {
     const key = SOCIAL_KEY_MAP[icon];
     if (!key) continue;
-    social_links[key] =
-      key === "website" ? `https://${handle.replace(/[^a-z0-9]/gi, "")}.com` : handle;
+    social_links[key] = key === "website"
+      ? `https://${handle.replace(/[^a-z0-9]/gi, "")}.com`
+      : key === "email"
+        ? `hello@${handle.replace(/[^a-z0-9]/gi, "")}.com`
+        : handle;
   }
   return {
     links: t.links.map((l, i) => {

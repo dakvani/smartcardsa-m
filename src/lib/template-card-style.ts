@@ -24,6 +24,8 @@ export interface CardStyle {
   nameColor?: string;
   bioColor?: string;
   socialColor?: string;
+  socialOrder?: string[];
+  bgTint?: string;
   layout?: TemplateLayout;
   threeD?: boolean;
   threeDVariant?: ThreeDVariant;
@@ -49,6 +51,8 @@ export function cardStyleFromTemplate(t: TemplateProfile): CardStyle {
     nameColor: t.nameColor,
     bioColor: t.bioColor,
     socialColor: t.socialColor,
+    socialOrder: [...t.socials],
+    bgTint: t.bgTint,
     layout: t.layout ?? "classic",
     threeD: !!t.threeD,
     threeDVariant: t.threeDVariant,

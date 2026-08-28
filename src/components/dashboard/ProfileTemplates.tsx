@@ -22,6 +22,8 @@ import {
 import { SmartlinkPublishDialog } from "./SmartlinkPublishDialog";
 import type { TemplateProfile } from "@/lib/smartlink-templates";
 import type { UserPlan } from "@/hooks/use-plan";
+import type { CardStyle } from "@/lib/template-card-style";
+import { TemplatePhoneCard } from "@/components/smartlink/TemplatePhoneCard";
 
 export type CustomBackground = { url: string; type: "image" | "video" } | null;
 
@@ -74,6 +76,9 @@ interface ProfileTemplatesProps {
     /** Optional background media applied together with the theme. */
     custom_background_url?: string | null;
     custom_background_type?: "image" | "video" | null;
+    animation_speed?: number;
+    animation_intensity?: number;
+    card_style?: CardStyle;
   }) => void;
 
   currentThemeName: string;
@@ -428,6 +433,9 @@ export function ProfileTemplates({
         custom_bg_color: null,
         custom_accent_color: null,
         animation_type: patch.animation_type,
+        animation_speed: patch.animation_speed,
+        animation_intensity: patch.animation_intensity,
+        card_style: patch.card_style,
 
         custom_background_url: patch.custom_background_url,
         custom_background_type: "image",
@@ -440,6 +448,9 @@ export function ProfileTemplates({
         custom_bg_color: null,
         custom_accent_color: null,
         animation_type: patch.animation_type,
+        animation_speed: patch.animation_speed,
+        animation_intensity: patch.animation_intensity,
+        card_style: patch.card_style,
         custom_background_url: patch.custom_background_url,
         custom_background_type: "image",
       } as any);
@@ -763,14 +774,10 @@ export function ProfileTemplates({
                   active ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/50"
                 }`}
               >
-                <div className="aspect-[9/16] w-full overflow-hidden bg-muted">
-                  <img
-                    src={t.bgImage}
-                    alt={`${t.name} SmartLink template`}
-                    loading="lazy"
-                    className={`w-full h-full object-cover transition-transform group-hover:scale-105 ${
-                      locked ? "blur-[1px] opacity-70" : ""
-                    }`}
+                <div className={`aspect-[9/16] w-full overflow-hidden bg-muted ${locked ? "opacity-70" : ""}`}>
+                  <TemplatePhoneCard
+                    template={t}
+                    className="!rounded-none !aspect-[9/16] w-full shadow-none ring-0 transition-transform group-hover:scale-[1.02]"
                   />
                 </div>
                 <span

@@ -31,7 +31,9 @@ import { SocialIcons } from "@/components/profile/SocialIcons";
 const AnalyticsCharts = lazy(() =>
   import("@/components/dashboard/AnalyticsCharts").then((m) => ({ default: m.AnalyticsCharts }))
 );
-import { AnimatedBackground } from "@/components/profile/AnimatedBackground";
+const ThreeDLayer = lazy(() =>
+  import("@/components/smartlink/ThreeDLayer").then((module) => ({ default: module.ThreeDLayer }))
+);
 import { ThemeCustomizer } from "@/components/dashboard/ThemeCustomizer";
 import { QRCodeGenerator } from "@/components/dashboard/QRCodeGenerator";
 import { ProfileShareCard } from "@/components/dashboard/ProfileShareCard";
@@ -60,6 +62,11 @@ import {
   type TemplateFieldKey, type TemplateFieldValues,
 } from "@/lib/template-fields";
 import { TemplateFieldsDialog } from "@/components/dashboard/TemplateFieldsDialog";
+import { TemplateDesignEditor } from "@/components/dashboard/TemplateDesignEditor";
+import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
+import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
+import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
+import { DeferredProfileMedia } from "@/components/profile/DeferredProfileMedia";
 
 interface Profile {
   id: string;
@@ -1181,7 +1188,14 @@ export default function Dashboard() {
                   <SocialLinksEditor
                     socialLinks={profile.social_links || {}}
                     onChange={(links) => setProfile({ ...profile, social_links: links })}
-                    onBlur={() => updateProfile({ social_links: profile.social_links })}
+                    onBlur={(socialLinks) => updateProfile({ social_links: socialLinks ?? profile.social_links })}
+                    order={parseCardStyle(profile.card_style).socialOrder}
+                    onOrderChange={(socialOrder) => updateProfile({ card_style: { ...parseCardStyle(profile.card_style), socialOrder } })}
+                  />
+
+                  <TemplateDesignEditor
+                    value={parseCardStyle(profile.card_style)}
+                    onChange={(cardStyle) => updateProfile({ card_style: cardStyle })}
                   />
 
                   {/* Theme Customizer */}
@@ -1366,37 +1380,23 @@ export default function Dashboard() {
 
                     {/* Custom background media — instant preview of uploads */}
                     {profile.custom_background_url && (
-                      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                        {profile.custom_background_type === "video" ? (
-                          <video
-                            key={profile.custom_background_url}
-                            src={profile.custom_background_url}
-                            autoPlay muted loop playsInline
-                            className="w-full h-full object-cover"
-                            ref={(el) => { if (el) el.playbackRate = profile.animation_speed || 1; }}
-                            onError={(e) => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
-                          />
-                        ) : (
-                          <img
-                            key={profile.custom_background_url}
-                            src={profile.custom_background_url}
-                            alt=""
-                            className="w-full h-full object-cover"
-                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                          />
-                        )}
-                        <div className="absolute inset-0 bg-black/35" />
-                      </div>
+                      <DeferredProfileMedia
+                        url={profile.custom_background_url}
+                        type={profile.custom_background_type}
+                        speed={profile.animation_speed || 1}
+                        motionEnabled={profile.motion_enabled !== false}
+                        tintClass={parseCardStyle(profile.card_style).bgTint}
+                      />
                     )}
 
                     {/* Animated bg — respects motion toggle */}
                     {profile.motion_enabled !== false && (
-                      <div className="absolute inset-0 overflow-hidden">
-                        <AnimatedBackground
-                          animationType={profile.animation_type}
-                          config={{ speed: profile.animation_speed || 1, intensity: profile.animation_intensity || 1 }}
-                        />
-                      </div>
+                      <LazyAnimatedBackground animationType={profile.animation_type} config={{ speed: profile.animation_speed || 1, intensity: profile.animation_intensity || 1 }} />
+                    )}
+                    {profile.motion_enabled !== false && parseCardStyle(profile.card_style).threeD && parseCardStyle(profile.card_style).threeDVariant && parseCardStyle(profile.card_style).threeDVariant !== "tilt" && (
+                      <Suspense fallback={null}>
+                        <ThreeDLayer variant={parseCardStyle(profile.card_style).threeDVariant ?? "tilt"} speed={profile.animation_speed || 1} />
+                      </Suspense>
                     )}
 
                     {/* Content - scrollable */}
@@ -1411,30 +1411,34 @@ export default function Dashboard() {
                             </span>
                           )}
                         </div>
-                        <h2 className="text-sm font-bold text-primary-foreground">{profile.title}</h2>
+                        <h2 className={`text-sm ${headingClassFor(parseCardStyle(profile.card_style))}`}>{profile.title}</h2>
                         {profile.bio && (
-                          <p className="text-primary-foreground/70 text-[11px] mt-1 px-2">{profile.bio}</p>
+                          <p className={`text-[11px] mt-1 px-2 ${bioClassFor(parseCardStyle(profile.card_style))}`}>{profile.bio}</p>
                         )}
-                        <SocialIcons socialLinks={profile.social_links || {}} />
+                        <SocialIcons socialLinks={profile.social_links || {}} className={parseCardStyle(profile.card_style).socialColor} order={parseCardStyle(profile.card_style).socialOrder} />
                       </div>
+                      {parseCardStyle(profile.card_style).layout === "social" && parseCardStyle(profile.card_style).stats && (
+                        <div className="relative z-10 mb-3 grid grid-cols-3 gap-1 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 p-2">
+                          {parseCardStyle(profile.card_style).stats?.map((item, index) => <div key={`${item.label}-${index}`} className="text-center"><div className={`text-[11px] font-bold ${headingClassFor(parseCardStyle(profile.card_style))}`}>{item.value}</div><div className={`text-[8px] uppercase ${bioClassFor(parseCardStyle(profile.card_style))}`}>{item.label}</div></div>)}
+                        </div>
+                      )}
+                      {parseCardStyle(profile.card_style).layout === "biodata" && parseCardStyle(profile.card_style).facts && (
+                        <div className="relative z-10 mb-3 divide-y divide-primary-foreground/15 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10">
+                          {parseCardStyle(profile.card_style).facts?.map((item, index) => <div key={`${item.label}-${index}`} className="flex justify-between gap-2 px-2 py-1.5"><span className={`text-[8px] uppercase ${bioClassFor(parseCardStyle(profile.card_style))}`}>{item.label}</span><span className={`text-[9px] text-right ${headingClassFor(parseCardStyle(profile.card_style))}`}>{item.value}</span></div>)}
+                        </div>
+                      )}
                       <div className="space-y-2 relative z-10">
-                        {links.filter(l => l.visible).map(link => {
+                        {links.filter(l => l.visible).map((link, index) => {
                           const t = detectLinkType(link.url || "", link.title);
                           const def = getLinkTypeDef(t);
                           const iconName = def.icon || (t === "website" ? "Globe" : "Link2");
                           const Ico = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[iconName] || LucideIcons.Link2;
                           return (
-                            <div key={link.id} className="flex items-center gap-2 py-2.5 px-3 rounded-xl bg-primary-foreground/20 backdrop-blur">
-                              {link.thumbnail_url ? (
+                            <ProfileLinkButton key={link.id} title={link.title || "Untitled Link"} url={link.url} motionStyle={link.motion} cardStyle={parseCardStyle(profile.card_style)} reducedMotion={profile.motion_enabled === false} index={index} onActivate={() => undefined} icon={link.thumbnail_url ? (
                                 <img src={link.thumbnail_url} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
                               ) : (
-                                <Ico className="w-4 h-4 text-primary-foreground shrink-0" />
-                              )}
-                              <span className="flex-1 text-primary-foreground font-medium text-center text-[11px]">
-                                {link.title || "Untitled Link"}
-                              </span>
-                              <div className="w-6" />
-                            </div>
+                                <Ico className="w-4 h-4 shrink-0" />
+                              )} />
                           );
                         })}
                       </div>

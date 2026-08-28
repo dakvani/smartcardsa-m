@@ -1,13 +1,14 @@
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 interface AvatarUploadProps {
   userId: string;
   currentAvatarUrl: string | null;
   username: string;
-  onUpload: (url: string) => void;
+  onUpload: (url: string | null) => void;
 }
 
 export function AvatarUpload({ userId, currentAvatarUrl, username, onUpload }: AvatarUploadProps) {
@@ -68,6 +69,15 @@ export function AvatarUpload({ userId, currentAvatarUrl, username, onUpload }: A
     }
   };
 
+  const removeAvatar = async () => {
+    if (currentAvatarUrl) {
+      const oldPath = currentAvatarUrl.split("/avatars/")[1];
+      if (oldPath) await supabase.storage.from("avatars").remove([oldPath]);
+    }
+    onUpload(null);
+    toast.success("Avatar removed");
+  };
+
   return (
     <div className="flex flex-col items-center gap-3">
       <div 
@@ -103,7 +113,10 @@ export function AvatarUpload({ userId, currentAvatarUrl, username, onUpload }: A
         className="hidden"
         disabled={uploading}
       />
-      <p className="text-xs text-muted-foreground">Click to upload avatar</p>
+      <div className="flex items-center gap-2">
+        <p className="text-xs text-muted-foreground">Click to upload avatar</p>
+        {currentAvatarUrl && <Button type="button" size="sm" variant="ghost" className="h-7 text-[11px] text-destructive" onClick={removeAvatar}><Trash2 className="h-3 w-3" /> Remove</Button>}
+      </div>
     </div>
   );
 }

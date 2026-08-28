@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
@@ -16,12 +16,17 @@ import { getBrandLogo } from "@/lib/brand-logos";
 
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
 import { ClaimSmartCardDialog } from "@/components/profile/ClaimSmartCardDialog";
+import { DeferredProfileMedia } from "@/components/profile/DeferredProfileMedia";
 import { parseUserAgent } from "@/lib/userAgentParser";
 import {
   ACCESSIBILITY_SCOPE_ATTR,
   applyAccessibilityPreferencesToScope,
   loadAccessibilityPreferences,
 } from "@/lib/accessibility";
+
+const ThreeDLayer = lazy(() =>
+  import("@/components/smartlink/ThreeDLayer").then((module) => ({ default: module.ThreeDLayer }))
+);
 
 interface SocialLinks {
   instagram?: string;
@@ -414,40 +419,24 @@ export default function PublicProfile() {
             style={bgStyle}
           >
             {profile.custom_background_url && (
-              <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                {profile.custom_background_type === "video" ? (
-                  <video
-                    src={profile.custom_background_url}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-full object-cover"
-                    ref={(el) => { if (el) el.playbackRate = profile.animation_speed || 1; }}
-                    onError={(e) => {
-                      // Hide broken video — theme gradient stays visible underneath
-                      (e.currentTarget as HTMLVideoElement).style.display = "none";
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={profile.custom_background_url}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      // Hide broken image — fall back to theme gradient
-                      (e.currentTarget as HTMLImageElement).style.display = "none";
-                    }}
-                  />
-                )}
-                <div className="absolute inset-0 bg-black/35" />
-              </div>
+              <DeferredProfileMedia
+                url={profile.custom_background_url}
+                type={profile.custom_background_type}
+                speed={profile.animation_speed || 1}
+                motionEnabled={profile.motion_enabled !== false}
+                tintClass={cardStyle.bgTint}
+              />
             )}
             {profile.motion_enabled !== false && (
               <LazyAnimatedBackground
                 animationType={profile.animation_type}
                 config={{ speed: profile.animation_speed || 1, intensity: profile.animation_intensity || 1 }}
               />
+            )}
+            {profile.motion_enabled !== false && cardStyle.threeD && cardStyle.threeDVariant && cardStyle.threeDVariant !== "tilt" && (
+              <Suspense fallback={null}>
+                <ThreeDLayer variant={cardStyle.threeDVariant} speed={profile.animation_speed || 1} />
+              </Suspense>
             )}
 
 
@@ -466,12 +455,34 @@ export default function PublicProfile() {
                     </span>
                   )}
                 </div>
-                <h1 className={`text-xl sm:text-2xl leading-tight text-primary-foreground ${headingClassFor(cardStyle)}`}>{profile.title}</h1>
+                <h1 className={`text-xl sm:text-2xl leading-tight ${headingClassFor(cardStyle)}`}>{profile.title}</h1>
                 {profile.bio && (
-                  <p className="text-sm text-primary-foreground/70 mt-1.5 max-w-xs mx-auto leading-snug">{profile.bio}</p>
+                  <p className={`text-sm mt-1.5 max-w-xs mx-auto leading-snug ${bioClassFor(cardStyle)}`}>{profile.bio}</p>
                 )}
-                <SocialIcons socialLinks={profile.social_links || {}} />
+                <SocialIcons socialLinks={profile.social_links || {}} className={cardStyle.socialColor} order={cardStyle.socialOrder} />
               </motion.div>
+
+              {cardStyle.layout === "social" && cardStyle.stats && cardStyle.stats.length > 0 && (
+                <div className="mb-4 grid grid-cols-3 gap-1 rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 px-2 py-2 backdrop-blur">
+                  {cardStyle.stats.map((stat, index) => (
+                    <div key={`${stat.label}-${index}`} className="text-center">
+                      <div className={`text-sm font-bold ${headingClassFor(cardStyle)}`}>{stat.value}</div>
+                      <div className={`text-[9px] uppercase ${bioClassFor(cardStyle)}`}>{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {cardStyle.layout === "biodata" && cardStyle.facts && cardStyle.facts.length > 0 && (
+                <div className="mb-4 divide-y divide-primary-foreground/15 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 backdrop-blur">
+                  {cardStyle.facts.map((fact, index) => (
+                    <div key={`${fact.label}-${index}`} className="flex items-center justify-between gap-3 px-3 py-2">
+                      <span className={`text-[10px] uppercase ${bioClassFor(cardStyle)}`}>{fact.label}</span>
+                      <span className={`text-xs text-right ${headingClassFor(cardStyle)}`}>{fact.value}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="space-y-2.5">
                 {links.filter((l) => l.is_featured).length > 0 && (

@@ -1,7 +1,7 @@
+import { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { Phone, MessageCircle, Mail, MapPin, CalendarCheck, ShoppingBag, ArrowUpRight } from "lucide-react";
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
-import { ThreeDLayer } from "@/components/smartlink/ThreeDLayer";
 import {
   iconMap,
   shapeClassFor,
@@ -11,6 +11,10 @@ import {
   type TemplateLinkAction,
   type TemplateProfile,
 } from "@/lib/smartlink-templates";
+
+const ThreeDLayer = lazy(() =>
+  import("@/components/smartlink/ThreeDLayer").then((module) => ({ default: module.ThreeDLayer }))
+);
 
 export interface TemplatePhoneCardProps {
   template: TemplateProfile;
@@ -103,7 +107,9 @@ export function TemplatePhoneCard({
         <LazyAnimatedBackground animationType={t.animation} config={animConfig} />
       )}
       {t.threeD && t.threeDVariant && t.threeDVariant !== "tilt" && (
-        <ThreeDLayer variant={t.threeDVariant} speed={animConfig.speed} />
+        <Suspense fallback={null}>
+          <ThreeDLayer variant={t.threeDVariant} speed={animConfig.speed} />
+        </Suspense>
       )}
 
       <div

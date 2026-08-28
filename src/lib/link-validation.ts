@@ -45,7 +45,17 @@ export function validateSocialHandle(
   const value = (raw || "").trim();
   if (!value) return { valid: true };
 
-  if (platform === "website") return validateUrl(value);
+  if (platform === "website" || platform === "spotify") return validateUrl(value);
+  if (platform === "email") {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.replace(/^mailto:/i, ""))
+      ? { valid: true }
+      : { valid: false, message: "Enter a valid email address" };
+  }
+  if (platform === "whatsapp") {
+    return /^\+?[\d\s().-]{7,}$/.test(value) || /^https?:\/\/(wa\.me|api\.whatsapp\.com)\//i.test(value)
+      ? { valid: true }
+      : { valid: false, message: "Enter a valid WhatsApp number" };
+  }
 
   // Allow users to paste a full profile URL — extract the handle portion.
   let handle = value;
