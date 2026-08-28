@@ -3,6 +3,7 @@ import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { ChevronsRight } from "lucide-react";
 import { linkMotionProps, normalizeMotion, slideActionLabel } from "@/lib/link-motion";
 import { buttonClassFor, type CardStyle } from "@/lib/template-card-style";
+import { linkStyleCss, parseLinkStyle, type LinkStyle } from "@/lib/link-style";
 
 interface Props {
   title: string;
@@ -10,12 +11,15 @@ interface Props {
   motionStyle?: string | null;
   featured?: boolean;
   cardStyle?: CardStyle;
+  /** Per-button colour / shadow overrides (links.style). */
+  linkStyle?: LinkStyle | unknown;
   /** Disable movement (reduced motion / profile setting). */
   reducedMotion?: boolean;
   icon?: React.ReactNode;
   index?: number;
   onActivate: () => void;
 }
+
 
 /**
  * A public-profile link button. Renders the template's element design
@@ -29,6 +33,7 @@ export function ProfileLinkButton({
   motionStyle,
   featured = false,
   cardStyle = {},
+  linkStyle,
   reducedMotion = false,
   icon,
   index = 0,
@@ -37,6 +42,7 @@ export function ProfileLinkButton({
   const style = normalizeMotion(motionStyle);
   const cls = buttonClassFor(cardStyle, featured);
   const pad = featured ? "py-3.5 px-5" : "py-3 px-5";
+  const css = linkStyleCss(parseLinkStyle(linkStyle));
 
   if (style === "slide-action") {
     return (
@@ -44,6 +50,7 @@ export function ProfileLinkButton({
         label={slideActionLabel(url, title)}
         title={title}
         className={`${cls} ${pad}`}
+        css={css}
         icon={icon}
         onActivate={onActivate}
       />
@@ -58,6 +65,7 @@ export function ProfileLinkButton({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
       onClick={onActivate}
+      style={css}
       className={`w-full flex items-center gap-3 ${pad} ${cls} hover:brightness-110 active:scale-[0.98] transition-all ${featured ? "shadow-lg" : ""}`}
     >
       <motion.span className="contents" {...(move ?? {})}>
@@ -73,17 +81,20 @@ export function ProfileLinkButton({
   );
 }
 
+
 /** Drag the handle to the right to trigger the link (slide to call/chat/open). */
 function SlideToAction({
   label,
   title,
   className,
+  css,
   icon,
   onActivate,
 }: {
   label: string;
   title: string;
   className: string;
+  css?: React.CSSProperties;
   icon?: React.ReactNode;
   onActivate: () => void;
 }) {
@@ -105,7 +116,9 @@ function SlideToAction({
   return (
     <div
       ref={trackRef}
+      style={css}
       className={`relative w-full overflow-hidden select-none ${className}`}
+
       role="button"
       tabIndex={0}
       aria-label={`${title} — ${label}`}

@@ -72,6 +72,7 @@ interface LinkItem {
   group_id: string | null;
   is_featured: boolean;
   motion?: string | null;
+  style?: unknown;
 }
 
 interface LinkGroup {
@@ -502,6 +503,7 @@ export default function PublicProfile() {
                         title={link.title}
                         url={link.url}
                         motionStyle={link.motion}
+                        linkStyle={link.style}
                         featured
                         cardStyle={cardStyle}
                         reducedMotion={reduceLinkMotion}
@@ -527,6 +529,7 @@ export default function PublicProfile() {
                         title={link.title}
                         url={link.url}
                         motionStyle={link.motion}
+                        linkStyle={link.style}
                         cardStyle={cardStyle}
                         reducedMotion={reduceLinkMotion}
                         index={index}
@@ -561,6 +564,7 @@ export default function PublicProfile() {
                             title={link.title}
                             url={link.url}
                             motionStyle={link.motion}
+                        linkStyle={link.style}
                             cardStyle={cardStyle}
                             reducedMotion={reduceLinkMotion}
                             index={index}

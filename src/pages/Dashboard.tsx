@@ -105,6 +105,7 @@ interface LinkItem {
   group_id: string | null;
   is_featured: boolean;
   motion?: string | null;
+  style?: unknown;
 }
 
 const tabs = [
@@ -133,10 +134,12 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState(initialTab);
   /** Sub-sections of the Appearance tab, split so each editor gets its own space. */
   const APPEARANCE_TAB_KEY = "smartcard:appearanceTab";
-  const [appearanceTab, setAppearanceTab] = useState<"profile" | "theme" | "buttons" | "templates">(() => {
+  const [appearanceTab, setAppearanceTab] = useState<"profile" | "buttons" | "templates">(() => {
     try {
       const stored = localStorage.getItem(APPEARANCE_TAB_KEY);
-      if (stored === "profile" || stored === "theme" || stored === "buttons" || stored === "templates") return stored;
+      // "theme" merged into the Templates tab
+      if (stored === "theme") return "templates";
+      if (stored === "profile" || stored === "buttons" || stored === "templates") return stored;
     } catch { /* storage unavailable */ }
     return "profile";
   });
@@ -737,7 +740,7 @@ export default function Dashboard() {
   const updateLink = async (id: string, updates: Partial<LinkItem>) => {
     const { error } = await supabase
       .from("links")
-      .update(updates)
+      .update(updates as never)
       .eq("id", id);
 
     if (error) {
@@ -790,7 +793,7 @@ export default function Dashboard() {
   const updateGroup = async (id: string, updates: Partial<LinkGroup>) => {
     const { error } = await supabase
       .from("link_groups")
-      .update(updates)
+      .update(updates as never)
       .eq("id", id);
 
     if (error) {
@@ -1261,9 +1264,8 @@ export default function Dashboard() {
                   <div className="sticky -top-3 sm:-top-4 z-20 -mx-3 sm:-mx-4 -mt-3 sm:-mt-4 px-3 sm:px-4 pt-3 sm:pt-4 pb-2 bg-background/85 backdrop-blur-md border-b border-border flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
                     {([
                       { id: "profile", label: "Profile & socials" },
-                      { id: "theme", label: "Colors & animation" },
                       { id: "buttons", label: "Buttons & style" },
-                      { id: "templates", label: "Templates" },
+                      { id: "templates", label: "Templates & theme" },
                     ] as const).map((s) => (
                       <button
                         key={s.id}
@@ -1332,7 +1334,7 @@ export default function Dashboard() {
                   <TemplateDesignEditor
                     value={parseCardStyle(profile.card_style)}
                     onChange={(cardStyle) => updateProfile({ card_style: cardStyle })}
-                    buttons={links.map((l) => ({ id: l.id, title: l.title, url: l.url }))}
+                    buttons={links.map((l) => ({ id: l.id, title: l.title, url: l.url, motion: l.motion, style: l.style }))}
                     onAddButton={() => addLink("custom")}
                     onUpdateButton={(id, patch) => updateLink(id, patch)}
                     onDeleteButton={(id) => deleteLink(id)}
@@ -1340,8 +1342,12 @@ export default function Dashboard() {
                   />
                   )}
 
-                  {appearanceTab === "theme" && (
+                  {appearanceTab === "templates" && (
                   <div className="space-y-4 sm:space-y-6">
+                  <div>
+                    <h3 className="text-sm font-semibold">Theme colors &amp; animation</h3>
+                    <p className="text-[11px] text-muted-foreground">Applies on top of the template you pick below.</p>
+                  </div>
                   {/* Theme Customizer */}
                   <ThemeCustomizer
                     themeName={profile.theme_name}
@@ -1591,7 +1597,7 @@ export default function Dashboard() {
                           const iconName = def.icon || (t === "website" ? "Globe" : "Link2");
                           const Ico = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[iconName] || LucideIcons.Link2;
                           return (
-                            <ProfileLinkButton key={link.id} title={link.title || "Untitled Link"} url={link.url} motionStyle={link.motion} cardStyle={parseCardStyle(profile.card_style)} reducedMotion={profile.motion_enabled === false} index={index} onActivate={() => undefined} icon={link.thumbnail_url ? (
+                            <ProfileLinkButton key={link.id} title={link.title || "Untitled Link"} url={link.url} motionStyle={link.motion} linkStyle={link.style} cardStyle={parseCardStyle(profile.card_style)} reducedMotion={profile.motion_enabled === false} index={index} onActivate={() => undefined} icon={link.thumbnail_url ? (
                                 <img src={link.thumbnail_url} alt="" className="w-6 h-6 rounded-md object-cover flex-shrink-0" />
                               ) : (
                                 <Ico className="w-4 h-4 shrink-0" />
