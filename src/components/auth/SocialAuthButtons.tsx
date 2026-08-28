@@ -60,7 +60,7 @@ export function SocialAuthButtons() {
         return;
       }
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: `${window.location.origin}${loginReturnPath()}`,
+        redirect_uri: `${window.location.origin}/login`,
       });
 
       if (result.error) {
@@ -85,7 +85,7 @@ export function SocialAuthButtons() {
         return;
       }
       const result = await lovable.auth.signInWithOAuth("apple", {
-        redirect_uri: `${window.location.origin}${loginReturnPath()}`,
+        redirect_uri: `${window.location.origin}/login`,
       });
 
       if (result.error) {
@@ -110,7 +110,7 @@ export function SocialAuthButtons() {
         return;
       }
       const result = await lovable.auth.signInWithOAuth("microsoft", {
-        redirect_uri: `${window.location.origin}${loginReturnPath()}`,
+        redirect_uri: `${window.location.origin}/login`,
       });
 
       if (result.error) {
