@@ -983,8 +983,8 @@ export default function Dashboard() {
           </aside>
 
           {/* Middle: Edit / Builder Panel — only this column scrolls on desktop */}
-          <div className="flex-1 min-w-0 lg:h-full lg:min-h-0">
-            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 shadow-sm overflow-hidden lg:h-full lg:flex lg:flex-col lg:min-h-0">
+          <div className="flex-1 min-w-0">
+            <div className="bg-background/60 backdrop-blur-sm rounded-xl border border-border/60 shadow-sm overflow-hidden">
 
               {/* Panel Header */}
               <div className="flex items-center justify-between px-3 sm:px-6 py-4 border-b border-border/60 bg-secondary/30 gap-4 lg:shrink-0">
