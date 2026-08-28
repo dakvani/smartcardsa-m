@@ -375,6 +375,8 @@ export function ProfileTemplates({
         setSnapshot(readThemeSnapshot(userId));
       }
       const patch = smartlinkTemplateToProfilePatch(t);
+      // Theme + background must go out in ONE update: the dashboard debounces a
+      // full-profile save, so a separate background write would be overwritten.
       onApply({
         theme_name: patch.theme_name,
         theme_gradient: patch.theme_gradient,
@@ -382,12 +384,21 @@ export function ProfileTemplates({
         custom_bg_color: null,
         custom_accent_color: null,
         animation_type: null,
-      });
-      setCustomMedia({ url: patch.custom_background_url, type: "image" });
-      await persist({
         custom_background_url: patch.custom_background_url,
         custom_background_type: "image",
       });
+      setCustomMedia({ url: patch.custom_background_url, type: "image" });
+      await persist({
+        theme_name: patch.theme_name,
+        theme_gradient: patch.theme_gradient,
+        gradient_direction: patch.gradient_direction,
+        custom_bg_color: null,
+        custom_accent_color: null,
+        animation_type: null,
+        custom_background_url: patch.custom_background_url,
+        custom_background_type: "image",
+      } as any);
+
       setPreviewTemplate(null);
       toast.success(`Published "${t.name}" — you can revert to your previous look`);
     } finally {
