@@ -31,7 +31,6 @@ import { SocialIcons } from "@/components/profile/SocialIcons";
 const AnalyticsCharts = lazy(() =>
   import("@/components/dashboard/AnalyticsCharts").then((m) => ({ default: m.AnalyticsCharts }))
 );
-import { AnimatedBackground } from "@/components/profile/AnimatedBackground";
 import { ThemeCustomizer } from "@/components/dashboard/ThemeCustomizer";
 import { QRCodeGenerator } from "@/components/dashboard/QRCodeGenerator";
 import { ProfileShareCard } from "@/components/dashboard/ProfileShareCard";
@@ -64,6 +63,7 @@ import { TemplateDesignEditor } from "@/components/dashboard/TemplateDesignEdito
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
+import { DeferredProfileMedia } from "@/components/profile/DeferredProfileMedia";
 
 interface Profile {
   id: string;
@@ -1375,27 +1375,13 @@ export default function Dashboard() {
 
                     {/* Custom background media — instant preview of uploads */}
                     {profile.custom_background_url && (
-                      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                        {profile.custom_background_type === "video" ? (
-                          <video
-                            key={profile.custom_background_url}
-                            src={profile.custom_background_url}
-                            autoPlay muted loop playsInline
-                            className="w-full h-full object-cover"
-                            ref={(el) => { if (el) el.playbackRate = profile.animation_speed || 1; }}
-                            onError={(e) => { (e.currentTarget as HTMLVideoElement).style.display = "none"; }}
-                          />
-                        ) : (
-                          <img
-                            key={profile.custom_background_url}
-                            src={profile.custom_background_url}
-                            alt=""
-                            className="w-full h-full object-cover"
-                            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                          />
-                        )}
-                        <div className="absolute inset-0 bg-black/35" />
-                      </div>
+                      <DeferredProfileMedia
+                        url={profile.custom_background_url}
+                        type={profile.custom_background_type}
+                        speed={profile.animation_speed || 1}
+                        motionEnabled={profile.motion_enabled !== false}
+                        tintClass={parseCardStyle(profile.card_style).bgTint}
+                      />
                     )}
 
                     {/* Animated bg — respects motion toggle */}

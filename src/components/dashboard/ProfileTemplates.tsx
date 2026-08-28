@@ -23,6 +23,7 @@ import { SmartlinkPublishDialog } from "./SmartlinkPublishDialog";
 import type { TemplateProfile } from "@/lib/smartlink-templates";
 import type { UserPlan } from "@/hooks/use-plan";
 import type { CardStyle } from "@/lib/template-card-style";
+import { TemplatePhoneCard } from "@/components/smartlink/TemplatePhoneCard";
 
 export type CustomBackground = { url: string; type: "image" | "video" } | null;
 

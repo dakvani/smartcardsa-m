@@ -17,6 +17,7 @@ import { getBrandLogo } from "@/lib/brand-logos";
 
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
 import { ClaimSmartCardDialog } from "@/components/profile/ClaimSmartCardDialog";
+import { DeferredProfileMedia } from "@/components/profile/DeferredProfileMedia";
 import { parseUserAgent } from "@/lib/userAgentParser";
 import {
   ACCESSIBILITY_SCOPE_ATTR,
@@ -415,34 +416,13 @@ export default function PublicProfile() {
             style={bgStyle}
           >
             {profile.custom_background_url && (
-              <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                {profile.custom_background_type === "video" ? (
-                  <video
-                    src={profile.custom_background_url}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="w-full h-full object-cover"
-                    ref={(el) => { if (el) el.playbackRate = profile.animation_speed || 1; }}
-                    onError={(e) => {
-                      // Hide broken video — theme gradient stays visible underneath
-                      (e.currentTarget as HTMLVideoElement).style.display = "none";
-                    }}
-                  />
-                ) : (
-                  <img
-                    src={profile.custom_background_url}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      // Hide broken image — fall back to theme gradient
-                      (e.currentTarget as HTMLImageElement).style.display = "none";
-                    }}
-                  />
-                )}
-                <div className="absolute inset-0 bg-black/35" />
-              </div>
+              <DeferredProfileMedia
+                url={profile.custom_background_url}
+                type={profile.custom_background_type}
+                speed={profile.animation_speed || 1}
+                motionEnabled={profile.motion_enabled !== false}
+                tintClass={cardStyle.bgTint}
+              />
             )}
             {profile.motion_enabled !== false && (
               <LazyAnimatedBackground

@@ -76,6 +76,40 @@ export function TemplateDesignEditor({ value = {}, onChange }: Props) {
           </Select>
         </div>
       </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label className="text-xs">Button style</Label>
+          <Select value={value.buttonBg ?? "bg-white text-neutral-900"} onValueChange={(buttonBg) => update({ buttonBg })}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="bg-white text-neutral-900">Light solid</SelectItem>
+              <SelectItem value="bg-neutral-900 text-white">Dark solid</SelectItem>
+              <SelectItem value="bg-white/20 text-white backdrop-blur border border-white/40">Glass</SelectItem>
+              <SelectItem value="bg-transparent text-white border border-white/70">Light outline</SelectItem>
+              <SelectItem value="bg-transparent text-emerald-200 border border-emerald-300/60">Accent outline</SelectItem>
+              <SelectItem value="bg-amber-100 text-neutral-900">Warm</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label className="text-xs">3D decoration</Label>
+          <Select
+            value={value.threeD ? value.threeDVariant ?? "tilt" : "none"}
+            onValueChange={(variant) => update({ threeD: variant !== "none", threeDVariant: variant === "none" ? undefined : variant as CardStyle["threeDVariant"] })}
+          >
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">None</SelectItem>
+              <SelectItem value="tilt">Tilt</SelectItem>
+              <SelectItem value="cube">Cube</SelectItem>
+              <SelectItem value="orbit">Orbit</SelectItem>
+              <SelectItem value="prism">Prism</SelectItem>
+              <SelectItem value="rings">Rings</SelectItem>
+              <SelectItem value="carousel">Carousel</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
       {detailKey && (
         <div className="space-y-2 border-t border-border/60 pt-3">
