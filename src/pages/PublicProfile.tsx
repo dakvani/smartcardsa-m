@@ -562,7 +562,8 @@ export default function PublicProfile() {
                       transition={{ delay: 0.2 + groupIndex * 0.1 }}
                     >
                       <p className="text-primary-foreground/60 text-sm font-medium mb-3 text-center">{group.name}</p>
-                      <div className="space-y-3">
+                      <div className={L.links}>
+
                         {groupLinks.map((link, index) => (
                           <ProfileLinkButton
                             key={link.id}
