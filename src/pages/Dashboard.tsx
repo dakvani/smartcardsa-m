@@ -277,10 +277,24 @@ export default function Dashboard() {
           })
           .select()
           .single();
-        if (createError) throw createError;
-        profileData = newProfile;
+        if (createError) {
+          // Username collision (or a race with another tab): fall back to the
+          // shared helper which retries with a unique handle.
+          const ok = await ensureProfile(userId);
+          if (!ok) throw createError;
+          const { data: retried, error: retryError } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("user_id", userId)
+            .maybeSingle();
+          if (retryError || !retried) throw createError;
+          profileData = retried;
+        } else {
+          profileData = newProfile;
+        }
         trackOnboarding("onboarding_started", { isNewUser: true, provider, prefill });
       }
+
 
       if (profileData) {
         setProfile({
