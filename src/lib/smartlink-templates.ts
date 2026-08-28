@@ -46,6 +46,28 @@ export type FontFamily = (typeof FONT_FAMILIES)[number];
 export const TEXT_TONE = ["light", "dark"] as const;
 export type TextTone = (typeof TEXT_TONE)[number];
 
+/** Kind of action a template button performs (drives icon + default URL). */
+export const LINK_ACTIONS = ["link", "call", "whatsapp", "email", "map", "booking", "shop"] as const;
+export type TemplateLinkAction = (typeof LINK_ACTIONS)[number];
+
+/** A template button: plain label, or a label with a real actionable URL. */
+export type TemplateLink =
+  | string
+  | { label: string; url?: string; action?: TemplateLinkAction };
+
+export const linkLabel = (l: TemplateLink): string => (typeof l === "string" ? l : l.label);
+export const linkUrl = (l: TemplateLink): string => (typeof l === "string" ? "" : l.url ?? "");
+export const linkAction = (l: TemplateLink): TemplateLinkAction =>
+  typeof l === "string" ? "link" : l.action ?? "link";
+
+/** Visual pattern of the card body. */
+export const TEMPLATE_LAYOUTS = ["classic", "social", "biodata"] as const;
+export type TemplateLayout = (typeof TEMPLATE_LAYOUTS)[number];
+
+/** Style of the decorative 3D element rendered over the background. */
+export const THREE_D_VARIANTS = ["tilt", "cube", "orbit", "prism", "rings", "carousel"] as const;
+export type ThreeDVariant = (typeof THREE_D_VARIANTS)[number];
+
 export type TemplateProfile = {
   name: string;
   username: string;
@@ -62,8 +84,14 @@ export type TemplateProfile = {
   buttonShape: ButtonShape;
   buttonBg: string;
   socialColor: string;
-  links: string[];
+  links: TemplateLink[];
   socials: SocialIcon[];
+  /** Card body pattern: classic link list, social profile, or biodata sheet. */
+  layout?: TemplateLayout;
+  /** Extra facts rendered by the biodata layout. */
+  facts?: { label: string; value: string }[];
+  /** Follower-style stats rendered by the social layout. */
+  stats?: { label: string; value: string }[];
   /**
    * Optional animated background layer (matches AnimatedBackground types:
    * aurora, matrix, sparkle, bokeh, particles, orbs, neon, snow, bubbles…).
@@ -73,7 +101,10 @@ export type TemplateProfile = {
   animationIntensity?: number;
   /** Enables the 3D depth/parallax treatment on the phone card. */
   threeD?: boolean;
+  /** Which 3D object to float over the card (defaults to a simple tilt). */
+  threeDVariant?: ThreeDVariant;
 };
+
 
 
 export const iconMap: Record<SocialIcon, LucideIcon> = {
