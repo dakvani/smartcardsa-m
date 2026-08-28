@@ -1215,7 +1215,13 @@ export default function Dashboard() {
                   <TemplateDesignEditor
                     value={parseCardStyle(profile.card_style)}
                     onChange={(cardStyle) => updateProfile({ card_style: cardStyle })}
+                    buttons={links.map((l) => ({ id: l.id, title: l.title, url: l.url }))}
+                    onAddButton={() => addLink("custom")}
+                    onUpdateButton={(id, patch) => updateLink(id, patch)}
+                    onDeleteButton={(id) => deleteLink(id)}
+                    onMoveButton={(id, direction) => moveLink(id, direction)}
                   />
+
 
                   {/* Theme Customizer */}
                   <ThemeCustomizer
