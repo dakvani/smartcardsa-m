@@ -6,6 +6,16 @@ import { supabase } from "@/integrations/supabase/client";
  * - Everyone else → /dashboard
  * Marketing landing (/) stays public for signed-out visitors.
  */
+function requestedNext(): string | null {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next") || params.get("returnTo");
+    // Only allow same-origin relative paths.
+    if (next && next.startsWith("/") && !next.startsWith("//")) return next;
+  } catch { /* noop */ }
+  return null;
+}
+
 export async function getPostLoginRedirect(userId: string): Promise<string> {
   try {
     const { data } = await supabase
