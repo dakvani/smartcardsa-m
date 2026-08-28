@@ -12,6 +12,7 @@ import { EmailSignup } from "@/components/profile/EmailSignup";
 import { SaveContactButton } from "@/components/profile/SaveContactButton";
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
+import { layoutClasses } from "@/lib/template-layout";
 import { getBrandLogo } from "@/lib/brand-logos";
 
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
@@ -336,6 +337,7 @@ export default function PublicProfile() {
   // Auto-icon for every link based on the detected type. Custom/website links
   // fall back to a generic icon so every button has a visual anchor.
   const cardStyle = parseCardStyle(profile?.card_style);
+  const L = layoutClasses(cardStyle.layout, "full");
   const reduceLinkMotion = profile?.motion_enabled === false;
 
   const renderAutoIcon = (url: string, size = "w-5 h-5", title?: string) => {
