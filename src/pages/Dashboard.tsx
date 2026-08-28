@@ -146,6 +146,10 @@ export default function Dashboard() {
     try { localStorage.setItem(APPEARANCE_TAB_KEY, appearanceTab); } catch { /* storage unavailable */ }
   }, [appearanceTab]);
 
+
+
+  const [loading, setLoading] = useState(true);
+
   /** Preview fit mode: "contain" locks the builder to the phone aspect ratio, "full" fills the viewport. */
   const PREVIEW_FIT_KEY = "smartcard:previewFit";
   const [previewFit, setPreviewFit] = useState<"contain" | "full">(() => {
@@ -182,7 +186,7 @@ export default function Dashboard() {
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [isDesktop, previewFit]);
+  }, [isDesktop, previewFit, loading]);
 
   const builderStyle = isDesktop
     ? previewFit === "full"
@@ -209,10 +213,7 @@ export default function Dashboard() {
       cancelAnimationFrame(raf);
       el.removeEventListener("scroll", onScroll);
     };
-  }, [activeTab]);
-
-
-  const [loading, setLoading] = useState(true);
+  }, [activeTab, loading]);
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
   const [onboarding, setOnboarding] = useState<{ open: boolean; prefill: OnboardingPrefill | null; saving: boolean }>({ open: false, prefill: null, saving: false });
