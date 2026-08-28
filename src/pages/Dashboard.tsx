@@ -1445,7 +1445,7 @@ export default function Dashboard() {
 
                   {/* Screen */}
                   <div
-                    className={`relative rounded-[2.25rem] overflow-hidden aspect-[9/19.5] lg:aspect-auto lg:h-full ${!previewStyle ? `bg-gradient-${profile.gradient_direction || 'to-b'} ${previewGradient}` : ''}`}
+                    className={`relative rounded-[2.25rem] overflow-hidden h-full ${!previewStyle ? `bg-gradient-${profile.gradient_direction || 'to-b'} ${previewGradient}` : ''}`}
                     style={previewStyle}
                   >
                     {/* Status bar */}
