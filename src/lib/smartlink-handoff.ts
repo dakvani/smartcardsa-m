@@ -135,6 +135,12 @@ const FREE_TEMPLATES = new Set<string>([
   "sara.designs",
   "omar.dev",
   "hana.tutor",
+  "dana.atelier",
+  "mira.daily",
+  "adam.learns",
+  "lina.bakes",
+  "rania.moves",
+
 ]);
 
 export const smartlinkTemplateTier = (t: TemplateProfile): TemplateTier =>
