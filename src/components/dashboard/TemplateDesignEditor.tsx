@@ -157,28 +157,17 @@ export function TemplateDesignEditor({
             <p className="text-[11px] text-muted-foreground">No buttons yet — add your first one.</p>
           )}
           {buttons.map((b, index) => (
-            <div key={b.id} className="grid grid-cols-[1fr_1fr_auto] items-center gap-1.5">
-              <Input
-                className="h-8 text-xs"
-                value={b.title}
-                placeholder="Label"
-                aria-label={`Button label ${index + 1}`}
-                onChange={(e) => onUpdateButton?.(b.id, { title: e.target.value })}
-              />
-              <Input
-                className="h-8 text-xs"
-                value={b.url}
-                placeholder="https://…"
-                aria-label={`Button URL ${index + 1}`}
-                onChange={(e) => onUpdateButton?.(b.id, { url: e.target.value })}
-              />
-              <div className="flex">
-                <Button type="button" size="icon" variant="ghost" className="h-7 w-7" disabled={index === 0} onClick={() => onMoveButton?.(b.id, -1)} aria-label="Move button up"><ArrowUp className="h-3 w-3" /></Button>
-                <Button type="button" size="icon" variant="ghost" className="h-7 w-7" disabled={index === buttons.length - 1} onClick={() => onMoveButton?.(b.id, 1)} aria-label="Move button down"><ArrowDown className="h-3 w-3" /></Button>
-                <Button type="button" size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => onDeleteButton?.(b.id)} aria-label="Delete button"><Trash2 className="h-3 w-3" /></Button>
-              </div>
-            </div>
+            <ButtonRow
+              key={b.id}
+              button={b}
+              index={index}
+              total={buttons.length}
+              onUpdate={onUpdateButton}
+              onDelete={onDeleteButton}
+              onMove={onMoveButton}
+            />
           ))}
+
         </div>
       )}
 
