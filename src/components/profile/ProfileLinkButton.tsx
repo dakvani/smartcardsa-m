@@ -33,6 +33,7 @@ export function ProfileLinkButton({
   motionStyle,
   featured = false,
   cardStyle = {},
+  linkStyle,
   reducedMotion = false,
   icon,
   index = 0,
@@ -41,6 +42,7 @@ export function ProfileLinkButton({
   const style = normalizeMotion(motionStyle);
   const cls = buttonClassFor(cardStyle, featured);
   const pad = featured ? "py-3.5 px-5" : "py-3 px-5";
+  const css = linkStyleCss(parseLinkStyle(linkStyle));
 
   if (style === "slide-action") {
     return (
@@ -48,6 +50,7 @@ export function ProfileLinkButton({
         label={slideActionLabel(url, title)}
         title={title}
         className={`${cls} ${pad}`}
+        css={css}
         icon={icon}
         onActivate={onActivate}
       />
@@ -62,6 +65,7 @@ export function ProfileLinkButton({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
       onClick={onActivate}
+      style={css}
       className={`w-full flex items-center gap-3 ${pad} ${cls} hover:brightness-110 active:scale-[0.98] transition-all ${featured ? "shadow-lg" : ""}`}
     >
       <motion.span className="contents" {...(move ?? {})}>
@@ -76,6 +80,7 @@ export function ProfileLinkButton({
     </motion.button>
   );
 }
+
 
 /** Drag the handle to the right to trigger the link (slide to call/chat/open). */
 function SlideToAction({
