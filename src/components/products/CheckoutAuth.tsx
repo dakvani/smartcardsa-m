@@ -23,6 +23,8 @@ export function CheckoutAuth({ onAuthSuccess }: CheckoutAuthProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [microsoftLoading, setMicrosoftLoading] = useState(false);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,22 +80,51 @@ export function CheckoutAuth({ onAuthSuccess }: CheckoutAuthProps) {
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/nfc-products`,
-        },
+      if (!navigator.onLine) {
+        toast.error("You appear to be offline. Please check your connection.");
+        return;
+      }
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}/nfc-products`,
       });
 
-      if (error) {
-        toast.error(error.message);
+      if (result.error) {
+        toast.error(result.error.message || "Failed to sign in with Google");
+        return;
       }
+      if (result.redirected) return;
+      onAuthSuccess();
     } catch (error: any) {
       toast.error("Failed to sign in with Google");
     } finally {
       setGoogleLoading(false);
     }
   };
+
+  const handleMicrosoftLogin = async () => {
+    setMicrosoftLoading(true);
+    try {
+      if (!navigator.onLine) {
+        toast.error("You appear to be offline. Please check your connection.");
+        return;
+      }
+      const result = await lovable.auth.signInWithOAuth("microsoft", {
+        redirect_uri: `${window.location.origin}/nfc-products`,
+      });
+
+      if (result.error) {
+        toast.error(result.error.message || "Failed to sign in with Microsoft");
+        return;
+      }
+      if (result.redirected) return;
+      onAuthSuccess();
+    } catch (error: any) {
+      toast.error("Failed to sign in with Microsoft");
+    } finally {
+      setMicrosoftLoading(false);
+    }
+  };
+
 
   return (
     <motion.div
@@ -133,6 +164,28 @@ export function CheckoutAuth({ onAuthSuccess }: CheckoutAuthProps) {
         )}
         Continue with Google
       </Button>
+
+      {/* Microsoft Login Button */}
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full h-11"
+        onClick={handleMicrosoftLogin}
+        disabled={microsoftLoading}
+      >
+        {microsoftLoading ? (
+          <Loader2 className="w-5 h-5 animate-spin mr-2" />
+        ) : (
+          <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M0 0h11.4v11.4H0z" />
+            <path d="M12.6 0H24v11.4H12.6z" />
+            <path d="M0 12.6h11.4V24H0z" />
+            <path d="M12.6 12.6H24V24H12.6z" />
+          </svg>
+        )}
+        Continue with Microsoft
+      </Button>
+
 
       <div className="relative my-4">
         <div className="absolute inset-0 flex items-center">

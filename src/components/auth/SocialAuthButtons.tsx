@@ -8,7 +8,9 @@ import { Loader2 } from "lucide-react";
 export function SocialAuthButtons() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [appleLoading, setAppleLoading] = useState(false);
-  const anyLoading = googleLoading || appleLoading;
+  const [microsoftLoading, setMicrosoftLoading] = useState(false);
+  const anyLoading = googleLoading || appleLoading || microsoftLoading;
+
 
   const describeOAuthError = (err: unknown, provider: string): string => {
     const raw =
@@ -70,15 +72,16 @@ export function SocialAuthButtons() {
         toast.error("You appear to be offline. Please check your connection.");
         return;
       }
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "apple",
-        options: { redirectTo: `${window.location.origin}/login` },
+      const result = await lovable.auth.signInWithOAuth("apple", {
+        redirect_uri: `${window.location.origin}/login`,
       });
-      if (error) {
-        toast.error(describeOAuthError(error, "Apple"));
+
+      if (result.error) {
+        toast.error(describeOAuthError(result.error, "Apple"));
         return;
       }
-      if (data?.url) window.location.href = data.url;
+      if (result.redirected) return;
+      window.location.href = "/login";
     } catch (error) {
       console.error("Apple sign-in failed:", error);
       toast.error(describeOAuthError(error, "Apple"));
@@ -86,6 +89,32 @@ export function SocialAuthButtons() {
       setAppleLoading(false);
     }
   };
+
+  const handleMicrosoftLogin = async () => {
+    setMicrosoftLoading(true);
+    try {
+      if (!navigator.onLine) {
+        toast.error("You appear to be offline. Please check your connection.");
+        return;
+      }
+      const result = await lovable.auth.signInWithOAuth("microsoft", {
+        redirect_uri: `${window.location.origin}/login`,
+      });
+
+      if (result.error) {
+        toast.error(describeOAuthError(result.error, "Microsoft"));
+        return;
+      }
+      if (result.redirected) return;
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Microsoft sign-in failed:", error);
+      toast.error(describeOAuthError(error, "Microsoft"));
+    } finally {
+      setMicrosoftLoading(false);
+    }
+  };
+
 
   return (
     <div className="space-y-3">
@@ -125,6 +154,27 @@ export function SocialAuthButtons() {
         )}
         Continue with Apple
       </Button>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full h-12 text-sm font-medium rounded-xl border-border/50 bg-card/50 backdrop-blur-sm hover:bg-accent/60 hover:border-primary/30 transition-all duration-300"
+        onClick={handleMicrosoftLogin}
+        disabled={anyLoading}
+      >
+        {microsoftLoading ? (
+          <Loader2 className="w-5 h-5 animate-spin mr-3" />
+        ) : (
+          <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M0 0h11.4v11.4H0z" />
+            <path d="M12.6 0H24v11.4H12.6z" />
+            <path d="M0 12.6h11.4V24H0z" />
+            <path d="M12.6 12.6H24V24H12.6z" />
+          </svg>
+        )}
+        Continue with Microsoft
+      </Button>
+
     </div>
   );
 }
