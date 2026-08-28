@@ -87,12 +87,14 @@ function SlideToAction({
   label,
   title,
   className,
+  css,
   icon,
   onActivate,
 }: {
   label: string;
   title: string;
   className: string;
+  css?: React.CSSProperties;
   icon?: React.ReactNode;
   onActivate: () => void;
 }) {
@@ -114,7 +116,9 @@ function SlideToAction({
   return (
     <div
       ref={trackRef}
+      style={css}
       className={`relative w-full overflow-hidden select-none ${className}`}
+
       role="button"
       tabIndex={0}
       aria-label={`${title} — ${label}`}
