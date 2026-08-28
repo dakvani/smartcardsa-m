@@ -6,18 +6,39 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { CardStyle } from "@/lib/template-card-style";
 import type { ButtonShape, FontFamily, TemplateLayout } from "@/lib/smartlink-templates";
 
+export interface DesignButton {
+  id: string;
+  title: string;
+  url: string;
+}
+
 interface Props {
   value?: CardStyle;
   onChange: (next: CardStyle) => void;
+  /** Profile buttons (links), managed inline alongside the element design. */
+  buttons?: DesignButton[];
+  onAddButton?: () => void;
+  onUpdateButton?: (id: string, patch: { title?: string; url?: string }) => void;
+  onDeleteButton?: (id: string) => void;
+  onMoveButton?: (id: string, direction: -1 | 1) => void;
 }
 
 type DetailKey = "stats" | "facts";
 
-export function TemplateDesignEditor({ value = {}, onChange }: Props) {
+export function TemplateDesignEditor({
+  value = {},
+  onChange,
+  buttons,
+  onAddButton,
+  onUpdateButton,
+  onDeleteButton,
+  onMoveButton,
+}: Props) {
   const update = (patch: Partial<CardStyle>) => onChange({ ...value, ...patch });
   const layout = value.layout ?? "classic";
   const detailKey: DetailKey | null = layout === "social" ? "stats" : layout === "biodata" ? "facts" : null;
   const details = detailKey ? value[detailKey] ?? [] : [];
+
 
   const updateDetail = (index: number, patch: { label?: string; value?: string }) => {
     if (!detailKey) return;
