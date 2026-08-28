@@ -1,4 +1,5 @@
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle, ArrowDown, ArrowUp, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { BRAND_LOGOS } from "@/lib/brand-logos";
 import { useMemo } from "react";
 import { validateSocialHandle } from "@/lib/link-validation";
@@ -23,6 +24,8 @@ interface SocialLinksEditorProps {
   socialLinks: SocialLinks;
   onChange: (links: SocialLinks) => void;
   onBlur: () => void;
+  order?: string[];
+  onOrderChange?: (order: string[]) => void;
 }
 
 const socialPlatforms = [
@@ -40,7 +43,7 @@ const socialPlatforms = [
   { key: "spotify", label: "Spotify", placeholder: "artist or profile URL" },
 ] as const;
 
-export function SocialLinksEditor({ socialLinks, onChange, onBlur }: SocialLinksEditorProps) {
+export function SocialLinksEditor({ socialLinks, onChange, onBlur, order = [], onOrderChange }: SocialLinksEditorProps) {
   const handleChange = (key: string, value: string) => {
     onChange({ ...socialLinks, [key]: value });
   };
@@ -65,12 +68,23 @@ export function SocialLinksEditor({ socialLinks, onChange, onBlur }: SocialLinks
     }
     onBlur();
   };
+  const orderedPlatforms = [...socialPlatforms].sort(
+    (a, b) => (order.indexOf(a.key) < 0 ? 999 : order.indexOf(a.key)) - (order.indexOf(b.key) < 0 ? 999 : order.indexOf(b.key)),
+  );
+  const move = (key: string, direction: -1 | 1) => {
+    const activeOrder = orderedPlatforms.map((platform) => platform.key);
+    const index = activeOrder.indexOf(key as typeof activeOrder[number]);
+    const target = index + direction;
+    if (target < 0 || target >= activeOrder.length) return;
+    [activeOrder[index], activeOrder[target]] = [activeOrder[target], activeOrder[index]];
+    onOrderChange?.(activeOrder);
+  };
 
   return (
     <div className="space-y-3">
       <label className="block text-sm font-medium">Social Media Links</label>
       <div className="space-y-2">
-        {socialPlatforms.map(({ key, label, placeholder }) => {
+        {orderedPlatforms.map(({ key, label, placeholder }, index) => {
           const brandLogo = BRAND_LOGOS[key];
           const value = (socialLinks as Record<string, string>)[key] || "";
           const result = results[key];
@@ -106,6 +120,11 @@ export function SocialLinksEditor({ socialLinks, onChange, onBlur }: SocialLinks
                       )}
                     </span>
                   )}
+                </div>
+                <div className="flex shrink-0">
+                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => move(key, -1)} disabled={index === 0} aria-label={`Move ${label} up`}><ArrowUp className="h-3.5 w-3.5" /></Button>
+                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={() => move(key, 1)} disabled={index === orderedPlatforms.length - 1} aria-label={`Move ${label} down`}><ArrowDown className="h-3.5 w-3.5" /></Button>
+                  <Button type="button" size="icon" variant="ghost" className="h-8 w-8 text-destructive" onClick={() => { handleChange(key, ""); queueMicrotask(onBlur); }} disabled={!hasValue} aria-label={`Delete ${label}`}><Trash2 className="h-3.5 w-3.5" /></Button>
                 </div>
               </div>
               {hasValue && !result.valid && result.message && (

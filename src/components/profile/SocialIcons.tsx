@@ -20,6 +20,7 @@ interface SocialLinks {
 interface SocialIconsProps {
   socialLinks: SocialLinks;
   className?: string;
+  order?: string[];
 }
 
 const socialConfig = [
@@ -37,10 +38,11 @@ const socialConfig = [
   { key: "spotify", label: "Spotify", icon: Music2, getUrl: (v: string) => v.startsWith("http") ? v : `https://open.spotify.com/${v}` },
 ] as const;
 
-export function SocialIcons({ socialLinks, className = "text-primary-foreground" }: SocialIconsProps) {
+export function SocialIcons({ socialLinks, className = "text-primary-foreground", order = [] }: SocialIconsProps) {
+  const rank = new Map(order.map((key, index) => [key === "x" ? "twitter" : key, index]));
   const activeLinks = socialConfig.filter(
     ({ key }) => (socialLinks as Record<string, string>)[key]
-  );
+  ).sort((a, b) => (rank.get(a.key) ?? 999) - (rank.get(b.key) ?? 999));
 
   if (activeLinks.length === 0) return null;
 

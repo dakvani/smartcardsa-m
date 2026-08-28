@@ -1189,6 +1189,8 @@ export default function Dashboard() {
                     socialLinks={profile.social_links || {}}
                     onChange={(links) => setProfile({ ...profile, social_links: links })}
                     onBlur={() => updateProfile({ social_links: profile.social_links })}
+                    order={parseCardStyle(profile.card_style).socialOrder}
+                    onOrderChange={(socialOrder) => updateProfile({ card_style: { ...parseCardStyle(profile.card_style), socialOrder } })}
                   />
 
                   <TemplateDesignEditor
@@ -1413,7 +1415,7 @@ export default function Dashboard() {
                         {profile.bio && (
                           <p className={`text-[11px] mt-1 px-2 ${bioClassFor(parseCardStyle(profile.card_style))}`}>{profile.bio}</p>
                         )}
-                        <SocialIcons socialLinks={profile.social_links || {}} className={parseCardStyle(profile.card_style).socialColor} />
+                        <SocialIcons socialLinks={profile.social_links || {}} className={parseCardStyle(profile.card_style).socialColor} order={parseCardStyle(profile.card_style).socialOrder} />
                       </div>
                       {parseCardStyle(profile.card_style).layout === "social" && parseCardStyle(profile.card_style).stats && (
                         <div className="relative z-10 mb-3 grid grid-cols-3 gap-1 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 p-2">

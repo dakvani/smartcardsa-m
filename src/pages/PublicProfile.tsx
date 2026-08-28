@@ -459,7 +459,7 @@ export default function PublicProfile() {
                 {profile.bio && (
                   <p className={`text-sm mt-1.5 max-w-xs mx-auto leading-snug ${bioClassFor(cardStyle)}`}>{profile.bio}</p>
                 )}
-                <SocialIcons socialLinks={profile.social_links || {}} className={cardStyle.socialColor} />
+                <SocialIcons socialLinks={profile.social_links || {}} className={cardStyle.socialColor} order={cardStyle.socialOrder} />
               </motion.div>
 
               {cardStyle.layout === "social" && cardStyle.stats && cardStyle.stats.length > 0 && (
