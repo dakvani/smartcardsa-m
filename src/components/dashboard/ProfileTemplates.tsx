@@ -144,6 +144,8 @@ export function ProfileTemplates({
   currentTheme,
   previewIdentity,
   onEditTemplateInBuilder,
+  onImportTemplateContent,
+  existingLinkCount = 0,
 }: ProfileTemplatesProps) {
   const effectivePlan: UserPlan = plan ?? (isPro ? "pro" : "free");
   const isProTier = isPro || PRO_TIERS.includes(effectivePlan);
