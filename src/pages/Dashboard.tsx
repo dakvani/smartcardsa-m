@@ -1301,6 +1301,21 @@ export default function Dashboard() {
         </div>
       </div>
       <MobileTabBar activeTab={activeTab} onChange={setActiveTab} />
+
+      <SmartlinkPublishDialog
+        open={!!handoff}
+        onOpenChange={(o) => {
+          if (!o) { setHandoff(null); clearPendingBio(); }
+        }}
+        template={handoff?.template ?? null}
+        overrides={{
+          name: handoff?.pending.name,
+          bio: handoff?.pending.bio,
+          username: handoff?.pending.handle,
+        }}
+        publishing={handoffPublishing}
+        onConfirm={publishHandoff}
+      />
     </div>
   );
 }
