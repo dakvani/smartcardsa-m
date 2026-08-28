@@ -68,6 +68,8 @@ import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-car
 import { layoutClasses } from "@/lib/template-layout";
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
 import { DeferredProfileMedia } from "@/components/profile/DeferredProfileMedia";
+import { ensureProfile } from "@/lib/ensure-profile";
+
 
 interface Profile {
   id: string;
