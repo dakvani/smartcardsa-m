@@ -1202,7 +1202,9 @@ export default function Dashboard() {
                         custom_background_url: profile.custom_background_url ?? null,
                         custom_background_type: (profile.custom_background_type as "image" | "video" | null) ?? null,
                       }}
-                      onEditTemplateInBuilder={(t) => editTemplateInBuilder(t)}
+                      existingLinkCount={links.length}
+                      onEditTemplateInBuilder={(t, keepLinks) => editTemplateInBuilder(t, undefined, keepLinks)}
+                      onImportTemplateContent={(t, keepLinks) => importTemplateContent(t, keepLinks)}
                       onPersist={(u) => setProfile({ ...profile, ...u } as Profile)}
                       onApply={(updates) => {
                         setProfile({ ...profile, ...updates } as Profile);
@@ -1413,8 +1415,11 @@ export default function Dashboard() {
           username: handoff?.pending.handle,
         }}
         publishing={handoffPublishing}
-        onConfirm={publishHandoff}
-        onKeepEditing={() => handoff && editTemplateInBuilder(handoff.template, handoff.pending)}
+        existingLinkCount={links.length}
+        onConfirm={(keepLinks) => publishHandoff(keepLinks)}
+        onKeepEditing={(keepLinks) =>
+          handoff && editTemplateInBuilder(handoff.template, handoff.pending, keepLinks)
+        }
       />
 
     </div>
