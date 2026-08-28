@@ -131,6 +131,8 @@ export function ProfileTemplates({
   initialAnimationSpeed = 1,
   initialMotionEnabled = true,
   onPersist,
+  currentTheme,
+  previewIdentity,
 }: ProfileTemplatesProps) {
   const effectivePlan: UserPlan = plan ?? (isPro ? "pro" : "free");
   const isProTier = isPro || PRO_TIERS.includes(effectivePlan);
