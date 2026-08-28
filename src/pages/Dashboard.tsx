@@ -1344,6 +1344,10 @@ export default function Dashboard() {
 
                   {appearanceTab === "templates" && (
                   <div className="space-y-4 sm:space-y-6">
+                  <div>
+                    <h3 className="text-sm font-semibold">Theme colors &amp; animation</h3>
+                    <p className="text-[11px] text-muted-foreground">Applies on top of the template you pick below.</p>
+                  </div>
                   {/* Theme Customizer */}
                   <ThemeCustomizer
                     themeName={profile.theme_name}
