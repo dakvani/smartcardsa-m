@@ -59,11 +59,9 @@ export function SocialAuthButtons() {
         toast.error("You appear to be offline. Please check your connection.");
         return;
       }
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google" as any,
-        options: { redirectTo: `${window.location.origin}${loginReturnPath()}` },
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}${loginReturnPath()}`,
       });
-      const result = { error, redirected: !error };
 
       if (result.error) {
         toast.error(describeOAuthError(result.error, "Google"));
@@ -86,11 +84,9 @@ export function SocialAuthButtons() {
         toast.error("You appear to be offline. Please check your connection.");
         return;
       }
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "apple" as any,
-        options: { redirectTo: `${window.location.origin}${loginReturnPath()}` },
+      const result = await lovable.auth.signInWithOAuth("apple", {
+        redirect_uri: `${window.location.origin}${loginReturnPath()}`,
       });
-      const result = { error, redirected: !error };
 
       if (result.error) {
         toast.error(describeOAuthError(result.error, "Apple"));
@@ -113,11 +109,9 @@ export function SocialAuthButtons() {
         toast.error("You appear to be offline. Please check your connection.");
         return;
       }
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "microsoft" as any,
-        options: { redirectTo: `${window.location.origin}${loginReturnPath()}` },
+      const result = await lovable.auth.signInWithOAuth("microsoft", {
+        redirect_uri: `${window.location.origin}${loginReturnPath()}`,
       });
-      const result = { error, redirected: !error };
 
       if (result.error) {
         toast.error(describeOAuthError(result.error, "Microsoft"));
