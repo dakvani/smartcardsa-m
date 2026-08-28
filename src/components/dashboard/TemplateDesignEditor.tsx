@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { CardStyle } from "@/lib/template-card-style";
-import { FONT_FAMILIES, FONT_LABELS, fontClassFor, type ButtonShape, type FontFamily, type TemplateLayout } from "@/lib/smartlink-templates";
+import { FONT_FAMILIES, FONT_LABELS, fontClassFor, TEMPLATE_LAYOUTS, type ButtonShape, type FontFamily, type TemplateLayout } from "@/lib/smartlink-templates";
+import { LAYOUT_HINTS, LAYOUT_LABELS } from "@/lib/template-layout";
+
 import { LINK_MOTIONS } from "@/lib/link-motion";
 import { LINK_SHADOWS, parseLinkStyle, type LinkShadow, type LinkStyle } from "@/lib/link-style";
 
