@@ -765,6 +765,25 @@ export default function Dashboard() {
     }
   };
 
+  /** Move a button up/down in the list (used by the template design editor). */
+  const moveLink = async (id: string, direction: -1 | 1) => {
+    const index = links.findIndex((l) => l.id === id);
+    const target = index + direction;
+    if (index < 0 || target < 0 || target >= links.length) return;
+    const reordered = arrayMove(links, index, target).map((link, i) => ({ ...link, position: i }));
+    setLinks(reordered);
+    try {
+      await Promise.all(
+        reordered.map((link) => supabase.from("links").update({ position: link.position }).eq("id", link.id))
+      );
+    } catch {
+      toast.error("Failed to save order");
+      loadData(user!.id);
+    }
+  };
+
+
+
   const copyProfileUrl = () => {
     if (!profile) return;
     navigator.clipboard.writeText(`${window.location.origin}${profilePath(profile.username)}`);
