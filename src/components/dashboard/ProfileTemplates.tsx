@@ -233,6 +233,7 @@ export function ProfileTemplates({
     }
     setApplying(template.id);
     try {
+      // Clear any SmartLink background so the chosen theme is actually visible.
       onApply({
         theme_name: template.theme_name,
         theme_gradient: template.theme_gradient,
@@ -240,7 +241,21 @@ export function ProfileTemplates({
         custom_bg_color: null,
         custom_accent_color: null,
         animation_type: template.animation_type,
+        custom_background_url: null,
+        custom_background_type: null,
       });
+      setCustomMedia(null);
+      await persist({
+        theme_name: template.theme_name,
+        theme_gradient: template.theme_gradient,
+        gradient_direction: template.gradient_direction || "to-b",
+        custom_bg_color: null,
+        custom_accent_color: null,
+        animation_type: template.animation_type,
+        custom_background_url: null,
+        custom_background_type: null,
+      } as any);
+
       // Optimistic local bump + persist count
       setTemplates((prev) =>
         prev.map((t) =>
