@@ -64,7 +64,7 @@ export const linkAction = (l: TemplateLink): TemplateLinkAction =>
   typeof l === "string" ? "link" : l.action ?? "link";
 
 /** Visual pattern of the card body. */
-export const TEMPLATE_LAYOUTS = ["classic", "social", "biodata"] as const;
+export const TEMPLATE_LAYOUTS = ["classic", "social", "biodata", "grid", "hero", "card", "minimal", "magazine"] as const;
 export type TemplateLayout = (typeof TEMPLATE_LAYOUTS)[number];
 
 /** Style of the decorative 3D element rendered over the background. */
