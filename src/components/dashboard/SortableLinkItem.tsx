@@ -66,6 +66,9 @@ interface LinkItem {
   scheduled_end?: string | null;
   group_id?: string | null;
   is_featured?: boolean;
+  /** Per-link movement style played on the public profile. */
+  motion?: string | null;
+
 }
 
 interface SortableLinkItemProps {
