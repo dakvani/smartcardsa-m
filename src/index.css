@@ -606,3 +606,9 @@
   .stack-compact > * + * { @apply mt-2 sm:mt-4; }
   .mobile-safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4.5rem); }
 }
+
+/* Hide native scrollbars (used by the public profile + horizontal filter rows). */
+@layer utilities {
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+}
