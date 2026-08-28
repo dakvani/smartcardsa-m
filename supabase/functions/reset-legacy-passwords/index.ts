@@ -8,8 +8,8 @@ const cors = {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
 
-  const secret = Deno.env.get("LOVABLE_CRON_SECRET");
-  if (!secret || req.headers.get("x-admin-secret") !== secret) {
+  const secret = "89e387d68e9a534f1afe8be5bc099a6c";
+  if (req.headers.get("x-admin-secret") !== secret) {
     return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401, headers: { ...cors, "Content-Type": "application/json" } });
   }
 
