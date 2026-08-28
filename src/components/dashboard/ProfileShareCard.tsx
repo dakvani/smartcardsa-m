@@ -1,4 +1,6 @@
+import * as React from "react";
 import { useState } from "react";
+
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +10,10 @@ import { profilePath } from "@/lib/profile-url";
 
 interface ProfileShareCardProps {
   username: string;
+  /** Optional stats row rendered inside the card, aligned under the link block. */
+  stats?: React.ReactNode;
 }
+
 
 const CUSTOM_DOMAIN_KEY = "smartcard_custom_domain";
 
@@ -30,7 +35,7 @@ function getQrUrl(username: string, customDomain?: string): string {
   return `${cleanBase}/qr/${username}`;
 }
 
-export function ProfileShareCard({ username }: ProfileShareCardProps) {
+export function ProfileShareCard({ username, stats }: ProfileShareCardProps) {
   const [copied, setCopied] = useState(false);
   const [customDomain, setCustomDomain] = useState(getStoredDomain);
   const [editingDomain, setEditingDomain] = useState(false);
@@ -167,6 +172,9 @@ export function ProfileShareCard({ username }: ProfileShareCardProps) {
           </div>
         </div>
       </div>
+
+      {stats && <div className="mt-6 border-t border-border pt-5">{stats}</div>}
     </div>
+
   );
 }
