@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Download, Copy, Check, ExternalLink, QrCode, Globe, Link2 } from "lucide-react";
 import { toast } from "sonner";
+import { profilePath } from "@/lib/profile-url";
 
 interface ProfileShareCardProps {
   username: string;
@@ -19,7 +20,7 @@ function getProfileUrl(username: string, customDomain?: string): string {
   const base = customDomain?.trim() || window.location.origin;
   // Remove trailing slash
   const cleanBase = base.replace(/\/+$/, "");
-  return `${cleanBase}/${username}`;
+  return `${cleanBase}${profilePath(username)}`;
 }
 
 function getQrUrl(username: string, customDomain?: string): string {

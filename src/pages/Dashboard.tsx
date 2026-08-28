@@ -53,6 +53,7 @@ import {
 } from "@/lib/smartlink-handoff";
 import type { TemplateProfile } from "@/lib/smartlink-templates";
 import { SmartlinkPublishDialog } from "@/components/dashboard/SmartlinkPublishDialog";
+import { profilePath } from "@/lib/profile-url";
 
 interface Profile {
   id: string;
@@ -712,7 +713,7 @@ export default function Dashboard() {
 
   const copyProfileUrl = () => {
     if (!profile) return;
-    navigator.clipboard.writeText(`${window.location.origin}/${profile.username}`);
+    navigator.clipboard.writeText(`${window.location.origin}${profilePath(profile.username)}`);
     setCopied(true);
     toast.success("URL copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
@@ -812,7 +813,7 @@ export default function Dashboard() {
               <span className="hidden sm:inline">{copied ? "Copied" : "Share"}</span>
             </Button>
             <QRCodeGenerator username={profile.username} />
-            <Link to={`/${profile.username}`} target="_blank">
+            <Link to={profilePath(profile.username)} target="_blank">
               <Button variant="outline" size="sm" className="h-8 text-xs px-3">
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">View</span>
@@ -1283,7 +1284,7 @@ export default function Dashboard() {
                   <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live
                   </span>
-                  <Link to={`/${profile.username}`} target="_blank" className="text-[10px] text-primary hover:underline flex items-center gap-1">
+                  <Link to={profilePath(profile.username)} target="_blank" className="text-[10px] text-primary hover:underline flex items-center gap-1">
                     <ExternalLink className="w-2.5 h-2.5" /> Open
                   </Link>
                 </div>

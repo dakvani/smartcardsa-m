@@ -407,7 +407,8 @@ export function ProfileTemplates({
         gradient_direction: patch.gradient_direction,
         custom_bg_color: null,
         custom_accent_color: null,
-        animation_type: null,
+        animation_type: patch.animation_type,
+
         custom_background_url: patch.custom_background_url,
         custom_background_type: "image",
       });
@@ -418,7 +419,7 @@ export function ProfileTemplates({
         gradient_direction: patch.gradient_direction,
         custom_bg_color: null,
         custom_accent_color: null,
-        animation_type: null,
+        animation_type: patch.animation_type,
         custom_background_url: patch.custom_background_url,
         custom_background_type: "image",
       } as any);
