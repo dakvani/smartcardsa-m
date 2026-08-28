@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
@@ -12,7 +12,6 @@ import { EmailSignup } from "@/components/profile/EmailSignup";
 import { SaveContactButton } from "@/components/profile/SaveContactButton";
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
-import { ThreeDLayer } from "@/components/smartlink/ThreeDLayer";
 import { getBrandLogo } from "@/lib/brand-logos";
 
 import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
@@ -24,6 +23,10 @@ import {
   applyAccessibilityPreferencesToScope,
   loadAccessibilityPreferences,
 } from "@/lib/accessibility";
+
+const ThreeDLayer = lazy(() =>
+  import("@/components/smartlink/ThreeDLayer").then((module) => ({ default: module.ThreeDLayer }))
+);
 
 interface SocialLinks {
   instagram?: string;
@@ -431,7 +434,9 @@ export default function PublicProfile() {
               />
             )}
             {profile.motion_enabled !== false && cardStyle.threeD && cardStyle.threeDVariant && cardStyle.threeDVariant !== "tilt" && (
-              <ThreeDLayer variant={cardStyle.threeDVariant} speed={profile.animation_speed || 1} />
+              <Suspense fallback={null}>
+                <ThreeDLayer variant={cardStyle.threeDVariant} speed={profile.animation_speed || 1} />
+              </Suspense>
             )}
 
 

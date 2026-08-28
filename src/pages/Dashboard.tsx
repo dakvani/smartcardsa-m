@@ -31,6 +31,9 @@ import { SocialIcons } from "@/components/profile/SocialIcons";
 const AnalyticsCharts = lazy(() =>
   import("@/components/dashboard/AnalyticsCharts").then((m) => ({ default: m.AnalyticsCharts }))
 );
+const ThreeDLayer = lazy(() =>
+  import("@/components/smartlink/ThreeDLayer").then((module) => ({ default: module.ThreeDLayer }))
+);
 import { ThemeCustomizer } from "@/components/dashboard/ThemeCustomizer";
 import { QRCodeGenerator } from "@/components/dashboard/QRCodeGenerator";
 import { ProfileShareCard } from "@/components/dashboard/ProfileShareCard";
@@ -1387,6 +1390,11 @@ export default function Dashboard() {
                     {/* Animated bg — respects motion toggle */}
                     {profile.motion_enabled !== false && (
                       <LazyAnimatedBackground animationType={profile.animation_type} config={{ speed: profile.animation_speed || 1, intensity: profile.animation_intensity || 1 }} />
+                    )}
+                    {profile.motion_enabled !== false && parseCardStyle(profile.card_style).threeD && parseCardStyle(profile.card_style).threeDVariant && parseCardStyle(profile.card_style).threeDVariant !== "tilt" && (
+                      <Suspense fallback={null}>
+                        <ThreeDLayer variant={parseCardStyle(profile.card_style).threeDVariant ?? "tilt"} speed={profile.animation_speed || 1} />
+                      </Suspense>
                     )}
 
                     {/* Content - scrollable */}
