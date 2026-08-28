@@ -1395,7 +1395,9 @@ export default function Dashboard() {
         }}
         publishing={handoffPublishing}
         onConfirm={publishHandoff}
+        onKeepEditing={() => handoff && editTemplateInBuilder(handoff.template, handoff.pending)}
       />
+
     </div>
   );
 }
