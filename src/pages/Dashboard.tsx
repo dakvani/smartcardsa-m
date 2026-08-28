@@ -1184,6 +1184,7 @@ export default function Dashboard() {
                         custom_background_url: profile.custom_background_url ?? null,
                         custom_background_type: (profile.custom_background_type as "image" | "video" | null) ?? null,
                       }}
+                      onEditTemplateInBuilder={(t) => editTemplateInBuilder(t)}
                       onPersist={(u) => setProfile({ ...profile, ...u } as Profile)}
                       onApply={(updates) => {
                         setProfile({ ...profile, ...updates } as Profile);
