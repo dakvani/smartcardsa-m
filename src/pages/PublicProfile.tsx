@@ -12,7 +12,7 @@ import { EmailSignup } from "@/components/profile/EmailSignup";
 import { SaveContactButton } from "@/components/profile/SaveContactButton";
 import { getBrandLogo } from "@/lib/brand-logos";
 
-import { AnimatedBackground } from "@/components/profile/AnimatedBackground";
+import { LazyAnimatedBackground } from "@/components/profile/LazyAnimatedBackground";
 import { ClaimSmartCardDialog } from "@/components/profile/ClaimSmartCardDialog";
 import { parseUserAgent } from "@/lib/userAgentParser";
 import {
