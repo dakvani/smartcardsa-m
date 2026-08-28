@@ -10,14 +10,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BarChart3, CreditCard, Layers, Lock, Palette, Smartphone,
   Check, Sparkles, Wand2, Undo2, Redo2, Monitor, AlertCircle,
-  Home, Grid3x3, Zap, DollarSign, Eye, Pencil,
+  Home, Grid3x3, Zap, DollarSign, Eye, Pencil, Search,
 } from "lucide-react";
 import { trackEvent } from "@/lib/analytics";
 import { SEO } from "@/components/SEO";
 import {
-  templates, templateCategories, bioInputSchema,
+  templates, templateCategories, bioInputSchema, linkLabel,
   type TemplateProfile, type BioInput,
 } from "@/lib/smartlink-templates";
+
 import { TemplatePhoneCard } from "@/components/smartlink/TemplatePhoneCard";
 import { useHistoryState, useDebouncedCommit } from "@/hooks/use-history-state";
 import { savePendingBio } from "@/lib/smartlink-handoff";
