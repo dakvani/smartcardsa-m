@@ -1,15 +1,22 @@
-import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { CardStyle } from "@/lib/template-card-style";
 import type { ButtonShape, FontFamily, TemplateLayout } from "@/lib/smartlink-templates";
+import { LINK_MOTIONS } from "@/lib/link-motion";
+import { LINK_SHADOWS, parseLinkStyle, type LinkShadow, type LinkStyle } from "@/lib/link-style";
 
 export interface DesignButton {
   id: string;
   title: string;
   url: string;
+  /** Movement style for this button (links.motion). */
+  motion?: string | null;
+  /** Per-button colours / shadow (links.style). */
+  style?: unknown;
 }
 
 interface Props {
@@ -18,10 +25,11 @@ interface Props {
   /** Profile buttons (links), managed inline alongside the element design. */
   buttons?: DesignButton[];
   onAddButton?: () => void;
-  onUpdateButton?: (id: string, patch: { title?: string; url?: string }) => void;
+  onUpdateButton?: (id: string, patch: { title?: string; url?: string; motion?: string | null; style?: LinkStyle }) => void;
   onDeleteButton?: (id: string) => void;
   onMoveButton?: (id: string, direction: -1 | 1) => void;
 }
+
 
 type DetailKey = "stats" | "facts";
 
