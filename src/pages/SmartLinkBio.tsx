@@ -285,9 +285,9 @@ export default function SmartLinkBio() {
               </p>
             </div>
 
-            <div ref={previewRef} data-smartlink-editor className="grid lg:grid-cols-[1fr_420px] gap-3 sm:gap-10 items-start max-w-6xl mx-auto">
+            <div ref={previewRef} data-smartlink-editor className="grid lg:grid-cols-[1fr_420px] gap-3 sm:gap-10 lg:items-stretch max-w-6xl mx-auto">
               {/* Editor — first on mobile (top), second on desktop (left) */}
-              <div className="order-1 lg:order-1 space-y-2.5 sm:space-y-5 rounded-xl sm:rounded-2xl border border-border bg-card p-2.5 sm:p-6">
+              <div className="order-1 lg:order-1 lg:h-full flex flex-col justify-center space-y-2.5 sm:space-y-5 rounded-xl sm:rounded-2xl border border-border bg-card p-2.5 sm:p-6">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5 text-[11px] sm:text-sm font-semibold">
                     <Wand2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" /> Edit your bio
@@ -376,7 +376,7 @@ export default function SmartLinkBio() {
               </div>
 
               {/* Live preview — second on mobile (below editor), first on desktop (right) */}
-              <div className="order-2 lg:order-2">
+              <div className="order-2 lg:order-2 lg:h-full flex flex-col">
                 <div className="hidden sm:flex items-center justify-center gap-1 mb-2 sm:mb-4 p-0.5 sm:p-1 rounded-full bg-secondary/60 w-fit mx-auto">
                   <button
                     type="button"
