@@ -202,3 +202,149 @@ export function TemplateDesignEditor({
     </div>
   );
 }
+/**
+ * One editable button row: label + URL inline, with an expandable panel for
+ * this button's own animation and colours (text, button, border, shadow).
+ */
+function ButtonRow({
+  button,
+  index,
+  total,
+  onUpdate,
+  onDelete,
+  onMove,
+}: {
+  button: DesignButton;
+  index: number;
+  total: number;
+  onUpdate?: (id: string, patch: { title?: string; url?: string; motion?: string | null; style?: LinkStyle }) => void;
+  onDelete?: (id: string) => void;
+  onMove?: (id: string, direction: -1 | 1) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const style = parseLinkStyle(button.style);
+  const patchStyle = (patch: Partial<LinkStyle>) => onUpdate?.(button.id, { style: { ...style, ...patch } });
+
+  return (
+    <div className="rounded-lg border border-border/60 bg-background/40 p-1.5 space-y-1.5">
+      <div className="grid grid-cols-[1fr_1fr_auto] items-center gap-1.5">
+        <Input
+          className="h-8 text-xs"
+          value={button.title}
+          placeholder="Label"
+          aria-label={`Button label ${index + 1}`}
+          onChange={(e) => onUpdate?.(button.id, { title: e.target.value })}
+        />
+        <Input
+          className="h-8 text-xs"
+          value={button.url}
+          placeholder="https://…"
+          aria-label={`Button URL ${index + 1}`}
+          onChange={(e) => onUpdate?.(button.id, { url: e.target.value })}
+        />
+        <div className="flex">
+          <Button type="button" size="icon" variant="ghost" className="h-7 w-7" disabled={index === 0} onClick={() => onMove?.(button.id, -1)} aria-label="Move button up"><ArrowUp className="h-3 w-3" /></Button>
+          <Button type="button" size="icon" variant="ghost" className="h-7 w-7" disabled={index === total - 1} onClick={() => onMove?.(button.id, 1)} aria-label="Move button down"><ArrowDown className="h-3 w-3" /></Button>
+          <Button type="button" size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => onDelete?.(button.id)} aria-label="Delete button"><Trash2 className="h-3 w-3" /></Button>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between rounded-md px-1 py-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <span>Animation &amp; colors for this button</span>
+        {open ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+      </button>
+
+      {open && (
+        <div className="space-y-2 rounded-md bg-secondary/40 p-2">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="space-y-1">
+              <Label className="text-[11px]">Animation</Label>
+              <Select
+                value={button.motion ?? "none"}
+                onValueChange={(motion) => onUpdate?.(button.id, { motion })}
+              >
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {LINK_MOTIONS.map((m) => (
+                    <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-[11px]">Shadow</Label>
+              <Select
+                value={style.shadow ?? "none"}
+                onValueChange={(shadow) => patchStyle({ shadow: shadow as LinkShadow })}
+              >
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {LINK_SHADOWS.map((s) => (
+                    <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <ColorField label="Text" value={style.text} fallback="#ffffff" onChange={(text) => patchStyle({ text })} />
+            <ColorField label="Button" value={style.bg} fallback="#111827" onChange={(bg) => patchStyle({ bg })} />
+            <ColorField label="Border" value={style.border} fallback="#ffffff" onChange={(border) => patchStyle({ border })} />
+            <ColorField label="Shadow" value={style.shadowColor} fallback="#000000" onChange={(shadowColor) => patchStyle({ shadowColor })} />
+          </div>
+
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            className="h-7 text-[11px]"
+            onClick={() => onUpdate?.(button.id, { style: {} })}
+          >
+            Reset to template colors
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Small colour swatch + clear control used by the per-button style panel. */
+function ColorField({
+  label,
+  value,
+  fallback,
+  onChange,
+}: {
+  label: string;
+  value?: string;
+  fallback: string;
+  onChange: (value?: string) => void;
+}) {
+  return (
+    <div className="space-y-1">
+      <Label className="text-[11px]">{label}</Label>
+      <div className="flex items-center gap-1">
+        <input
+          type="color"
+          aria-label={`${label} color`}
+          value={value || fallback}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-8 w-8 shrink-0 cursor-pointer rounded-md border border-input bg-background"
+        />
+        <button
+          type="button"
+          onClick={() => onChange(undefined)}
+          className="flex-1 truncate rounded-md border border-input px-1.5 py-1 text-[10px] text-muted-foreground hover:text-foreground"
+        >
+          {value ? "Clear" : "Auto"}
+        </button>
+      </div>
+    </div>
+  );
+}
