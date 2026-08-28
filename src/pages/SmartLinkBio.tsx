@@ -79,6 +79,8 @@ type MobileTab = "hero" | "studio" | "templates";
 
 export default function SmartLinkBio() {
   const [activeCategory, setActiveCategory] = useState<string>("All templates");
+  const [templateQuery, setTemplateQuery] = useState("");
+
   const [previewMode, setPreviewMode] = useState<"phone" | "full">("phone");
   const [mobileTab, setMobileTab] = useState<MobileTab>("hero");
 
