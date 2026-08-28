@@ -7,7 +7,9 @@
  * signup/login, and the dashboard picks it up and applies it to their
  * real profile so the very same design shows up in the editor.
  */
-import { templates, linkLabel, linkUrl, type TemplateProfile } from "@/lib/smartlink-templates";
+import { templates, linkLabel, linkUrl, linkAction, type TemplateProfile } from "@/lib/smartlink-templates";
+import { fieldForAction, urlForField, type TemplateFieldValues } from "@/lib/template-fields";
+
 
 export const SMARTLINK_PENDING_KEY = "smartlink.pending.v2";
 
