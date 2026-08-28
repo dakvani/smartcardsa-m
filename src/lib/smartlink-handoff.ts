@@ -26,7 +26,9 @@ export interface SmartlinkProfilePatch {
   gradient_direction: string;
   custom_bg_color: null;
   custom_accent_color: null;
-  animation_type: null;
+  animation_type: string | null;
+  animation_speed: number;
+  animation_intensity: number;
   custom_background_url: string;
   custom_background_type: "image";
 }
@@ -45,6 +47,21 @@ const GRADIENTS: Record<string, string> = {
   "reem.consults": "from-sky-700 via-slate-800 to-slate-900",
   "hana.tutor": "from-teal-600 via-cyan-800 to-slate-900",
   "khalid.realty": "from-amber-500 via-amber-700 to-neutral-900",
+  "dana.atelier": "from-stone-400 via-stone-700 to-neutral-900",
+  "zain.creates": "from-lime-500 via-emerald-800 to-neutral-900",
+  "tariq.ventures": "from-sky-600 via-slate-800 to-slate-900",
+  "mira.daily": "from-rose-400 via-pink-600 to-purple-900",
+  "huda.ai": "from-cyan-600 via-slate-800 to-black",
+  "salem.estates": "from-slate-500 via-slate-800 to-neutral-900",
+  "adam.learns": "from-indigo-500 via-indigo-800 to-slate-900",
+  "lina.bakes": "from-rose-300 via-amber-600 to-neutral-900",
+  "basil.beats": "from-violet-600 via-purple-900 to-black",
+  "rania.moves": "from-emerald-500 via-teal-800 to-neutral-900",
+  "nova.motion": "from-indigo-600 via-purple-900 to-black",
+  "kian.cyber": "from-green-700 via-neutral-900 to-black",
+  "elle.runway": "from-fuchsia-500 via-rose-800 to-neutral-900",
+  "marwan.brew": "from-amber-500 via-amber-900 to-neutral-950",
+  "skyline.living": "from-sky-700 via-slate-900 to-black",
 };
 
 export const gradientForTemplate = (t: TemplateProfile): string =>
@@ -60,10 +77,13 @@ export const smartlinkTemplateToProfilePatch = (t: TemplateProfile): SmartlinkPr
   gradient_direction: "to-b",
   custom_bg_color: null,
   custom_accent_color: null,
-  animation_type: null,
+  animation_type: t.animation ?? null,
+  animation_speed: t.animationSpeed ?? 1,
+  animation_intensity: t.animationIntensity ?? 1,
   custom_background_url: t.bgImage,
   custom_background_type: "image",
 });
+
 
 export const findSmartlinkTemplate = (username: string): TemplateProfile | undefined =>
   templates.find((t) => t.username === username);
