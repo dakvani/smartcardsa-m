@@ -77,7 +77,7 @@ describe("Appearance tab — ThemeCustomizer", () => {
   it("expanding Custom Colors reveals bg + accent color inputs and updates fire onUpdate", () => {
     const onUpdate = vi.fn();
     render(<ThemeCustomizer {...baseProps} onUpdate={onUpdate} />);
-    fireEvent.click(screen.getByRole("button", { name: /Custom Colors/i }));
+    // Colors & animation panel is expanded by default now.
 
     const bgInput = screen.getByPlaceholderText("#1e1b4b") as HTMLInputElement;
     const accentInput = screen.getByPlaceholderText("#8b5cf6") as HTMLInputElement;
@@ -98,7 +98,7 @@ describe("Appearance tab — ThemeCustomizer", () => {
   it("changing the gradient direction fires onUpdate with gradient_direction", () => {
     const onUpdate = vi.fn();
     render(<ThemeCustomizer {...baseProps} onUpdate={onUpdate} />);
-    fireEvent.click(screen.getByRole("button", { name: /Custom Colors/i }));
+    // Colors & animation panel is expanded by default now.
     fireEvent.click(screen.getByRole("button", { name: /Diagonal$/ }));
     expect(onUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ gradient_direction: "to-br" })
@@ -108,7 +108,7 @@ describe("Appearance tab — ThemeCustomizer", () => {
   it("selecting an animation type reveals speed/intensity sliders and presets", () => {
     const onUpdate = vi.fn();
     const { rerender } = render(<ThemeCustomizer {...baseProps} onUpdate={onUpdate} />);
-    fireEvent.click(screen.getByRole("button", { name: /Custom Colors/i }));
+    // Colors & animation panel is expanded by default now.
     fireEvent.click(screen.getByRole("button", { name: /Pulse/i }));
     expect(onUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ animation_type: "pulse" })
@@ -129,7 +129,7 @@ describe("Appearance tab — ThemeCustomizer", () => {
 
   it("(documented absence) Appearance tab exposes no separate button-shape selector", () => {
     render(<ThemeCustomizer {...baseProps} onUpdate={vi.fn()} />);
-    fireEvent.click(screen.getByRole("button", { name: /Custom Colors/i }));
+    // Colors & animation panel is expanded by default now.
     // Button/link shape is implicit in the theme today; there is no
     // dedicated shape selector. If one is added, replace this with
     // a positive assertion.
