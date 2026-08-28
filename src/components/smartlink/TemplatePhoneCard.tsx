@@ -22,6 +22,8 @@ export interface TemplatePhoneCardProps {
   overrides?: Partial<Pick<TemplateProfile, "name" | "bio" | "username" | "links" | "socials" | "avatarImage">>;
   /** Compact = smaller aspect for grid; full = tall preview. */
   size?: "compact" | "full";
+  /** First-screen cards: load images eagerly and skip entry animations. */
+  priority?: boolean;
   className?: string;
 }
 
@@ -39,6 +41,7 @@ export function TemplatePhoneCard({
   template,
   overrides,
   size = "compact",
+  priority = false,
   className = "",
 }: TemplatePhoneCardProps) {
   const t: TemplateProfile = { ...template, ...overrides };
@@ -46,6 +49,8 @@ export function TemplatePhoneCard({
   const shapeClass = shapeClassFor(t.buttonShape);
   const fontClass = fontClassFor(t.font);
   const layout = t.layout ?? "classic";
+  const imgLoading = priority ? "eager" : "lazy";
+
 
   const animConfig = {
     speed: t.animationSpeed ?? 1,
@@ -92,12 +97,13 @@ export function TemplatePhoneCard({
       whileHover={t.threeD ? { rotateX: -6, rotateY: 6, scale: 1.02 } : undefined}
       transition={{ type: "spring", stiffness: 200, damping: 18 }}
       style={t.threeD ? { transformPerspective: 900, transformStyle: "preserve-3d" } : undefined}
-      className={`relative rounded-[36px] overflow-hidden ${aspect} shadow-elevated ring-1 ring-black/10 ${className}`}
+      className={`relative rounded-[36px] overflow-hidden ${aspect} bg-muted shadow-elevated ring-1 ring-black/10 ${className}`}
     >
       <img
         src={t.bgImage}
         alt=""
-        loading="lazy"
+        loading={imgLoading}
+        fetchPriority={priority ? "high" : "auto"}
         decoding="async"
         className="absolute inset-0 w-full h-full object-cover"
       />
@@ -121,7 +127,7 @@ export function TemplatePhoneCard({
             <img
               src={t.avatarImage}
               alt={t.name}
-              loading="lazy"
+              loading={imgLoading}
               decoding="async"
               className="w-14 h-14 rounded-xl object-cover ring-2 ring-white/60 shadow-lg"
             />
@@ -135,13 +141,13 @@ export function TemplatePhoneCard({
             <img
               src={t.avatarImage}
               alt={t.name}
-              loading="lazy"
+              loading={imgLoading}
               decoding="async"
               className="w-20 h-20 rounded-full object-cover ring-2 ring-white/70 shadow-lg"
             />
             <motion.h3
               key={t.name}
-              initial={{ opacity: 0, y: 4 }}
+              initial={priority ? false : { opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               className={`mt-3 text-lg text-center ${fontClass} ${t.nameColor}`}
             >
@@ -150,7 +156,7 @@ export function TemplatePhoneCard({
             {t.username && <p className={`text-[10px] mt-0.5 ${t.bioColor}`}>@{t.username}</p>}
             <motion.p
               key={t.bio}
-              initial={{ opacity: 0 }}
+              initial={priority ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               className={`text-[11px] text-center leading-snug mt-1 line-clamp-3 max-w-[85%] ${t.bioColor}`}
             >

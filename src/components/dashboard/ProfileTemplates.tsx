@@ -758,28 +758,31 @@ export function ProfileTemplates({
           </p>
         )}
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
-          {filteredSmartlinkTemplates.map((t) => {
+        <div className="grid grid-cols-2 xl:grid-cols-3 gap-2.5 sm:gap-8 min-w-0">
+          {filteredSmartlinkTemplates.map((t, index) => {
 
             const active = currentThemeName === t.name;
             const tier = templateTier(t);
             const locked = smartlinkLocked(t);
             return (
               <div key={t.username} className="group min-w-0">
-                <button
-                  type="button"
-                  aria-label={locked ? `${t.name} — Pro template, upgrade to use` : `Preview ${t.name} template`}
-                  onClick={() => requestSmartlinkTemplate(t)}
-                  className="relative block w-full rounded-[26px] overflow-hidden text-left"
-                >
-                  <TemplatePhoneCard
-                    template={t}
-                    className={`transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-glow ${
-                      active ? "ring-2 ring-primary shadow-glow" : ""
-                    } ${locked ? "opacity-80" : ""}`}
-                  />
+                <div className="relative rounded-[28px] sm:rounded-[36px] overflow-hidden">
+                  <button
+                    type="button"
+                    aria-label={locked ? `${t.name} — Pro template, upgrade to use` : `Preview ${t.name} template`}
+                    onClick={() => requestSmartlinkTemplate(t)}
+                    className="block w-full text-left"
+                  >
+                    <TemplatePhoneCard
+                      template={t}
+                      priority={index < 6}
+                      className={`transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-glow ${
+                        active ? "ring-2 ring-primary shadow-glow" : ""
+                      } ${locked ? "opacity-80" : ""}`}
+                    />
+                  </button>
                   <span
-                    className={`absolute top-2 left-2 px-2 py-0.5 rounded-full text-[9px] font-bold tracking-wide shadow ${
+                    className={`absolute top-2 left-2 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold tracking-wide shadow ${
                       tier === "pro"
                         ? "bg-amber-500/95 text-amber-950"
                         : "bg-emerald-500/95 text-emerald-950"
@@ -788,37 +791,55 @@ export function ProfileTemplates({
                     {tier === "pro" ? "PRO" : "FREE"}
                   </span>
                   {locked && (
-                    <span className="absolute inset-0 flex items-center justify-center bg-black/25">
+                    <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/25">
                       <Lock className="w-5 h-5 text-white drop-shadow" />
                     </span>
                   )}
                   {active && !locked && (
-                    <span className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow">
-                      <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                    <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-full bg-primary text-primary-foreground text-[9px] sm:text-[10px] font-semibold px-1.5 py-0.5 sm:px-2 sm:py-1 shadow">
+                      <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> On
                     </span>
                   )}
-                </button>
 
-                <div className="mt-2.5 flex items-start justify-between gap-2">
+                  {/* Mobile-only info + CTA overlay, matching the public showcase */}
+                  <div className="sm:hidden absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/85 via-black/60 to-transparent">
+                    <p className="text-white text-[11px] font-semibold leading-tight truncate">{t.name}</p>
+                    <p className="text-white/70 text-[9px] truncate mb-1.5">
+                      {locked ? "Pro plan required" : t.category}
+                    </p>
+                    <Button
+                      size="sm"
+                      variant={active ? "secondary" : "gradient"}
+                      onClick={() => requestSmartlinkTemplate(t)}
+                      className="w-full h-7 text-[10px] px-2"
+                    >
+                      {active ? "Applied" : locked ? "Unlock" : "Use this"}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Desktop-only label row */}
+                <div className="hidden sm:flex mt-4 items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-xs font-semibold truncate">{t.name}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">
+                    <p className="font-semibold text-sm truncate">{t.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">
                       {locked ? "Pro plan required" : t.category}
                     </p>
                   </div>
                   <Button
                     size="sm"
-                    variant={active ? "secondary" : "outline"}
-                    className="shrink-0 h-7 text-[10px] px-2"
+                    variant={active ? "secondary" : "gradient"}
+                    className="shrink-0 h-9 text-sm px-3"
                     onClick={() => requestSmartlinkTemplate(t)}
                   >
-                    {active ? "Applied" : locked ? "Unlock" : "Use"}
+                    {active ? "Applied" : locked ? "Unlock" : "Use template"}
                   </Button>
                 </div>
               </div>
             );
           })}
         </div>
+
 
       </div>
 
