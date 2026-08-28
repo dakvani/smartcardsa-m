@@ -398,6 +398,35 @@ export default function Dashboard() {
   const [handoff, setHandoff] = useState<{ pending: PendingBio; template: TemplateProfile } | null>(null);
   const [handoffPublishing, setHandoffPublishing] = useState(false);
 
+  /* --- Template action-field popup -------------------------------------- *
+   * Templates ship call / WhatsApp / email / map / booking / shop buttons.
+   * We prefill them from the user's existing links and account email, and
+   * only ask for what is genuinely missing before applying the design.      */
+  const [fieldsDialog, setFieldsDialog] = useState<{
+    template: TemplateProfile;
+    fields: TemplateFieldKey[];
+    missing: TemplateFieldKey[];
+    initial: TemplateFieldValues;
+  } | null>(null);
+  const fieldsResolver = useRef<((v: TemplateFieldValues | null) => void) | null>(null);
+
+  const requestTemplateFields = (t: TemplateProfile) =>
+    new Promise<TemplateFieldValues | null>((resolve) => {
+      const keys = templateFieldKeys(t);
+      if (!keys.length) return resolve({});
+      const initial = prefillFields(keys, { links, email: user?.email ?? null });
+      const missing = missingFields(keys, initial);
+      if (!missing.length) return resolve(initial);
+      fieldsResolver.current = resolve;
+      setFieldsDialog({ template: t, fields: keys, missing, initial });
+    });
+
+  const resolveFields = (values: TemplateFieldValues | null) => {
+    fieldsResolver.current?.(values);
+    fieldsResolver.current = null;
+    setFieldsDialog(null);
+  };
+
   useEffect(() => {
     if (!profile || !user || handoffApplied.current) return;
     const pending = readPendingBio();
@@ -482,10 +511,12 @@ export default function Dashboard() {
   const importTemplateContent = async (
     template: TemplateProfile,
     keepExistingLinks = true,
-    values: TemplateFieldValues = {},
+    values?: TemplateFieldValues,
   ) => {
     if (!user || !profile) return;
-    const content = templateContent(template, values);
+    const resolved = values ?? (await requestTemplateFields(template));
+    if (resolved === null) return; // user cancelled the details popup
+    const content = templateContent(template, resolved);
     try {
       let existing: any[] = links;
       if (!keepExistingLinks) {
@@ -1419,6 +1450,16 @@ export default function Dashboard() {
         </div>
       </div>
       <MobileTabBar activeTab={activeTab} onChange={setActiveTab} />
+
+      <TemplateFieldsDialog
+        open={!!fieldsDialog}
+        onOpenChange={(o) => { if (!o) resolveFields(null); }}
+        templateName={fieldsDialog?.template.name ?? ""}
+        fields={fieldsDialog?.fields ?? []}
+        missing={fieldsDialog?.missing ?? []}
+        initialValues={fieldsDialog?.initial ?? {}}
+        onConfirm={(values) => resolveFields(values)}
+      />
 
       <SmartlinkPublishDialog
         open={!!handoff}
