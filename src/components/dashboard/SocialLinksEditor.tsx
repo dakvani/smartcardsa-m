@@ -12,6 +12,11 @@ export interface SocialLinks {
   linkedin?: string;
   github?: string;
   website?: string;
+  email?: string;
+  whatsapp?: string;
+  tiktok?: string;
+  twitch?: string;
+  spotify?: string;
 }
 
 interface SocialLinksEditorProps {
@@ -28,6 +33,11 @@ const socialPlatforms = [
   { key: "linkedin", label: "LinkedIn", placeholder: "username" },
   { key: "github", label: "GitHub", placeholder: "username" },
   { key: "website", label: "Website", placeholder: "https://..." },
+  { key: "email", label: "Email", placeholder: "you@example.com" },
+  { key: "whatsapp", label: "WhatsApp", placeholder: "+966..." },
+  { key: "tiktok", label: "TikTok", placeholder: "username" },
+  { key: "twitch", label: "Twitch", placeholder: "username" },
+  { key: "spotify", label: "Spotify", placeholder: "artist or profile URL" },
 ] as const;
 
 export function SocialLinksEditor({ socialLinks, onChange, onBlur }: SocialLinksEditorProps) {

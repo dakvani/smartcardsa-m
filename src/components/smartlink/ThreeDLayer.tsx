@@ -13,7 +13,7 @@ interface ThreeDLayerProps {
  * first paint or on low-end devices.
  */
 export function ThreeDLayer({ variant, speed = 1 }: ThreeDLayerProps) {
-  const { ref, active } = useDeferAnimation<HTMLDivElement>(variant !== "tilt");
+  const { ref, active, lowPower } = useDeferAnimation<HTMLDivElement>(variant !== "tilt");
   const d = (base: number) => base / Math.max(0.25, speed);
 
   return (
@@ -23,11 +23,11 @@ export function ThreeDLayer({ variant, speed = 1 }: ThreeDLayerProps) {
       className="absolute inset-0 pointer-events-none overflow-hidden"
       style={{ perspective: 600 }}
     >
-      {active && variant === "cube" && <Cube duration={d(9)} />}
-      {active && variant === "prism" && <Prism duration={d(11)} />}
-      {active && variant === "orbit" && <Orbit duration={d(10)} />}
-      {active && variant === "rings" && <Rings duration={d(8)} />}
-      {active && variant === "carousel" && <Carousel duration={d(14)} />}
+      {active && !lowPower && variant === "cube" && <Cube duration={d(9)} />}
+      {active && !lowPower && variant === "prism" && <Prism duration={d(11)} />}
+      {active && !lowPower && variant === "orbit" && <Orbit duration={d(10)} />}
+      {active && !lowPower && variant === "rings" && <Rings duration={d(8)} />}
+      {active && !lowPower && variant === "carousel" && <Carousel duration={d(14)} />}
     </div>
   );
 }

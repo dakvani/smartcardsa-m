@@ -1,4 +1,4 @@
-import { Instagram, Twitter, Youtube, Facebook, Linkedin, Github, Globe } from "lucide-react";
+import { Instagram, Twitter, Youtube, Facebook, Linkedin, Github, Globe, Mail, MessageCircle, Twitch, Music2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { getBrandLogo } from "@/lib/brand-logos";
 
@@ -10,6 +10,11 @@ interface SocialLinks {
   linkedin?: string;
   github?: string;
   website?: string;
+  email?: string;
+  whatsapp?: string;
+  tiktok?: string;
+  twitch?: string;
+  spotify?: string;
 }
 
 interface SocialIconsProps {
@@ -24,6 +29,11 @@ const socialConfig = [
   { key: "linkedin", label: "LinkedIn", icon: Linkedin, getUrl: (v: string) => `https://linkedin.com/in/${v}` },
   { key: "github", label: "GitHub", icon: Github, getUrl: (v: string) => `https://github.com/${v}` },
   { key: "website", label: "Website", icon: Globe, getUrl: (v: string) => (v.startsWith("http") ? v : `https://${v}`) },
+  { key: "email", label: "Email", icon: Mail, getUrl: (v: string) => (v.startsWith("mailto:") ? v : `mailto:${v}`) },
+  { key: "whatsapp", label: "WhatsApp", icon: MessageCircle, getUrl: (v: string) => v.startsWith("http") ? v : `https://wa.me/${v.replace(/\D/g, "")}` },
+  { key: "tiktok", label: "TikTok", icon: Music2, getUrl: (v: string) => v.startsWith("http") ? v : `https://tiktok.com/@${v.replace(/^@/, "")}` },
+  { key: "twitch", label: "Twitch", icon: Twitch, getUrl: (v: string) => v.startsWith("http") ? v : `https://twitch.tv/${v}` },
+  { key: "spotify", label: "Spotify", icon: Music2, getUrl: (v: string) => v.startsWith("http") ? v : `https://open.spotify.com/${v}` },
 ] as const;
 
 export function SocialIcons({ socialLinks }: SocialIconsProps) {
