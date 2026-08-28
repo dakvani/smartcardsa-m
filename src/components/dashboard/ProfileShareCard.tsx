@@ -1,4 +1,6 @@
+import * as React from "react";
 import { useState } from "react";
+
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +10,10 @@ import { profilePath } from "@/lib/profile-url";
 
 interface ProfileShareCardProps {
   username: string;
+  /** Optional stats row rendered inside the card, aligned under the link block. */
+  stats?: React.ReactNode;
 }
+
 
 const CUSTOM_DOMAIN_KEY = "smartcard_custom_domain";
 
