@@ -445,6 +445,7 @@ export default function Dashboard() {
     if (!template) { clearPendingBio(); return; }
     handoffApplied.current = true;
     setActiveTab("appearance");
+    setAppearanceTab("templates");
     setHandoff({ pending, template });
   }, [profile, user]);
 
@@ -503,6 +504,7 @@ export default function Dashboard() {
       await importTemplateContent(template, keepExistingLinks);
       setHandoff(null);
       setActiveTab("appearance");
+      setAppearanceTab("templates");
       window.scrollTo({ top: 0, behavior: "smooth" });
       toast.success(`"${template.name}" template published — you can revert it in Appearance`);
     } finally {
@@ -1174,6 +1176,32 @@ export default function Dashboard() {
 
               {activeTab === "appearance" && (
                 <div className="space-y-4 sm:space-y-6">
+                  {/* Appearance sub-tabs — every editor keeps its own space */}
+                  <div className="flex flex-wrap gap-1.5 border-b border-border pb-2">
+                    {([
+                      { id: "profile", label: "Profile & socials" },
+                      { id: "theme", label: "Colors & animation" },
+                      { id: "buttons", label: "Buttons & style" },
+                      { id: "templates", label: "Templates" },
+                    ] as const).map((s) => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => setAppearanceTab(s.id)}
+                        aria-pressed={appearanceTab === s.id}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                          appearanceTab === s.id
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-secondary/60 text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {appearanceTab === "profile" && (
+                  <div className="space-y-4 sm:space-y-6">
                   {/* Avatar Upload */}
                   <AvatarUpload
                     userId={user.id}
@@ -1215,6 +1243,10 @@ export default function Dashboard() {
                     onOrderChange={(socialOrder) => updateProfile({ card_style: { ...parseCardStyle(profile.card_style), socialOrder } })}
                   />
 
+                  </div>
+                  )}
+
+                  {appearanceTab === "buttons" && (
                   <TemplateDesignEditor
                     value={parseCardStyle(profile.card_style)}
                     onChange={(cardStyle) => updateProfile({ card_style: cardStyle })}
@@ -1224,8 +1256,10 @@ export default function Dashboard() {
                     onDeleteButton={(id) => deleteLink(id)}
                     onMoveButton={(id, direction) => moveLink(id, direction)}
                   />
+                  )}
 
-
+                  {appearanceTab === "theme" && (
+                  <div className="space-y-4 sm:space-y-6">
                   {/* Theme Customizer */}
                   <ThemeCustomizer
                     themeName={profile.theme_name}
@@ -1263,8 +1297,11 @@ export default function Dashboard() {
                     />
                   </div>
 
-                  {/* Profile Templates */}
-                  <div className="border-t border-border pt-4 sm:pt-6">
+                  </div>
+                  )}
+
+                  {appearanceTab === "templates" && (
+                  <div>
                     <ProfileTemplates
                       isPro={isPro}
                       plan={plan}
@@ -1302,6 +1339,7 @@ export default function Dashboard() {
                       }}
                     />
                   </div>
+                  )}
                 </div>
               )}
 
