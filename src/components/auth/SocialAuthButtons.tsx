@@ -40,6 +40,18 @@ export function SocialAuthButtons() {
     return raw || `Couldn't sign in with ${provider}. Please try again.`;
   };
 
+  /** Keep any ?next=/... handoff (e.g. SmartLink template) through OAuth. */
+  const loginReturnPath = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get("next") || params.get("returnTo");
+      if (next && next.startsWith("/") && !next.startsWith("//")) {
+        return `/login?next=${encodeURIComponent(next)}`;
+      }
+    } catch { /* noop */ }
+    return "/login";
+  };
+
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     try {
@@ -48,7 +60,7 @@ export function SocialAuthButtons() {
         return;
       }
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: `${window.location.origin}/login`,
+        redirect_uri: `${window.location.origin}${loginReturnPath()}`,
       });
 
       if (result.error) {
@@ -56,7 +68,7 @@ export function SocialAuthButtons() {
         return;
       }
       if (result.redirected) return;
-      window.location.href = "/login";
+      window.location.href = loginReturnPath();
     } catch (error) {
       console.error("Google sign-in failed:", error);
       toast.error(describeOAuthError(error, "Google"));
@@ -73,7 +85,7 @@ export function SocialAuthButtons() {
         return;
       }
       const result = await lovable.auth.signInWithOAuth("apple", {
-        redirect_uri: `${window.location.origin}/login`,
+        redirect_uri: `${window.location.origin}${loginReturnPath()}`,
       });
 
       if (result.error) {
@@ -81,7 +93,7 @@ export function SocialAuthButtons() {
         return;
       }
       if (result.redirected) return;
-      window.location.href = "/login";
+      window.location.href = loginReturnPath();
     } catch (error) {
       console.error("Apple sign-in failed:", error);
       toast.error(describeOAuthError(error, "Apple"));
@@ -98,7 +110,7 @@ export function SocialAuthButtons() {
         return;
       }
       const result = await lovable.auth.signInWithOAuth("microsoft", {
-        redirect_uri: `${window.location.origin}/login`,
+        redirect_uri: `${window.location.origin}${loginReturnPath()}`,
       });
 
       if (result.error) {
@@ -106,7 +118,7 @@ export function SocialAuthButtons() {
         return;
       }
       if (result.redirected) return;
-      window.location.href = "/login";
+      window.location.href = loginReturnPath();
     } catch (error) {
       console.error("Microsoft sign-in failed:", error);
       toast.error(describeOAuthError(error, "Microsoft"));
