@@ -26,11 +26,16 @@ export async function sendWelcomeEmailWithRetry(
   username?: string | null,
   opts: { force?: boolean } = {}
 ): Promise<WelcomeSendResult> {
+  if (!MANAGED_EMAIL_READY) {
+    return { ok: true, attempts: 0 };
+  }
+
   const { data: profile } = await supabase
     .from("profiles")
     .select("welcome_email_sent_at, welcome_email_attempts, username")
     .eq("user_id", userId)
     .maybeSingle();
+
 
   if (!opts.force && profile?.welcome_email_sent_at) {
     return { ok: true, attempts: profile.welcome_email_attempts ?? 0 };
