@@ -235,7 +235,7 @@ export default function AdminDashboard() {
               </div>
               <div className="flex gap-1 items-center shrink-0">
                 <ThemeToggle />
-                <AdminNotificationBell isAdmin={isAdmin} onOpenTab={setActiveTab} />
+                <AdminNotificationBell isAdmin={isAdmin} onOpenTab={(tab) => setActiveTab(TAB_ALIASES[tab] ?? tab)} />
                 <Button size="sm" variant="outline" onClick={loadAllData} disabled={refreshing} className="h-7 w-7 sm:h-8 sm:w-auto p-0 sm:px-3 text-xs" aria-label="Refresh">
                   <RefreshCw className={`w-3.5 h-3.5 sm:mr-1.5 ${refreshing ? 'animate-spin' : ''}`} />
                   <span className="hidden sm:inline">Refresh</span>
