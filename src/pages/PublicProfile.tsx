@@ -609,7 +609,13 @@ export default function PublicProfile() {
                 {profile.email_collection_enabled && (
                   <EmailSignup profileId={profile.id} />
                 )}
+                <AddToWalletButtons
+                  profile={profile}
+                  links={links}
+                  publicUrl={typeof window !== "undefined" ? window.location.href : ""}
+                />
               </motion.div>
+
 
               {/* Inline QR — always on mobile, and on sm+ when in Compact mode */}
               <div className={isCompact ? "block" : "block sm:hidden"}>{InlineQR}</div>
