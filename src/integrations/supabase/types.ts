@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.17"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -692,6 +692,54 @@ export type Database = {
           product_name?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      oauth_verification_status: {
+        Row: {
+          app_name: string
+          authorized_domains_added: boolean
+          consent_screen_configured: boolean
+          credentials_created: boolean
+          credentials_saved_in_cloud: boolean
+          id: number
+          notes: string | null
+          provider: string
+          publishing_status: string
+          scopes_configured: boolean
+          updated_at: string
+          updated_by: string | null
+          verification_status: string
+        }
+        Insert: {
+          app_name?: string
+          authorized_domains_added?: boolean
+          consent_screen_configured?: boolean
+          credentials_created?: boolean
+          credentials_saved_in_cloud?: boolean
+          id?: number
+          notes?: string | null
+          provider?: string
+          publishing_status?: string
+          scopes_configured?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          verification_status?: string
+        }
+        Update: {
+          app_name?: string
+          authorized_domains_added?: boolean
+          consent_screen_configured?: boolean
+          credentials_created?: boolean
+          credentials_saved_in_cloud?: boolean
+          id?: number
+          notes?: string | null
+          provider?: string
+          publishing_status?: string
+          scopes_configured?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          verification_status?: string
         }
         Relationships: []
       }

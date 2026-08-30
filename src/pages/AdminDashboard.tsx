@@ -20,6 +20,8 @@ import { AdminBuilderSettings } from "@/components/admin/AdminBuilderSettings";
 import { AdminTableViewer } from "@/components/admin/AdminTableViewer";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AdminUserManager } from "@/components/admin/AdminUserManager";
+import { AdminGoogleOAuthStatus } from "@/components/admin/AdminGoogleOAuthStatus";
+
 import { AuditLogViewer } from "@/components/admin/AuditLogViewer";
 import { AdminWelcomeEmails } from "@/components/admin/AdminWelcomeEmails";
 import { AdminEmailSettings } from "@/components/admin/AdminEmailSettings";
@@ -612,9 +614,11 @@ export default function AdminDashboard() {
                 <AdminTableViewer />
               </TabsContent>
 
-              <TabsContent value="users">
+              <TabsContent value="users" className="space-y-4">
+                <AdminGoogleOAuthStatus />
                 <AdminUserManager />
               </TabsContent>
+
 
               <TabsContent value="builder">
                 <AdminBuilderSettings />
