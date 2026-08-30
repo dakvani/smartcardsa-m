@@ -1313,6 +1313,51 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_settings: {
+        Row: {
+          apple_cert_filename: string | null
+          apple_cert_p12_base64: string | null
+          apple_cert_password: string | null
+          apple_enabled: boolean
+          apple_pass_type_id: string
+          apple_team_id: string
+          google_enabled: boolean
+          google_issuer_id: string
+          google_service_account: string | null
+          id: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          apple_cert_filename?: string | null
+          apple_cert_p12_base64?: string | null
+          apple_cert_password?: string | null
+          apple_enabled?: boolean
+          apple_pass_type_id?: string
+          apple_team_id?: string
+          google_enabled?: boolean
+          google_issuer_id?: string
+          google_service_account?: string | null
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          apple_cert_filename?: string | null
+          apple_cert_p12_base64?: string | null
+          apple_cert_password?: string | null
+          apple_enabled?: boolean
+          apple_pass_type_id?: string
+          apple_team_id?: string
+          google_enabled?: boolean
+          google_issuer_id?: string
+          google_service_account?: string | null
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       nfc_catalog_products_public: {

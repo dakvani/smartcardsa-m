@@ -13,8 +13,45 @@
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
+
+interface WalletConfig {
+  apple_enabled: boolean;
+  apple_pass_type_id: string;
+  apple_team_id: string;
+  apple_cert_p12_base64: string | null;
+  google_enabled: boolean;
+  google_issuer_id: string;
+  google_service_account: string | null;
+}
+
+async function loadConfig(): Promise<WalletConfig | null> {
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return null;
+  try {
+    const res = await fetch(`${url}/rest/v1/wallet_settings?id=eq.1&select=*`, {
+      headers: { apikey: key, Authorization: `Bearer ${key}` },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return (rows?.[0] as WalletConfig) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function appleReady(cfg: WalletConfig | null): boolean {
+  if (cfg) {
+    return !!(cfg.apple_enabled && cfg.apple_pass_type_id && cfg.apple_team_id && cfg.apple_cert_p12_base64);
+  }
+  return (
+    !!Deno.env.get("APPLE_PASS_TYPE_ID") &&
+    !!Deno.env.get("APPLE_TEAM_ID") &&
+    !!Deno.env.get("APPLE_PASS_CERT_P12_BASE64")
+  );
+}
 
 interface PassRequest {
   platform: "apple" | "google";
@@ -64,10 +101,20 @@ async function signRs256(payload: Record<string, unknown>, privateKeyPem: string
   return `${signingInput}.${b64url(sig)}`;
 }
 
-async function buildGoogleSaveUrl(req: PassRequest): Promise<string | null> {
+function googleCreds(cfg: WalletConfig | null): { issuerId: string; saJson: string } | null {
+  if (cfg && cfg.google_enabled && cfg.google_issuer_id && cfg.google_service_account) {
+    return { issuerId: cfg.google_issuer_id, saJson: cfg.google_service_account };
+  }
   const issuerId = Deno.env.get("GOOGLE_WALLET_ISSUER_ID");
   const saJson = Deno.env.get("GOOGLE_WALLET_SERVICE_ACCOUNT");
-  if (!issuerId || !saJson) return null;
+  if (issuerId && saJson) return { issuerId, saJson };
+  return null;
+}
+
+async function buildGoogleSaveUrl(req: PassRequest, cfg: WalletConfig | null): Promise<string | null> {
+  const creds = googleCreds(cfg);
+  if (!creds) return null;
+  const { issuerId, saJson } = creds;
 
   let sa: { client_email: string; private_key: string };
   try {
@@ -121,7 +168,20 @@ Deno.serve(async (request) => {
   }
 
   try {
-    const body = (await request.json()) as PassRequest;
+    const raw = request.method === "GET" ? {} : await request.json().catch(() => ({}));
+    const cfg = await loadConfig();
+
+    if (request.method === "GET" || (raw as { action?: string })?.action === "status") {
+      return new Response(
+        JSON.stringify({
+          apple: appleReady(cfg) ? "available" : "pending",
+          google: googleCreds(cfg) ? "available" : "pending",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    const body = raw as PassRequest;
     if (!body?.platform || !body?.profile?.id) {
       return new Response(JSON.stringify({ error: "Invalid request" }), {
         status: 400,
@@ -130,7 +190,7 @@ Deno.serve(async (request) => {
     }
 
     if (body.platform === "google") {
-      const saveUrl = await buildGoogleSaveUrl(body);
+      const saveUrl = await buildGoogleSaveUrl(body, cfg);
       if (!saveUrl) {
         return new Response(
           JSON.stringify({
@@ -147,15 +207,10 @@ Deno.serve(async (request) => {
     }
 
     // Apple Wallet — needs a signed .pkpass bundle.
-    const appleReady =
-      !!Deno.env.get("APPLE_PASS_TYPE_ID") &&
-      !!Deno.env.get("APPLE_TEAM_ID") &&
-      !!Deno.env.get("APPLE_PASS_CERT_P12_BASE64");
-
     return new Response(
       JSON.stringify({
         configured: false,
-        reason: appleReady
+        reason: appleReady(cfg)
           ? "Apple Wallet pass signing is still being finalised."
           : "Apple Wallet isn't set up yet. Add your Apple Pass Type ID certificate to enable it.",
       }),
