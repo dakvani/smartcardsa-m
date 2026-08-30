@@ -139,7 +139,7 @@ export function Hero3D() {
 
           <button
             type="button"
-            onClick={() => smoothScrollTo("story-next")}
+            onClick={() => smoothScrollTo("how-it-works")}
             className="mt-8 text-[11px] uppercase tracking-[0.3em] text-white/40 transition-colors hover:text-white/80"
           >
             See how it works
