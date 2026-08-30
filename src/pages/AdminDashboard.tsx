@@ -612,9 +612,11 @@ export default function AdminDashboard() {
                 <AdminTableViewer />
               </TabsContent>
 
-              <TabsContent value="users">
+              <TabsContent value="users" className="space-y-4">
+                <AdminGoogleOAuthStatus />
                 <AdminUserManager />
               </TabsContent>
+
 
               <TabsContent value="builder">
                 <AdminBuilderSettings />
