@@ -7,15 +7,13 @@ import { useToast } from "@/hooks/use-toast";
 import { 
   Loader2, Database, Users, ShoppingBag, Star, Heart, Eye, Mail,
   Link, Palette, Shield, RefreshCw, ChevronRight, BarChart3, Package,
-  Clock, Bell, DollarSign, TrendingUp, Activity, LogOut,
-  ArrowUpRight, ArrowDownRight, FileText, Settings
+  Clock, DollarSign, LogOut, ArrowUpRight, Settings
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LayoutTemplate } from "lucide-react";
 import { AdminBuilderSettings } from "@/components/admin/AdminBuilderSettings";
 import { AdminTableViewer } from "@/components/admin/AdminTableViewer";
 import { ThemeToggle } from "@/components/ThemeToggle";
