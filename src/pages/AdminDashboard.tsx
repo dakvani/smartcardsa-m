@@ -450,35 +450,28 @@ export default function AdminDashboard() {
                   </Card>
                 </div>
 
-                {/* Quick Actions */}
-                <Card>
-                  <CardHeader className="p-3 pb-2">
-                    <CardTitle className="text-sm flex items-center gap-1.5">
-                      <Activity className="w-4 h-4 text-primary" />
-                      Quick Actions
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-3 pt-0">
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      <Button variant="outline" className="h-auto py-2.5 flex-col gap-1" onClick={() => setActiveTab("orders")}>
-                        <Package className="w-4 h-4 text-primary" />
-                        <span className="text-[11px]">Manage Orders</span>
-                      </Button>
-                      <Button variant="outline" className="h-auto py-2.5 flex-col gap-1" onClick={() => setActiveTab("users")}>
-                        <Users className="w-4 h-4 text-primary" />
-                        <span className="text-[11px]">Manage Users</span>
-                      </Button>
-                      <Button variant="outline" className="h-auto py-2.5 flex-col gap-1" onClick={() => setActiveTab("tables")}>
-                        <Database className="w-4 h-4 text-primary" />
-                        <span className="text-[11px]">View Database</span>
-                      </Button>
-                      <Button variant="outline" className="h-auto py-2.5 flex-col gap-1" onClick={() => setActiveTab("audit")}>
-                        <FileText className="w-4 h-4 text-primary" />
-                        <span className="text-[11px]">Audit Logs</span>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+              </TabsContent>
+
+              {/* Orders Tab (orders + pro requests) */}
+              <TabsContent value="orders">
+                <Tabs defaultValue="orders" className="space-y-3">
+                  <TabsList className="h-9 p-1 bg-muted/50 rounded-lg">
+                    <TabsTrigger value="orders" className="text-xs px-3 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm gap-1.5">
+                      Orders
+                      {pendingOrderNotifCount > 0 && (
+                        <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold rounded-full bg-yellow-500 text-background">{pendingOrderNotifCount}</span>
+                      )}
+                    </TabsTrigger>
+                    <TabsTrigger value="pro" className="text-xs px-3 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm gap-1.5">
+                      Pro requests
+                      {pendingProCount > 0 && (
+                        <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold rounded-full bg-primary text-primary-foreground">{pendingProCount}</span>
+                      )}
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="orders"><AdminOrdersInline /></TabsContent>
+                  <TabsContent value="pro"><AdminProRequests /></TabsContent>
+                </Tabs>
               </TabsContent>
 
               {/* Products Tab */}
@@ -486,38 +479,31 @@ export default function AdminDashboard() {
                 <AdminProductManager />
               </TabsContent>
 
-              {/* Orders Tab - Inline */}
-              <TabsContent value="orders">
-                <AdminOrdersInline />
+              {/* Users Tab */}
+              <TabsContent value="users" className="space-y-4">
+                <AdminGoogleOAuthStatus />
+                <AdminUserManager />
               </TabsContent>
 
-              <TabsContent value="pro">
-                <AdminProRequests />
-              </TabsContent>
-
-
+              {/* Emails Tab */}
               <TabsContent value="emails" className="space-y-4">
                 <AdminEmailSettings />
                 <AdminEmailTemplatesEditor />
                 <AdminWelcomeEmails />
               </TabsContent>
 
-              <TabsContent value="tables">
-                <AdminTableViewer />
-              </TabsContent>
-
-              <TabsContent value="users" className="space-y-4">
-                <AdminGoogleOAuthStatus />
-                <AdminUserManager />
-              </TabsContent>
-
-
-              <TabsContent value="builder">
-                <AdminBuilderSettings />
-              </TabsContent>
-
-              <TabsContent value="audit">
-                <AuditLogViewer />
+              {/* System Tab (builder, database, audit) */}
+              <TabsContent value="system">
+                <Tabs defaultValue="builder" className="space-y-3">
+                  <TabsList className="h-9 p-1 bg-muted/50 rounded-lg">
+                    <TabsTrigger value="builder" className="text-xs px-3 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">Builder</TabsTrigger>
+                    <TabsTrigger value="database" className="text-xs px-3 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">Database</TabsTrigger>
+                    <TabsTrigger value="audit" className="text-xs px-3 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">Audit log</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="builder"><AdminBuilderSettings /></TabsContent>
+                  <TabsContent value="database"><AdminTableViewer /></TabsContent>
+                  <TabsContent value="audit"><AuditLogViewer /></TabsContent>
+                </Tabs>
               </TabsContent>
             </Tabs>
           </motion.div>
