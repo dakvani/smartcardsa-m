@@ -149,7 +149,7 @@ export function Hero3D() {
         {/* 3D scene */}
         <div
           ref={sceneRef}
-          className="relative mx-auto flex w-full max-w-[520px] items-center justify-center py-6 lg:py-0"
+          className="relative mx-auto flex w-full max-w-[520px] items-center justify-center px-6 pb-14 pt-6 sm:pb-16 lg:py-0"
           style={{ perspective: 1100 }}
         >
           <motion.div
@@ -208,7 +208,7 @@ export function Hero3D() {
             {/* Floating phone — sits in front on the Z axis */}
             <motion.div
               style={{ transform: "translateZ(90px)", x: shift }}
-              className="absolute -bottom-16 -left-6 w-[104px] rounded-[18px] border border-white/15 bg-[#0d0d22]/90 p-1.5 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.9)] backdrop-blur-sm sm:w-[124px]"
+              className="absolute -bottom-10 -right-4 w-[92px] sm:-bottom-14 sm:-right-8 sm:w-[124px] rounded-[18px] border border-white/15 bg-[#0d0d22]/90 p-1.5 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.9)] backdrop-blur-sm sm:w-[124px]"
             >
               <div className="flex aspect-[9/18] flex-col gap-1.5 rounded-[13px] bg-gradient-to-b from-[#4f46e5]/35 via-[#0d0d22] to-[#7c3aed]/25 p-2.5">
                 <div className="mx-auto mt-1 h-8 w-8 rounded-full bg-white/25" />
