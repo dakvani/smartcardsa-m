@@ -695,6 +695,54 @@ export type Database = {
         }
         Relationships: []
       }
+      oauth_verification_status: {
+        Row: {
+          app_name: string
+          authorized_domains_added: boolean
+          consent_screen_configured: boolean
+          credentials_created: boolean
+          credentials_saved_in_cloud: boolean
+          id: number
+          notes: string | null
+          provider: string
+          publishing_status: string
+          scopes_configured: boolean
+          updated_at: string
+          updated_by: string | null
+          verification_status: string
+        }
+        Insert: {
+          app_name?: string
+          authorized_domains_added?: boolean
+          consent_screen_configured?: boolean
+          credentials_created?: boolean
+          credentials_saved_in_cloud?: boolean
+          id?: number
+          notes?: string | null
+          provider?: string
+          publishing_status?: string
+          scopes_configured?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          verification_status?: string
+        }
+        Update: {
+          app_name?: string
+          authorized_domains_added?: boolean
+          consent_screen_configured?: boolean
+          credentials_created?: boolean
+          credentials_saved_in_cloud?: boolean
+          id?: number
+          notes?: string | null
+          provider?: string
+          publishing_status?: string
+          scopes_configured?: boolean
+          updated_at?: string
+          updated_by?: string | null
+          verification_status?: string
+        }
+        Relationships: []
+      }
       pro_upgrade_requests: {
         Row: {
           admin_note: string | null
