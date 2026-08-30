@@ -34,6 +34,14 @@ const AdminOverviewCharts = lazy(() =>
 import { format } from "date-fns";
 import { formatSAR } from "@/lib/currency";
 
+const TAB_ALIASES: Record<string, string> = {
+  pro: "orders",
+  tables: "system",
+  database: "system",
+  audit: "system",
+  builder: "system",
+};
+
 interface TableStats {
   name: string;
   count: number;
