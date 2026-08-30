@@ -342,144 +342,35 @@ export default function AdminDashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
-              <TabsList className="grid w-full grid-cols-8 h-11 sm:h-10 gap-0.5 sm:gap-1 p-1 bg-muted/60">
-                <TabsTrigger
-                  value="overview"
-                  className="min-w-0 gap-1.5 px-1 sm:px-3 text-xs h-9 sm:h-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:ring-1 data-[state=active]:ring-primary/40 transition-colors"
-                  aria-label="Overview"
-                >
-                  <BarChart3 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                  <span className="hidden sm:inline">Overview</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="products"
-                  className="min-w-0 gap-1.5 px-1 sm:px-3 text-xs h-9 sm:h-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:ring-1 data-[state=active]:ring-primary/40 transition-colors"
-                  aria-label="Products"
-                >
-                  <ShoppingBag className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                  <span className="hidden sm:inline">Products</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="orders"
-                  className="min-w-0 gap-1 px-1 sm:px-3 text-xs h-9 sm:h-8 relative data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:ring-1 data-[state=active]:ring-primary/40 transition-colors"
-                  aria-label="Orders"
-                >
-                  <Package className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                  <span className="hidden sm:inline">Orders</span>
-                  {pendingOrderNotifCount > 0 && (
-                    <span className="absolute -top-1 -right-1 sm:static sm:ml-0.5 inline-flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold rounded-full bg-yellow-500 text-background animate-attention">
-                      {pendingOrderNotifCount}
-                    </span>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="pro"
-                  className="min-w-0 gap-1 px-1 sm:px-3 text-xs h-9 sm:h-8 relative data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:ring-1 data-[state=active]:ring-primary/40 transition-colors"
-                  aria-label="Pro requests"
-                >
-                  <Star className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                  <span className="hidden sm:inline">Pro</span>
-                  {pendingProCount > 0 && (
-                    <span className="absolute -top-1 -right-1 sm:static sm:ml-0.5 inline-flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold rounded-full bg-primary text-primary-foreground animate-attention">
-                      {pendingProCount}
-                    </span>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="emails"
-                  className="min-w-0 gap-1.5 px-1 sm:px-3 text-xs h-9 sm:h-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:ring-1 data-[state=active]:ring-primary/40 transition-colors"
-                  aria-label="Emails"
-                >
-                  <Mail className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                  <span className="hidden sm:inline">Emails</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="tables"
-                  className="min-w-0 gap-1.5 px-1 sm:px-3 text-xs h-9 sm:h-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:ring-1 data-[state=active]:ring-primary/40 transition-colors"
-                  aria-label="Database"
-                >
-                  <Database className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                  <span className="hidden sm:inline">Database</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="users"
-                  className="min-w-0 gap-1.5 px-1 sm:px-3 text-xs h-9 sm:h-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:ring-1 data-[state=active]:ring-primary/40 transition-colors"
-                  aria-label="Users"
-                >
-                  <Users className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                  <span className="hidden sm:inline">Users</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="audit"
-                  className="min-w-0 gap-1.5 px-1 sm:px-3 text-xs h-9 sm:h-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:ring-1 data-[state=active]:ring-primary/40 transition-colors"
-                  aria-label="Audit log"
-                >
-                  <Clock className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                  <span className="hidden sm:inline">Audit</span>
-                </TabsTrigger>
-                <TabsTrigger
-                  value="builder"
-                  className="min-w-0 gap-1.5 px-1 sm:px-3 text-xs h-9 sm:h-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:ring-1 data-[state=active]:ring-primary/40 transition-colors"
-                  aria-label="Builder"
-                >
-                  <LayoutTemplate className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                  <span className="hidden sm:inline">Builder</span>
-                </TabsTrigger>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+              <TabsList className="flex w-full overflow-x-auto scrollbar-hide h-auto gap-1 p-1 bg-muted/50 rounded-lg">
+                {([
+                  { value: "overview", label: "Overview", icon: BarChart3 },
+                  { value: "orders", label: "Orders", icon: Package, badge: pendingOrderNotifCount + pendingProCount },
+                  { value: "products", label: "Products", icon: ShoppingBag },
+                  { value: "users", label: "Users", icon: Users },
+                  { value: "emails", label: "Emails", icon: Mail },
+                  { value: "system", label: "System", icon: Settings },
+                ] as const).map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="flex-1 min-w-[52px] sm:min-w-0 gap-1.5 px-2 sm:px-3 py-2 text-xs rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-colors"
+                    aria-label={tab.label}
+                  >
+                    <tab.icon className="w-4 h-4" />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                    {"badge" in tab && tab.badge > 0 && (
+                      <span className="inline-flex items-center justify-center min-w-[16px] h-4 px-1 text-[10px] font-bold rounded-full bg-yellow-500 text-background">
+                        {tab.badge}
+                      </span>
+                    )}
+                  </TabsTrigger>
+                ))}
               </TabsList>
 
               {/* Overview Tab */}
               <TabsContent value="overview" className="space-y-4">
-                {/* Public site appearance (admin only) */}
-                <Card className="border-border/60">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3">
-                    <div className="min-w-0">
-                      <CardTitle className="text-sm sm:text-base flex items-center gap-1.5">
-                        <Palette className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-                        Public site appearance
-                      </CardTitle>
-                      <CardDescription className="text-[11px] sm:text-xs hidden sm:block">
-                        Choose the theme every visitor sees on the public site.
-                      </CardDescription>
-                    </div>
-                    <ThemeToggle />
-                  </CardHeader>
-                </Card>
-
-                {/* Stats Grid */}
-                <TooltipProvider delayDuration={200}>
-                  <div className="flex flex-wrap gap-2">
-                    {stats.map((stat, index) => (
-                      <motion.div
-                        key={stat.name}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.05 + index * 0.03 }}
-                        className="flex-[1_1_108px] sm:flex-[1_1_180px]"
-                      >
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Card className="hover:shadow-md transition-shadow cursor-pointer group" onClick={() => setActiveTab(stat.tab)}>
-                              <CardContent className="p-2 sm:p-3">
-                                <div className="flex items-center gap-2">
-                                  <div className={`p-1.5 sm:p-2 rounded-md sm:rounded-lg bg-muted ${stat.color} shrink-0`}>
-                                    <stat.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-[10px] sm:text-[11px] text-muted-foreground leading-none truncate">{stat.name}</p>
-                                    <p className="text-sm sm:text-lg font-bold leading-tight">{stat.count.toLocaleString()}</p>
-                                  </div>
-                                </div>
-                              </CardContent>
-                            </Card>
-                          </TooltipTrigger>
-                          <TooltipContent><p>Click to manage {stat.name.toLowerCase()}</p></TooltipContent>
-                        </Tooltip>
-                      </motion.div>
-                    ))}
-                  </div>
-                </TooltipProvider>
-
                 {/* Analytics Charts */}
                 <Suspense fallback={<div className="py-8 text-center text-sm text-muted-foreground">Loading charts…</div>}>
                   <AdminOverviewCharts />
