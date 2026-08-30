@@ -1,7 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Hero3D } from "@/components/home/Hero3D";
 import { ScrollStoryFallback } from "@/components/home/ScrollStoryFallback";
 import { ProductBenefits } from "@/components/home/ProductBenefits";
 import { ProductDesigns } from "@/components/home/ProductDesigns";
@@ -25,12 +24,9 @@ const Index = () => {
       />
       <Navbar />
       <main id="main-content" className="flex-1">
-        <Hero3D />
-        <div id="how-it-works">
-          <Suspense fallback={<ScrollStoryFallback />}>
-            <ScrollStory />
-          </Suspense>
-        </div>
+        <Suspense fallback={<ScrollStoryFallback />}>
+          <ScrollStory />
+        </Suspense>
         <ProductBenefits />
         <ProductDesigns />
         <Testimonials />
@@ -40,6 +36,5 @@ const Index = () => {
     </div>
   );
 };
-
 
 export default Index;
