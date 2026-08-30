@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { SocialIcons } from "@/components/profile/SocialIcons";
 import { EmailSignup } from "@/components/profile/EmailSignup";
 import { SaveContactButton } from "@/components/profile/SaveContactButton";
+import { AddToWalletButtons } from "@/components/profile/AddToWalletButtons";
+
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
 import { layoutClasses } from "@/lib/template-layout";
@@ -609,7 +611,13 @@ export default function PublicProfile() {
                 {profile.email_collection_enabled && (
                   <EmailSignup profileId={profile.id} />
                 )}
+                <AddToWalletButtons
+                  profile={profile}
+                  links={links}
+                  publicUrl={typeof window !== "undefined" ? window.location.href : ""}
+                />
               </motion.div>
+
 
               {/* Inline QR — always on mobile, and on sm+ when in Compact mode */}
               <div className={isCompact ? "block" : "block sm:hidden"}>{InlineQR}</div>

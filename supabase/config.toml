@@ -9,3 +9,5 @@ project_id = "aytnjjteziwwbfqddjrw"
     verify_jwt = false
 
 
+  [functions.wallet-pass]
+    verify_jwt = false
