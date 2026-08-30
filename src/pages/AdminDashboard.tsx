@@ -19,6 +19,7 @@ import { AdminTableViewer } from "@/components/admin/AdminTableViewer";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AdminUserManager } from "@/components/admin/AdminUserManager";
 import { AdminGoogleOAuthStatus } from "@/components/admin/AdminGoogleOAuthStatus";
+import { AdminWalletSetup } from "@/components/admin/AdminWalletSetup";
 
 import { AuditLogViewer } from "@/components/admin/AuditLogViewer";
 import { AdminWelcomeEmails } from "@/components/admin/AdminWelcomeEmails";
@@ -504,10 +505,12 @@ export default function AdminDashboard() {
                   <TabsList className="h-9 p-1 bg-muted/50 rounded-lg">
                     <TabsTrigger value="builder" className="text-xs px-3 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">Builder</TabsTrigger>
                     <TabsTrigger value="database" className="text-xs px-3 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">Database</TabsTrigger>
+                    <TabsTrigger value="wallet" className="text-xs px-3 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">Wallet</TabsTrigger>
                     <TabsTrigger value="audit" className="text-xs px-3 rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm">Audit log</TabsTrigger>
                   </TabsList>
                   <TabsContent value="builder"><AdminBuilderSettings /></TabsContent>
                   <TabsContent value="database"><AdminTableViewer /></TabsContent>
+                  <TabsContent value="wallet"><AdminWalletSetup /></TabsContent>
                   <TabsContent value="audit"><AuditLogViewer /></TabsContent>
                 </Tabs>
               </TabsContent>
