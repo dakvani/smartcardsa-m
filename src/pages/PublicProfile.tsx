@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { SocialIcons } from "@/components/profile/SocialIcons";
 import { EmailSignup } from "@/components/profile/EmailSignup";
 import { SaveContactButton } from "@/components/profile/SaveContactButton";
+import { AddToWalletButtons } from "@/components/profile/AddToWalletButtons";
+
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
 import { layoutClasses } from "@/lib/template-layout";
