@@ -24,6 +24,68 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
+  const [useOtp, setUseOtp] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+
+  const finishSignIn = async (userId: string) => {
+    setRedirecting(true);
+    const dest = await getPostLoginRedirect(userId);
+    setTimeout(() => navigate(dest, { replace: true }), 150);
+  };
+
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: mode === "signup",
+          emailRedirectTo: window.location.origin,
+          data: mode === "signup" ? { username: username || undefined } : undefined,
+        },
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setOtpSent(true);
+        toast.success("We sent a 6-digit code to your email.");
+      }
+    } catch {
+      toast.error("Could not send the code. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otpCode.trim().length < 6) {
+      toast.error("Enter the 6-digit code from your email.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: otpCode.trim(),
+        type: "email",
+      });
+      if (error) {
+        toast.error(error.message);
+        setLoading(false);
+      } else if (data?.session) {
+        await finishSignIn(data.session.user.id);
+      } else {
+        setLoading(false);
+      }
+    } catch {
+      toast.error("Verification failed. Please try again.");
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,9 +116,7 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
           toast.error(error.message);
           setLoading(false);
         } else if (data?.session) {
-          setRedirecting(true);
-          const dest = await getPostLoginRedirect(data.session.user.id);
-          setTimeout(() => navigate(dest, { replace: true }), 150);
+          await finishSignIn(data.session.user.id);
         } else {
           setLoading(false);
         }
@@ -87,6 +147,7 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
       setForgotLoading(false);
     }
   };
+
 
   if (showForgot) {
     return (
