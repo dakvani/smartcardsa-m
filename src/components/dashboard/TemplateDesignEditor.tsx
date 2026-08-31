@@ -139,11 +139,38 @@ export function TemplateDesignEditor({
   onUpdateButton,
   onDeleteButton,
   onMoveButton,
+  userId,
+  isPro,
 }: Props) {
   const update = (patch: Partial<CardStyle>) => onChange({ ...value, ...patch });
   const layout = value.layout ?? "classic";
   const detailKey: DetailKey | null = layout === "social" ? "stats" : layout === "biodata" ? "facts" : null;
   const details = detailKey ? value[detailKey] ?? [] : [];
+  const [headerUploading, setHeaderUploading] = useState(false);
+  const headerInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadHeaderBg = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !userId) return;
+    if (!file.type.startsWith("image/")) return toast.error("Please pick an image file");
+    if (file.size > 5 * 1024 * 1024) return toast.error("Image must be under 5MB");
+    setHeaderUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${userId}/header-bg/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
+      if (error) throw error;
+      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      update({ headerBg: data.publicUrl, headerOverlay: value.headerOverlay ?? 35 });
+      toast.success("Header background applied");
+    } catch (err: any) {
+      toast.error(err.message || "Upload failed");
+    } finally {
+      setHeaderUploading(false);
+    }
+  };
+
 
 
   const updateDetail = (index: number, patch: { label?: string; value?: string }) => {
