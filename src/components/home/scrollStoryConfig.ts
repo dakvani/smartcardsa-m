@@ -13,6 +13,12 @@ export const SCROLL_STORY_CONFIG = {
   /** Vertical viewport multiplier per stage. Larger = more scroll per stage. */
   viewportPerStage: 1,
 
+  /** Time (ms) for one full autoplay pass across all stages when idle. */
+  autoplayDuration: 22000,
+
+  /** Idle time (ms) after the last scroll event before autoplay resumes. */
+  autoplayIdleMs: 900,
+
   /**
    * Stage cross-fade window, expressed as fractions of a single stage span.
    * `enterPad` extends the fade-in before the stage start; `exitPad` extends
