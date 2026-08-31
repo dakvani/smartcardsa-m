@@ -24,7 +24,17 @@ export type HeaderDesign =
   | "stars"
   | "prism"
   | "tide"
-  | "slash";
+  | "slash"
+  | "ribbon"
+  | "arches"
+  | "bubbles"
+  | "origami"
+  | "layers"
+  | "sunflare"
+  | "spotlight"
+  | "lensflare"
+  | "halo"
+  | "radiance";
 
 export interface HeaderDesignSpec {
   key: HeaderDesign;
