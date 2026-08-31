@@ -14,7 +14,17 @@ export type HeaderDesign =
   | "grid"
   | "sunburst"
   | "confetti"
-  | "stripes";
+  | "stripes"
+  | "glass"
+  | "neon"
+  | "dusk"
+  | "topo"
+  | "bokeh"
+  | "strokes"
+  | "stars"
+  | "prism"
+  | "tide"
+  | "slash";
 
 export interface HeaderDesignSpec {
   key: HeaderDesign;
@@ -24,6 +34,10 @@ export interface HeaderDesignSpec {
   base: React.CSSProperties;
   /** Optional patterned layer painted over the base. */
   pattern?: React.CSSProperties;
+  /** Optional clip-path for an unequal / shaped bottom edge (CSS clip-path). */
+  clipPath?: string;
+  /** Glass styles: blurred, translucent tint instead of an opaque gradient. */
+  glass?: boolean;
 }
 
 export const HEADER_DESIGNS: HeaderDesignSpec[] = [
