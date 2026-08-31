@@ -67,12 +67,15 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
       return;
     }
     setLoading(true);
+    const token = otpCode.trim();
     try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        email,
-        token: otpCode.trim(),
-        type: "email",
-      });
+      // "signup" confirms a password signup; "email" covers code/magic-link logins.
+      let { data, error } = await supabase.auth.verifyOtp({ email, token, type: "signup" });
+      if (error) {
+        const retry = await supabase.auth.verifyOtp({ email, token, type: "email" });
+        data = retry.data;
+        error = retry.error;
+      }
       if (error) {
         toast.error(error.message);
         setLoading(false);
@@ -93,7 +96,7 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
 
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -103,11 +106,18 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
         });
         if (error) {
           toast.error(error.message);
+          setLoading(false);
+        } else if (data?.session) {
+          await finishSignIn(data.session.user.id);
         } else {
-          toast.success("Check your email to confirm your account!");
+          // Email confirmation required — collect the 6-digit code from the email.
+          toast.success("We emailed you a 6-digit code to confirm your account.");
+          setUseOtp(true);
+          setOtpSent(true);
+          setLoading(false);
         }
-        setLoading(false);
       } else {
+
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
