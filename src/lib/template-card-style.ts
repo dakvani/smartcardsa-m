@@ -14,6 +14,8 @@ import {
   type TemplateLayout,
   type ThreeDVariant,
 } from "@/lib/smartlink-templates";
+import type { HeaderDesign } from "@/lib/header-designs";
+
 
 export interface CardStyle {
   /** Template handle this style came from (informational). */
@@ -28,8 +30,13 @@ export interface CardStyle {
   bgTint?: string;
   /** Pro: image shown behind the header block only (avatar + name + bio). */
   headerBg?: string;
+  /** Pro: ready-made CSS banner design behind the header block. */
+  headerDesign?: HeaderDesign;
+  /** Banner runs to the top and both edges (default true). */
+  headerBleed?: boolean;
   /** 0-90: darkness of the scrim over the header image, for text contrast. */
   headerOverlay?: number;
+
   layout?: TemplateLayout;
   threeD?: boolean;
   threeDVariant?: ThreeDVariant;
