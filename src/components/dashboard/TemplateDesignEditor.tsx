@@ -281,12 +281,12 @@ export function TemplateDesignEditor({
         </div>
       </div>
 
-      {/* Pro: header-only background image */}
-      <div className="space-y-2 border-t border-border/60 pt-3">
+      {/* Pro: header banner — ready-made design or your own image */}
+      <div className="space-y-3 border-t border-border/60 pt-3">
         <div className="flex items-center justify-between gap-2">
           <div>
             <Label className="text-xs flex items-center gap-1">
-              Header background image
+              Header banner
               <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-primary">Pro</span>
             </Label>
             <p className="text-[11px] text-muted-foreground">Sits behind your photo, name and bio only — the rest keeps the template theme.</p>
@@ -300,21 +300,63 @@ export function TemplateDesignEditor({
           )}
         </div>
         <input ref={headerInputRef} type="file" accept="image/*" className="hidden" onChange={uploadHeaderBg} disabled={!isPro} />
-        {isPro && value.headerBg && (
-          <div className="space-y-2 rounded-lg border border-border/60 p-2">
-            <div className="flex items-center gap-2">
-              <img src={value.headerBg} alt="Header background preview" className="h-12 w-20 rounded-md object-cover" />
-              <Button type="button" size="sm" variant="ghost" className="h-7 text-[11px] text-destructive" onClick={() => update({ headerBg: undefined })}>
-                <Trash2 className="h-3 w-3" /> Remove
-              </Button>
+
+        {isPro && (
+          <>
+            <div className="grid grid-cols-4 gap-2">
+              {HEADER_DESIGNS.map((d) => {
+                const active = (value.headerDesign ?? "none") === d.key;
+                return (
+                  <button
+                    key={d.key}
+                    type="button"
+                    title={d.hint}
+                    aria-pressed={active}
+                    onClick={() => update({ headerDesign: d.key === "none" ? undefined : d.key })}
+                    className={`group overflow-hidden rounded-lg border text-left transition ${
+                      active ? "border-primary ring-2 ring-primary/40" : "border-border/60 hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="relative h-9 w-full bg-muted" style={d.base}>
+                      {d.pattern && <div className="absolute inset-0" style={d.pattern} />}
+                      {d.key === "none" && (
+                        <span className="absolute inset-0 flex items-center justify-center text-[9px] text-muted-foreground">None</span>
+                      )}
+                    </div>
+                    <span className="block truncate px-1.5 py-1 text-[9px] font-medium">{d.label}</span>
+                  </button>
+                );
+              })}
             </div>
-            <div className="space-y-1">
-              <Label className="text-[11px]">Darken for readability — {value.headerOverlay ?? 35}%</Label>
-              <Slider value={[value.headerOverlay ?? 35]} min={0} max={90} step={5} onValueChange={([v]) => update({ headerOverlay: v })} aria-label="Header overlay" />
-            </div>
-          </div>
+
+            {(value.headerDesign || value.headerBg) && (
+              <div className="space-y-2 rounded-lg border border-border/60 p-2">
+                {value.headerBg && (
+                  <div className="flex items-center gap-2">
+                    <img src={value.headerBg} alt="Header background preview" className="h-12 w-20 rounded-md object-cover" />
+                    <Button type="button" size="sm" variant="ghost" className="h-7 text-[11px] text-destructive" onClick={() => update({ headerBg: undefined })}>
+                      <Trash2 className="h-3 w-3" /> Remove image
+                    </Button>
+                  </div>
+                )}
+                <label className="flex items-center justify-between gap-2 text-[11px]">
+                  <span>Full-bleed banner (runs to the top and both edges)</span>
+                  <Switch
+                    checked={value.headerBleed !== false}
+                    onCheckedChange={(headerBleed) => update({ headerBleed })}
+                    aria-label="Full-bleed header banner"
+                  />
+                </label>
+                <div className="space-y-1">
+                  <Label className="text-[11px]">Darken for readability — {value.headerOverlay ?? 35}%</Label>
+                  <Slider value={[value.headerOverlay ?? 35]} min={0} max={90} step={5} onValueChange={([v]) => update({ headerOverlay: v })} aria-label="Header overlay" />
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
+
 
       {buttons && (
         <div className="space-y-2 border-t border-border/60 pt-3">
