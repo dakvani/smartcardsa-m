@@ -31,11 +31,17 @@ export function HeaderBackdrop({ style, children, scale = "full" }: Props) {
     ? "rounded-2xl p-3"
     : "rounded-3xl p-4 sm:p-5";
 
+  const clipPath = bleed && design?.clipPath ? design.clipPath : undefined;
+  // Clip-path replaces the bottom rounding; keep the bleed padding either way.
+  const bleedPad = mini ? "-mx-4 -mt-10 px-4 pt-12 pb-6" : "-mx-4 -mt-8 sm:-mt-12 px-4 pt-10 sm:pt-14 pb-8 sm:pb-9";
+  const shapeClasses = clipPath ? bleedPad : shape;
+
   return (
     <div
-      className={`relative z-10 overflow-hidden ${shape} ${
+      className={`relative z-10 overflow-hidden ${shapeClasses} ${
         bleed ? "mb-4 shadow-xl" : "ring-1 ring-primary-foreground/15 shadow-lg"
-      }`}
+      } ${design?.glass ? "bg-white/5" : ""}`}
+      style={clipPath ? { clipPath } : undefined}
     >
       {design && (
         <>
