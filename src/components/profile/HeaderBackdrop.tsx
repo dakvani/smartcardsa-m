@@ -31,11 +31,14 @@ export function HeaderBackdrop({ style, children, scale = "full" }: Props) {
     ? "rounded-2xl p-3"
     : "rounded-3xl p-4 sm:p-5";
 
+  const clipPath = bleed && design?.clipPath ? design.clipPath : undefined;
+
   return (
     <div
-      className={`relative z-10 overflow-hidden ${shape} ${
+      className={`relative z-10 overflow-hidden ${clipPath ? "" : shape} ${
         bleed ? "mb-4 shadow-xl" : "ring-1 ring-primary-foreground/15 shadow-lg"
-      }`}
+      } ${design?.glass ? "bg-white/5" : ""}`}
+      style={clipPath ? { clipPath, paddingTop: "inherit" } : undefined}
     >
       {design && (
         <>
