@@ -1586,10 +1586,10 @@ export default function Dashboard() {
                               <p className={`${PL.bio} ${bioClassFor(cs)}`}>{profile.bio}</p>
                             )}
                             <SocialIcons socialLinks={profile.social_links || {}} className={cs.socialColor} order={cs.socialOrder} />
-                         </div>
-                         </HeaderBackdrop>
+                          </div>
+                          </div>
+                          </HeaderBackdrop>
 
-                         </div>
                          {cs.layout === "social" && cs.stats && (
                           <div className="relative z-10 mb-3 grid grid-cols-3 gap-1 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 p-2">
                             {cs.stats.map((item, index) => <div key={`${item.label}-${index}`} className="text-center"><div className={`text-[11px] font-bold ${headingClassFor(cs)}`}>{item.value}</div><div className={`text-[8px] uppercase ${bioClassFor(cs)}`}>{item.label}</div></div>)}
