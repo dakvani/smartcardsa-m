@@ -26,6 +26,10 @@ export interface CardStyle {
   socialColor?: string;
   socialOrder?: string[];
   bgTint?: string;
+  /** Pro: image shown behind the header block only (avatar + name + bio). */
+  headerBg?: string;
+  /** 0-90: darkness of the scrim over the header image, for text contrast. */
+  headerOverlay?: number;
   layout?: TemplateLayout;
   threeD?: boolean;
   threeDVariant?: ThreeDVariant;

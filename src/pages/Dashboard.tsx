@@ -62,6 +62,7 @@ import {
   type TemplateFieldKey, type TemplateFieldValues,
 } from "@/lib/template-fields";
 import { TemplateFieldsDialog } from "@/components/dashboard/TemplateFieldsDialog";
+import { HeaderBackdrop } from "@/components/profile/HeaderBackdrop";
 import { TemplateDesignEditor } from "@/components/dashboard/TemplateDesignEditor";
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
@@ -1344,6 +1345,8 @@ export default function Dashboard() {
                     onUpdateButton={(id, patch) => updateLink(id, patch)}
                     onDeleteButton={(id) => deleteLink(id)}
                     onMoveButton={(id, direction) => moveLink(id, direction)}
+                    userId={user.id}
+                    isPro={isPro}
                   />
                   )}
 
@@ -1566,6 +1569,7 @@ export default function Dashboard() {
                        const PL = layoutClasses(cs.layout, "mini");
                        return (
                         <div className={PL.panel}>
+                         <HeaderBackdrop style={cs} scale="mini">
                          <div className={PL.header}>
                           <div className={`${PL.avatar} bg-primary-foreground/20 backdrop-blur flex items-center justify-center overflow-hidden`}>
                             {profile.avatar_url ? (
@@ -1583,7 +1587,9 @@ export default function Dashboard() {
                             )}
                             <SocialIcons socialLinks={profile.social_links || {}} className={cs.socialColor} order={cs.socialOrder} />
                           </div>
-                         </div>
+                          </div>
+                          </HeaderBackdrop>
+
                          {cs.layout === "social" && cs.stats && (
                           <div className="relative z-10 mb-3 grid grid-cols-3 gap-1 rounded-xl border border-primary-foreground/20 bg-primary-foreground/10 p-2">
                             {cs.stats.map((item, index) => <div key={`${item.label}-${index}`} className="text-center"><div className={`text-[11px] font-bold ${headingClassFor(cs)}`}>{item.value}</div><div className={`text-[8px] uppercase ${bioClassFor(cs)}`}>{item.label}</div></div>)}

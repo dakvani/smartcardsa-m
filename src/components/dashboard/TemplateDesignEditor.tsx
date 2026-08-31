@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, ImagePlus, Loader2, Lock, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { CardStyle } from "@/lib/template-card-style";
 import { FONT_FAMILIES, FONT_LABELS, fontClassFor, TEMPLATE_LAYOUTS, type ButtonShape, type FontFamily, type TemplateLayout } from "@/lib/smartlink-templates";
@@ -30,7 +33,12 @@ interface Props {
   onUpdateButton?: (id: string, patch: { title?: string; url?: string; motion?: string | null; style?: LinkStyle }) => void;
   onDeleteButton?: (id: string) => void;
   onMoveButton?: (id: string, direction: -1 | 1) => void;
+  /** Owner id — required to upload the pro header background. */
+  userId?: string;
+  /** Pro plans can upload a header background image. */
+  isPro?: boolean;
 }
+
 
 
 type DetailKey = "stats" | "facts";
@@ -134,11 +142,38 @@ export function TemplateDesignEditor({
   onUpdateButton,
   onDeleteButton,
   onMoveButton,
+  userId,
+  isPro,
 }: Props) {
   const update = (patch: Partial<CardStyle>) => onChange({ ...value, ...patch });
   const layout = value.layout ?? "classic";
   const detailKey: DetailKey | null = layout === "social" ? "stats" : layout === "biodata" ? "facts" : null;
   const details = detailKey ? value[detailKey] ?? [] : [];
+  const [headerUploading, setHeaderUploading] = useState(false);
+  const headerInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadHeaderBg = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !userId) return;
+    if (!file.type.startsWith("image/")) return toast.error("Please pick an image file");
+    if (file.size > 5 * 1024 * 1024) return toast.error("Image must be under 5MB");
+    setHeaderUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${userId}/header-bg/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
+      if (error) throw error;
+      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      update({ headerBg: data.publicUrl, headerOverlay: value.headerOverlay ?? 35 });
+      toast.success("Header background applied");
+    } catch (err: any) {
+      toast.error(err.message || "Upload failed");
+    } finally {
+      setHeaderUploading(false);
+    }
+  };
+
 
 
   const updateDetail = (index: number, patch: { label?: string; value?: string }) => {
@@ -244,6 +279,41 @@ export function TemplateDesignEditor({
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      {/* Pro: header-only background image */}
+      <div className="space-y-2 border-t border-border/60 pt-3">
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <Label className="text-xs flex items-center gap-1">
+              Header background image
+              <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-primary">Pro</span>
+            </Label>
+            <p className="text-[11px] text-muted-foreground">Sits behind your photo, name and bio only — the rest keeps the template theme.</p>
+          </div>
+          {isPro ? (
+            <Button type="button" size="sm" variant="outline" className="h-7 text-[11px]" disabled={headerUploading} onClick={() => headerInputRef.current?.click()}>
+              {headerUploading ? <Loader2 className="h-3 w-3 animate-spin" /> : <ImagePlus className="h-3 w-3" />} Upload
+            </Button>
+          ) : (
+            <span className="flex items-center gap-1 text-[11px] text-muted-foreground"><Lock className="h-3 w-3" /> Pro only</span>
+          )}
+        </div>
+        <input ref={headerInputRef} type="file" accept="image/*" className="hidden" onChange={uploadHeaderBg} disabled={!isPro} />
+        {isPro && value.headerBg && (
+          <div className="space-y-2 rounded-lg border border-border/60 p-2">
+            <div className="flex items-center gap-2">
+              <img src={value.headerBg} alt="Header background preview" className="h-12 w-20 rounded-md object-cover" />
+              <Button type="button" size="sm" variant="ghost" className="h-7 text-[11px] text-destructive" onClick={() => update({ headerBg: undefined })}>
+                <Trash2 className="h-3 w-3" /> Remove
+              </Button>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-[11px]">Darken for readability — {value.headerOverlay ?? 35}%</Label>
+              <Slider value={[value.headerOverlay ?? 35]} min={0} max={90} step={5} onValueChange={([v]) => update({ headerOverlay: v })} aria-label="Header overlay" />
+            </div>
+          </div>
+        )}
       </div>
 
       {buttons && (
