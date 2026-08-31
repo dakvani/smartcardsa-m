@@ -382,6 +382,18 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
         {mode === "signup" ? "Create Account" : "Sign In"}
       </Button>
 
+      <button
+        type="button"
+        onClick={() => setUseOtp(true)}
+        className="w-full text-sm text-primary hover:underline"
+      >
+        {mode === "signup"
+          ? "Sign up with an email code instead"
+          : "Sign in with an email code instead"}
+      </button>
+
+
+
       <p className="text-center text-sm text-muted-foreground">
         {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
         <button
