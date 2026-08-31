@@ -24,6 +24,68 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
+  const [useOtp, setUseOtp] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+
+  const finishSignIn = async (userId: string) => {
+    setRedirecting(true);
+    const dest = await getPostLoginRedirect(userId);
+    setTimeout(() => navigate(dest, { replace: true }), 150);
+  };
+
+  const handleSendOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: mode === "signup",
+          emailRedirectTo: window.location.origin,
+          data: mode === "signup" ? { username: username || undefined } : undefined,
+        },
+      });
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setOtpSent(true);
+        toast.success("We sent a 6-digit code to your email.");
+      }
+    } catch {
+      toast.error("Could not send the code. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otpCode.trim().length < 6) {
+      toast.error("Enter the 6-digit code from your email.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: otpCode.trim(),
+        type: "email",
+      });
+      if (error) {
+        toast.error(error.message);
+        setLoading(false);
+      } else if (data?.session) {
+        await finishSignIn(data.session.user.id);
+      } else {
+        setLoading(false);
+      }
+    } catch {
+      toast.error("Verification failed. Please try again.");
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,9 +116,7 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
           toast.error(error.message);
           setLoading(false);
         } else if (data?.session) {
-          setRedirecting(true);
-          const dest = await getPostLoginRedirect(data.session.user.id);
-          setTimeout(() => navigate(dest, { replace: true }), 150);
+          await finishSignIn(data.session.user.id);
         } else {
           setLoading(false);
         }
@@ -87,6 +147,7 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
       setForgotLoading(false);
     }
   };
+
 
   if (showForgot) {
     return (
@@ -126,6 +187,98 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
       </form>
     );
   }
+
+  if (useOtp) {
+    return (
+      <form onSubmit={otpSent ? handleVerifyOtp : handleSendOtp} className="space-y-4">
+        {mode === "signup" && !otpSent && (
+          <div className="space-y-2">
+            <Label htmlFor="otp-username" className="text-sm text-muted-foreground">
+              Username
+            </Label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                id="otp-username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="your_username"
+                className="pl-10 h-12 rounded-xl bg-card/50 border-border/50 backdrop-blur-sm"
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <Label htmlFor="otp-email" className="text-sm text-muted-foreground">
+            Email address
+          </Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              id="otp-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              disabled={otpSent}
+              className="pl-10 h-12 rounded-xl bg-card/50 border-border/50 backdrop-blur-sm"
+              required
+            />
+          </div>
+        </div>
+
+        {otpSent && (
+          <div className="space-y-2">
+            <Label htmlFor="otp-code" className="text-sm text-muted-foreground">
+              6-digit code
+            </Label>
+            <Input
+              id="otp-code"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              placeholder="123456"
+              className="h-12 rounded-xl text-center text-lg tracking-[0.5em] bg-card/50 border-border/50"
+              required
+            />
+            <button
+              type="button"
+              onClick={handleSendOtp}
+              className="text-xs text-primary hover:underline"
+            >
+              Resend code
+            </button>
+          </div>
+        )}
+
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full h-12 rounded-xl font-semibold bg-gradient-to-r from-primary to-pink-500 hover:opacity-90 transition-opacity"
+        >
+          {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+          {otpSent ? "Verify code" : "Send code"}
+        </Button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setUseOtp(false);
+            setOtpSent(false);
+            setOtpCode("");
+          }}
+          className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Use password instead
+        </button>
+      </form>
+    );
+  }
+
+
 
   return (
     <>
@@ -228,6 +381,18 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
         ) : null}
         {mode === "signup" ? "Create Account" : "Sign In"}
       </Button>
+
+      <button
+        type="button"
+        onClick={() => setUseOtp(true)}
+        className="w-full text-sm text-primary hover:underline"
+      >
+        {mode === "signup"
+          ? "Sign up with an email code instead"
+          : "Sign in with an email code instead"}
+      </button>
+
+
 
       <p className="text-center text-sm text-muted-foreground">
         {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}

@@ -2,14 +2,6 @@ import { supabase } from "@/integrations/supabase/client";
 
 const MAX_ATTEMPTS = 3;
 
-/**
- * Managed email sending is not configured for this project yet (no sender
- * domain). Until it is, welcome emails are skipped instead of repeatedly
- * calling an email function that no longer exists in this project.
- */
-const MANAGED_EMAIL_READY = false;
-
-
 export interface WelcomeSendResult {
   ok: boolean;
   error?: string;
@@ -18,7 +10,8 @@ export interface WelcomeSendResult {
 
 /**
  * Attempt to send the welcome email with retry + exponential backoff.
- * Records attempt count, last error, timestamps, and the footer version used.
+ * Sending happens server-side in the `send-welcome-email` edge function, which
+ * only ever mails the authenticated caller's own address.
  */
 export async function sendWelcomeEmailWithRetry(
   userId: string,
@@ -26,16 +19,11 @@ export async function sendWelcomeEmailWithRetry(
   username?: string | null,
   opts: { force?: boolean } = {}
 ): Promise<WelcomeSendResult> {
-  if (!MANAGED_EMAIL_READY) {
-    return { ok: true, attempts: 0 };
-  }
-
   const { data: profile } = await supabase
     .from("profiles")
     .select("welcome_email_sent_at, welcome_email_attempts, username")
     .eq("user_id", userId)
     .maybeSingle();
-
 
   if (!opts.force && profile?.welcome_email_sent_at) {
     return { ok: true, attempts: profile.welcome_email_attempts ?? 0 };
@@ -90,19 +78,13 @@ export async function sendWelcomeEmailWithRetry(
         })
         .eq("user_id", userId);
 
-      const { data, error } = await supabase.functions.invoke("send-transactional-email", {
+      const { data, error } = await supabase.functions.invoke("send-welcome-email", {
         body: {
-          templateName: "welcome",
-          recipientEmail,
-          idempotencyKey: `welcome-${userId}${opts.force ? `-r${attemptNumber}` : ""}`,
-          templateData: {
-            name: username || profile?.username || "",
-            siteUrl: window.location.origin,
-            helpText,
-            supportEmail,
-            footerVersion,
-            marketingUnsubscribeUrl,
-          },
+          name: username || profile?.username || "",
+          siteUrl: window.location.origin,
+          helpText,
+          supportEmail,
+          marketingUnsubscribeUrl,
         },
       });
 
@@ -135,26 +117,6 @@ export async function sendWelcomeEmailWithRetry(
     .from("profiles")
     .update({ welcome_email_last_error: finalError })
     .eq("user_id", userId);
-
-  try {
-    await supabase.functions.invoke("send-transactional-email", {
-      body: {
-        templateName: "welcome-email-failed",
-        recipientEmail,
-        idempotencyKey: `welcome-failed-${userId}-${Date.now()}`,
-        templateData: {
-          userEmail: recipientEmail,
-          username: username || profile?.username || "",
-          userId,
-          errorMessage: finalError,
-          attempts: baseAttempts + MAX_ATTEMPTS,
-          adminUrl: `${window.location.origin}/admin`,
-        },
-      },
-    });
-  } catch (alertErr) {
-    console.error("Failed to dispatch admin failure alert", alertErr);
-  }
 
   return { ok: false, error: lastError, attempts: baseAttempts + MAX_ATTEMPTS };
 }

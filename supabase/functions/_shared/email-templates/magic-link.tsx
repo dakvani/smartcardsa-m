@@ -16,11 +16,13 @@ import {
 interface MagicLinkEmailProps {
   siteName: string
   confirmationUrl: string
+  token?: string
 }
 
 export const MagicLinkEmail = ({
   siteName,
   confirmationUrl,
+  token,
 }: MagicLinkEmailProps) => (
   <Html lang="en" dir="ltr">
     <Head>
@@ -37,6 +39,12 @@ export const MagicLinkEmail = ({
         <Button className="dm-btn" style={button} href={confirmationUrl}>
           Log In
         </Button>
+        {token ? (
+          <>
+            <Text style={text}>Or enter this verification code:</Text>
+            <Text style={code}>{token}</Text>
+          </>
+        ) : null}
         <Text style={footer}>
           If you didn't request this link, you can safely ignore this email.
         </Text>
@@ -69,6 +77,13 @@ const button = {
   borderRadius: '8px',
   padding: '12px 20px',
   textDecoration: 'none',
+}
+const code = {
+  fontSize: '30px',
+  fontWeight: 'bold' as const,
+  letterSpacing: '8px',
+  color: '#000000',
+  margin: '16px 0 0',
 }
 const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
 // Rendered as a text child, which React may HTML-escape: keep this CSS free of >, &, and quotes.
