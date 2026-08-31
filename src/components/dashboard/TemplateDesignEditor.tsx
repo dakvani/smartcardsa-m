@@ -30,7 +30,12 @@ interface Props {
   onUpdateButton?: (id: string, patch: { title?: string; url?: string; motion?: string | null; style?: LinkStyle }) => void;
   onDeleteButton?: (id: string) => void;
   onMoveButton?: (id: string, direction: -1 | 1) => void;
+  /** Owner id — required to upload the pro header background. */
+  userId?: string;
+  /** Pro plans can upload a header background image. */
+  isPro?: boolean;
 }
+
 
 
 type DetailKey = "stats" | "facts";
