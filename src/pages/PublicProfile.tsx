@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Star, Smartphone, Maximize2, ChevronDown, icons as LucideIcons } from "lucide-react";
 import { detectLinkType, getLinkTypeDef } from "@/lib/link-types";
 import { SmartCardLogo } from "@/components/brand/SmartCardLogo";
-import { QRCodeSVG } from "qrcode.react";
+import { DesignedQrCode } from "@/components/profile/DesignedQrCode";
 import { Button } from "@/components/ui/button";
 import { HeaderBackdrop } from "@/components/profile/HeaderBackdrop";
 import { SocialIcons } from "@/components/profile/SocialIcons";
@@ -326,12 +326,15 @@ export default function PublicProfile() {
 
   // Reusable QR block (inline in footer for compact mode and small screens)
   const InlineQR = (
-    <div className="mt-6 flex flex-col items-center gap-2">
-      <div className="rounded-lg p-2" style={{ background: qrColors.bg }}>
-        <QRCodeSVG value={qrValue} size={104} level="M" fgColor={qrColors.fg} bgColor={qrColors.bg} />
-      </div>
+    <div className="mt-6 flex flex-col items-center gap-2.5">
+      <DesignedQrCode
+        value={qrValue}
+        accent={qrColors.fg}
+        logoUrl={profile.avatar_url}
+        size={104}
+      />
       <p className="text-[11px] font-medium text-primary-foreground/80">View on mobile</p>
-      <p className="text-[10px] text-primary-foreground/50 leading-tight text-center max-w-[180px]">
+      <p className="text-[10px] text-primary-foreground/50 leading-tight text-center max-w-[180px] -mt-1.5">
         Scan to open on your phone
       </p>
     </div>
@@ -681,10 +684,14 @@ export default function PublicProfile() {
 
           {/* Side QR badge — only phone mode on sm+ */}
           {!isCompact && (
-            <div className="hidden sm:flex absolute -right-44 top-6 w-40 flex-col items-center gap-2 rounded-2xl border border-white/10 bg-slate-900/70 backdrop-blur p-3 shadow-xl">
-              <div className="rounded-lg p-2" style={{ background: qrColors.bg }}>
-                <QRCodeSVG value={qrValue} size={120} level="M" fgColor={qrColors.fg} bgColor={qrColors.bg} />
-              </div>
+            <div className="hidden sm:flex absolute -right-44 top-6 w-40 flex-col items-center gap-2.5 rounded-2xl border border-white/10 bg-slate-900/70 backdrop-blur p-3.5 shadow-xl">
+              <DesignedQrCode
+                value={qrValue}
+                accent={qrColors.fg}
+                logoUrl={profile.avatar_url}
+                size={112}
+                compact
+              />
               <p className="text-[11px] font-medium text-primary-foreground/80 text-center leading-tight">
                 View on mobile
               </p>
