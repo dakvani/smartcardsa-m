@@ -7,6 +7,9 @@ project_id = "aytnjjteziwwbfqddjrw"
     verify_jwt = false
   [functions.preview-transactional-email]
     verify_jwt = false
+  [functions.send-welcome-email]
+    verify_jwt = true
+
 
 
   [functions.wallet-pass]
