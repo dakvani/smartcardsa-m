@@ -188,6 +188,98 @@ export function EmailAuthForm({ mode, onToggleMode }: EmailAuthFormProps) {
     );
   }
 
+  if (useOtp) {
+    return (
+      <form onSubmit={otpSent ? handleVerifyOtp : handleSendOtp} className="space-y-4">
+        {mode === "signup" && !otpSent && (
+          <div className="space-y-2">
+            <Label htmlFor="otp-username" className="text-sm text-muted-foreground">
+              Username
+            </Label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                id="otp-username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="your_username"
+                className="pl-10 h-12 rounded-xl bg-card/50 border-border/50 backdrop-blur-sm"
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <Label htmlFor="otp-email" className="text-sm text-muted-foreground">
+            Email address
+          </Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              id="otp-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              disabled={otpSent}
+              className="pl-10 h-12 rounded-xl bg-card/50 border-border/50 backdrop-blur-sm"
+              required
+            />
+          </div>
+        </div>
+
+        {otpSent && (
+          <div className="space-y-2">
+            <Label htmlFor="otp-code" className="text-sm text-muted-foreground">
+              6-digit code
+            </Label>
+            <Input
+              id="otp-code"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              placeholder="123456"
+              className="h-12 rounded-xl text-center text-lg tracking-[0.5em] bg-card/50 border-border/50"
+              required
+            />
+            <button
+              type="button"
+              onClick={handleSendOtp}
+              className="text-xs text-primary hover:underline"
+            >
+              Resend code
+            </button>
+          </div>
+        )}
+
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full h-12 rounded-xl font-semibold bg-gradient-to-r from-primary to-pink-500 hover:opacity-90 transition-opacity"
+        >
+          {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+          {otpSent ? "Verify code" : "Send code"}
+        </Button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setUseOtp(false);
+            setOtpSent(false);
+            setOtpCode("");
+          }}
+          className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Use password instead
+        </button>
+      </form>
+    );
+  }
+
+
+
   return (
     <>
       {redirecting && (
