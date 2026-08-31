@@ -7,6 +7,7 @@ import { detectLinkType, getLinkTypeDef } from "@/lib/link-types";
 import { SmartCardLogo } from "@/components/brand/SmartCardLogo";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
+import { HeaderBackdrop } from "@/components/profile/HeaderBackdrop";
 import { SocialIcons } from "@/components/profile/SocialIcons";
 import { EmailSignup } from "@/components/profile/EmailSignup";
 import { SaveContactButton } from "@/components/profile/SaveContactButton";
@@ -452,6 +453,7 @@ export default function PublicProfile() {
 
             <div className={L.wrapper}>
              <div className={L.panel}>
+              <HeaderBackdrop style={cardStyle}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -474,6 +476,7 @@ export default function PublicProfile() {
                   <SocialIcons socialLinks={profile.social_links || {}} className={cardStyle.socialColor} order={cardStyle.socialOrder} />
                 </div>
               </motion.div>
+              </HeaderBackdrop>
 
 
               {cardStyle.layout === "social" && cardStyle.stats && cardStyle.stats.length > 0 && (

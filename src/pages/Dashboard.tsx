@@ -62,6 +62,7 @@ import {
   type TemplateFieldKey, type TemplateFieldValues,
 } from "@/lib/template-fields";
 import { TemplateFieldsDialog } from "@/components/dashboard/TemplateFieldsDialog";
+import { HeaderBackdrop } from "@/components/profile/HeaderBackdrop";
 import { TemplateDesignEditor } from "@/components/dashboard/TemplateDesignEditor";
 import { ProfileLinkButton } from "@/components/profile/ProfileLinkButton";
 import { parseCardStyle, headingClassFor, bioClassFor } from "@/lib/template-card-style";
@@ -1344,6 +1345,8 @@ export default function Dashboard() {
                     onUpdateButton={(id, patch) => updateLink(id, patch)}
                     onDeleteButton={(id) => deleteLink(id)}
                     onMoveButton={(id, direction) => moveLink(id, direction)}
+                    userId={user.id}
+                    isPro={isPro}
                   />
                   )}
 
@@ -1566,6 +1569,7 @@ export default function Dashboard() {
                        const PL = layoutClasses(cs.layout, "mini");
                        return (
                         <div className={PL.panel}>
+                         <HeaderBackdrop style={cs} scale="mini">
                          <div className={PL.header}>
                           <div className={`${PL.avatar} bg-primary-foreground/20 backdrop-blur flex items-center justify-center overflow-hidden`}>
                             {profile.avatar_url ? (
