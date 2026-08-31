@@ -257,6 +257,116 @@ export const HEADER_DESIGNS: HeaderDesignSpec[] = [
     },
     clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 80%)",
   },
+  {
+    key: "ribbon",
+    label: "Ribbon waves",
+    hint: "Flowing curved ribbons like a branded badge.",
+    base: { backgroundImage: "linear-gradient(160deg, #eff6ff 0%, #dbeafe 100%)" },
+    pattern: {
+      backgroundImage:
+        "radial-gradient(120% 90% at 10% 0%, #2563eb 0%, transparent 55%), radial-gradient(100% 80% at 95% 100%, #3b82f6 0%, transparent 50%), radial-gradient(80% 60% at 50% 110%, rgba(59,130,246,0.25) 0%, transparent 50%)",
+    },
+    clipPath: "polygon(0 0, 100% 0, 100% 100%, 72% 94%, 50% 100%, 28% 92%, 0 98%)",
+  },
+  {
+    key: "arches",
+    label: "Arches",
+    hint: "Overlapping rounded arches.",
+    base: { backgroundImage: "linear-gradient(180deg, #fdf4ff 0%, #fae8ff 100%)" },
+    pattern: {
+      backgroundImage:
+        "radial-gradient(ellipse 80% 100% at 20% 100%, rgba(168,85,247,0.35) 0%, transparent 70%), radial-gradient(ellipse 80% 100% at 80% 100%, rgba(236,72,153,0.3) 0%, transparent 70%), radial-gradient(ellipse 60% 80% at 50% 100%, rgba(99,102,241,0.25) 0%, transparent 70%)",
+    },
+    clipPath: "polygon(0 0, 100% 0, 100% 90%, 85% 100%, 15% 100%, 0 90%)",
+  },
+  {
+    key: "bubbles",
+    label: "Bubbles",
+    hint: "Scattered translucent circles.",
+    base: { backgroundImage: "linear-gradient(160deg, #ecfeff 0%, #cffafe 100%)" },
+    pattern: {
+      backgroundImage:
+        "radial-gradient(circle at 20% 30%, rgba(6,182,212,0.35) 0%, transparent 25%), radial-gradient(circle at 70% 20%, rgba(59,130,246,0.3) 0%, transparent 20%), radial-gradient(circle at 85% 70%, rgba(14,165,233,0.35) 0%, transparent 22%), radial-gradient(circle at 40% 80%, rgba(99,102,241,0.25) 0%, transparent 18%), radial-gradient(circle at 55% 55%, rgba(236,72,153,0.2) 0%, transparent 15%)",
+    },
+    clipPath: "polygon(0 0, 100% 0, 100% 100%, 92% 95%, 75% 100%, 50% 93%, 25% 100%, 8% 95%, 0 100%)",
+  },
+  {
+    key: "origami",
+    label: "Origami",
+    hint: "Folded paper angular planes.",
+    base: { backgroundImage: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)" },
+    pattern: {
+      backgroundImage:
+        "linear-gradient(135deg, transparent 55%, rgba(217,119,6,0.25) 56%, rgba(217,119,6,0.25) 60%, transparent 61%), linear-gradient(45deg, transparent 30%, rgba(180,83,9,0.2) 31%, rgba(180,83,9,0.2) 35%, transparent 36%), linear-gradient(160deg, rgba(245,158,11,0.15) 0%, transparent 50%)",
+    },
+    clipPath: "polygon(0 0, 100% 0, 100% 85%, 70% 100%, 0 90%)",
+  },
+  {
+    key: "layers",
+    label: "Layered curves",
+    hint: "Stacked curved colour bands.",
+    base: { backgroundImage: "linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%)" },
+    pattern: {
+      backgroundImage:
+        "radial-gradient(140% 90% at 50% 120%, rgba(34,197,94,0.35) 0%, transparent 55%), radial-gradient(120% 70% at 30% 130%, rgba(21,128,61,0.3) 0%, transparent 50%), radial-gradient(120% 70% at 70% 130%, rgba(16,185,129,0.25) 0%, transparent 50%)",
+    },
+    clipPath: "polygon(0 0, 100% 0, 100% 92%, 80% 100%, 60% 92%, 40% 100%, 20% 92%, 0 100%)",
+  },
+  {
+    key: "sunflare",
+    label: "Sun flare",
+    hint: "Bright sunshine glow from the corner.",
+    base: { backgroundImage: "linear-gradient(160deg, #fffbeb 0%, #fef3c7 100%)" },
+    pattern: {
+      backgroundImage:
+        "radial-gradient(80% 80% at 15% 15%, rgba(251,191,36,0.7) 0%, rgba(245,158,11,0.35) 30%, transparent 65%), radial-gradient(60% 60% at 25% 25%, rgba(255,255,255,0.8) 0%, transparent 50%)",
+    },
+    clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 88%)",
+  },
+  {
+    key: "spotlight",
+    label: "Spotlight",
+    hint: "Focused beam of stage light.",
+    base: { backgroundImage: "linear-gradient(180deg, #0f172a 0%, #1e293b 100%)" },
+    pattern: {
+      backgroundImage:
+        "conic-gradient(from 270deg at 50% 120%, rgba(255,255,255,0.25) 0deg, rgba(255,255,255,0.05) 25deg, transparent 50deg, transparent 310deg, rgba(255,255,255,0.05) 335deg, rgba(255,255,255,0.25) 360deg)",
+    },
+    clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 92%, 0 100%)",
+  },
+  {
+    key: "lensflare",
+    label: "Lens flare",
+    hint: "Camera lens light artifacts and orbs.",
+    base: { backgroundImage: "linear-gradient(160deg, #0c4a6e 0%, #082f49 100%)" },
+    pattern: {
+      backgroundImage:
+        "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(125,211,252,0.5) 8%, transparent 20%), radial-gradient(circle at 45% 35%, rgba(255,255,255,0.4) 0%, transparent 6%), radial-gradient(circle at 55% 32%, rgba(255,255,255,0.3) 0%, transparent 5%), radial-gradient(circle at 70% 28%, rgba(255,255,255,0.25) 0%, transparent 4%), linear-gradient(120deg, transparent 40%, rgba(125,211,252,0.15) 50%, transparent 60%)",
+    },
+    clipPath: "polygon(0 0, 100% 0, 100% 90%, 0 100%)",
+  },
+  {
+    key: "halo",
+    label: "Halo glow",
+    hint: "Soft circular aura behind the header.",
+    base: { backgroundImage: "linear-gradient(180deg, #1a1a2e 0%, #16213e 100%)" },
+    pattern: {
+      backgroundImage:
+        "radial-gradient(circle at 50% 50%, rgba(99,102,241,0.45) 0%, rgba(168,85,247,0.25) 35%, transparent 70%), radial-gradient(circle at 50% 50%, rgba(255,255,255,0.15) 0%, transparent 50%)",
+    },
+    clipPath: "polygon(0 0, 100% 0, 100% 100%, 85% 94%, 15% 94%, 0 100%)",
+  },
+  {
+    key: "radiance",
+    label: "Radiance",
+    hint: "Warm rays emanating outward.",
+    base: { backgroundImage: "linear-gradient(180deg, #431407 0%, #7c2d12 100%)" },
+    pattern: {
+      backgroundImage:
+        "repeating-conic-gradient(from 0deg at 50% 100%, rgba(251,146,60,0.25) 0deg 4deg, transparent 4deg 10deg), radial-gradient(80% 60% at 50% 100%, rgba(234,88,12,0.5) 0%, transparent 60%)",
+    },
+    clipPath: "polygon(0 0, 100% 0, 100% 95%, 50% 100%, 0 95%)",
+  },
 ];
 
 export function headerDesignSpec(key: HeaderDesign | undefined): HeaderDesignSpec | undefined {
