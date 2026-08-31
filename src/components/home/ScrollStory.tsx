@@ -1,5 +1,6 @@
 import { useRef } from "react";
-import { motion, useScroll, useTransform, useSpring, useReducedMotion, MotionValue } from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion, MotionValue } from "framer-motion";
+import { useStoryDriver } from "./useStoryDriver";
 import { ArrowRight, Sparkles, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -364,8 +365,9 @@ export function ScrollStory() {
     offset: ["start start", "end end"],
   });
 
-  // Spring-smoothed scroll progress — keeps scrub responsive but stable at any speed.
-  const smoothProgress = useSpring(scrollYProgress, SCROLL_STORY_CONFIG.spring);
+  // Spring-smoothed progress — scroll drives it, and an autoplay clock keeps
+  // the story playing whenever the visitor isn't scrolling.
+  const smoothProgress = useStoryDriver(scrollYProgress, ref, !prefersReduced);
 
   // Top scroll progress bar
   const barScale = useTransform(smoothProgress, [0, 1], [0, 1]);
