@@ -10,6 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import type { CardStyle } from "@/lib/template-card-style";
 import { FONT_FAMILIES, FONT_LABELS, fontClassFor, TEMPLATE_LAYOUTS, type ButtonShape, type FontFamily, type TemplateLayout } from "@/lib/smartlink-templates";
 import { LAYOUT_HINTS, LAYOUT_LABELS } from "@/lib/template-layout";
+import { HEADER_DESIGNS } from "@/lib/header-designs";
+import { Switch } from "@/components/ui/switch";
+
 
 import { LINK_MOTIONS } from "@/lib/link-motion";
 import { LINK_SHADOWS, parseLinkStyle, type LinkShadow, type LinkStyle } from "@/lib/link-style";
