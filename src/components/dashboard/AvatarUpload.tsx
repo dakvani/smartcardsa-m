@@ -1,8 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Camera, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { AvatarCropper } from "@/components/dashboard/AvatarCropper";
 
 interface AvatarUploadProps {
   userId: string;
@@ -13,59 +14,52 @@ interface AvatarUploadProps {
 
 export function AvatarUpload({ userId, currentAvatarUrl, username, onUpload }: AvatarUploadProps) {
   const [uploading, setUploading] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Revoke the temporary object URL when the cropper closes.
+  useEffect(() => () => { if (cropSrc) URL.revokeObjectURL(cropSrc); }, [cropSrc]);
+
+  const handleSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Image must be less than 8MB");
+      return;
+    }
+    setCropSrc(URL.createObjectURL(file));
+  };
+
+  const uploadBlob = async (blob: Blob) => {
     try {
       setUploading(true);
-      
-      const file = event.target.files?.[0];
-      if (!file) return;
+      const filePath = `${userId}/avatar-${Date.now()}.jpg`;
 
-      // Validate file type
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please upload an image file");
-        return;
-      }
-
-      // Validate file size (max 2MB)
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error("Image must be less than 2MB");
-        return;
-      }
-
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${userId}/avatar.${fileExt}`;
-
-      // Delete old avatar if exists
+      // Delete old avatar if it lived in our bucket
       if (currentAvatarUrl) {
         const oldPath = currentAvatarUrl.split("/avatars/")[1];
-        if (oldPath) {
-          await supabase.storage.from("avatars").remove([oldPath]);
-        }
+        if (oldPath) await supabase.storage.from("avatars").remove([oldPath]);
       }
 
-      // Upload new avatar
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file, { upsert: true });
-
+        .upload(filePath, blob, { upsert: true, contentType: "image/jpeg" });
       if (uploadError) throw uploadError;
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
-
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
       onUpload(publicUrl);
-      toast.success("Avatar uploaded!");
+      setCropSrc(null);
+      toast.success("Avatar updated!");
     } catch (error: any) {
       toast.error("Failed to upload: " + error.message);
     } finally {
       setUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
     }
   };
 
@@ -109,14 +103,21 @@ export function AvatarUpload({ userId, currentAvatarUrl, username, onUpload }: A
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        onChange={handleUpload}
+        onChange={handleSelect}
         className="hidden"
         disabled={uploading}
       />
       <div className="flex items-center gap-2">
-        <p className="text-xs text-muted-foreground">Click to upload avatar</p>
+        <p className="text-xs text-muted-foreground">Click to upload &amp; crop your photo</p>
         {currentAvatarUrl && <Button type="button" size="sm" variant="ghost" className="h-7 text-[11px] text-destructive" onClick={removeAvatar}><Trash2 className="h-3 w-3" /> Remove</Button>}
       </div>
+
+      <AvatarCropper
+        open={!!cropSrc}
+        src={cropSrc}
+        onCancel={() => setCropSrc(null)}
+        onCropped={uploadBlob}
+      />
     </div>
   );
 }
