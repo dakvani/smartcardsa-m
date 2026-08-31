@@ -20,7 +20,7 @@ export function HeaderBackdrop({ style, children, scale = "full" }: Props) {
   return (
     <div
       className={`relative z-10 overflow-hidden ${
-        mini ? "mb-3 rounded-2xl p-3" : "mb-5 sm:mb-6 rounded-3xl p-4 sm:p-5"
+        mini ? "rounded-2xl p-3" : "rounded-3xl p-4 sm:p-5"
       } ring-1 ring-primary-foreground/15 shadow-lg`}
     >
       <img
