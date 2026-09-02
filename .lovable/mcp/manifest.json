@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "sdk_version": "1.0.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://ezflznozfbmrzxepfndu.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "smartcardsa",
+      "version": "0.1.0",
+      "title": "SmartCardSA"
+    },
+    "tools": [
+      {
+        "name": "get_my_profile",
+        "title": "Get my profile",
+        "description": "Fetch the signed-in user's SmartCard profile (username, title, bio, theme, plan).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_my_profile",
+        "title": "Update my profile",
+        "description": "Update the signed-in user's profile fields (title, bio, username, avatar URL).",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "maxLength": 120,
+              "description": "Display name / headline."
+            },
+            "bio": {
+              "type": "string",
+              "maxLength": 1000,
+              "description": "Short bio shown on the public profile."
+            },
+            "username": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]{3,30}$",
+              "description": "Public handle used in the profile URL."
+            },
+            "avatar_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Public URL of the avatar image."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_links",
+        "title": "List my links",
+        "description": "List all links on the signed-in user's SmartCard profile, in display order.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_link",
+        "title": "Create link",
+        "description": "Add a new link button to the signed-in user's SmartCard profile.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "description": "Button label."
+            },
+            "url": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Destination URL (https://, tel:, mailto:, etc.)."
+            },
+            "visible": {
+              "type": "boolean",
+              "description": "Whether the link is shown publicly. Defaults to true."
+            }
+          },
+          "required": [
+            "title",
+            "url"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_link",
+        "title": "Update link",
+        "description": "Update the title, URL, visibility, or position of one of the signed-in user's links.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the link to update."
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "url": {
+              "type": "string",
+              "minLength": 1
+            },
+            "visible": {
+              "type": "boolean"
+            },
+            "position": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Display order (0 = first)."
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "delete_link",
+        "title": "Delete link",
+        "description": "Permanently delete one of the signed-in user's profile links.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the link to delete."
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_profile_stats",
+        "title": "Get profile stats",
+        "description": "Summarize the signed-in user's profile performance: total views and link clicks over the last N days.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "description": "Lookback window in days (default 30)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
