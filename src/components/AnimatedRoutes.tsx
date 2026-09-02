@@ -80,6 +80,7 @@ export function AnimatedRoutes() {
             <Route path="/settings" element={<PageTransition><Settings /></PageTransition>} />
             <Route path="/nfc" element={<PageTransition><NFCPage /></PageTransition>} />
             <Route path="/~oauth/*" element={<Navigate to="/login" replace />} />
+            <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             <Route path="/marketing-unsubscribe" element={<PageTransition><MarketingUnsubscribe /></PageTransition>} />
             <Route path="/qr/:username" element={<QRRedirect />} />
             <Route path="/u/:username" element={<PageTransition><PublicProfile /></PageTransition>} />
