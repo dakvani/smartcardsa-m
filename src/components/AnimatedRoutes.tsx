@@ -32,6 +32,7 @@ const QRRedirect = lazy(() => import("@/pages/QRRedirect"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const NFCPage = lazy(() => import("@/pages/NFC"));
 const MarketingUnsubscribe = lazy(() => import("@/pages/MarketingUnsubscribe"));
+const OAuthConsent = lazy(() => import("@/pages/OAuthConsent"));
 
 function RouteFallback() {
   return (
