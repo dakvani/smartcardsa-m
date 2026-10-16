@@ -17,7 +17,7 @@ export default function QRRedirect() {
     void (async () => {
       try {
         const { data: profile } = await supabase
-          .from("public_profiles" as any)
+          .from("public_profiles")
           .select("id")
           .eq("username", username.toLowerCase())
           .maybeSingle();
