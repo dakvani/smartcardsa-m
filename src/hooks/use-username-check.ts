@@ -46,7 +46,7 @@ export function useUsernameCheck(username: string, debounceMs = 500) {
       try {
         // Check if username exists
         const { data, error } = await supabase
-          .from("profiles")
+          .from("public_profiles" as any)
           .select("username")
           .eq("username", trimmed)
           .maybeSingle();
@@ -65,7 +65,7 @@ export function useUsernameCheck(username: string, debounceMs = 500) {
           // Generate candidates and check which are available
           const candidates = generateSuggestions(trimmed);
           const { data: existingUsernames } = await supabase
-            .from("profiles")
+            .from("public_profiles" as any)
             .select("username")
             .in("username", candidates);
 

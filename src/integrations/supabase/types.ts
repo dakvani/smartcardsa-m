@@ -270,6 +270,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "email_subscribers_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       email_template_overrides: {
@@ -443,6 +450,13 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "link_clicks_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -915,6 +929,13 @@ export type Database = {
             referencedRelation: "profiles_public"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "profile_share_events_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profile_templates: {
@@ -1009,6 +1030,13 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_views_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1465,6 +1493,93 @@ export type Database = {
           updated_at?: string | null
           user_id?: string | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      public_profiles: {
+        Row: {
+          animation_intensity: number | null
+          animation_speed: number | null
+          animation_type: string | null
+          avatar_url: string | null
+          bio: string | null
+          card_style: Json | null
+          created_at: string | null
+          custom_accent_color: string | null
+          custom_background_type: string | null
+          custom_background_url: string | null
+          custom_bg_color: string | null
+          email_collection_enabled: boolean | null
+          gradient_direction: string | null
+          id: string | null
+          motion_enabled: boolean | null
+          plan: string | null
+          qr_settings: Json | null
+          social_links: Json | null
+          theme_gradient: string | null
+          theme_name: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string | null
+          username: string | null
+          wallpaper_style: string | null
+          wallpaper_value: string | null
+        }
+        Insert: {
+          animation_intensity?: number | null
+          animation_speed?: number | null
+          animation_type?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          card_style?: Json | null
+          created_at?: string | null
+          custom_accent_color?: string | null
+          custom_background_type?: string | null
+          custom_background_url?: string | null
+          custom_bg_color?: string | null
+          email_collection_enabled?: boolean | null
+          gradient_direction?: string | null
+          id?: string | null
+          motion_enabled?: boolean | null
+          plan?: string | null
+          qr_settings?: Json | null
+          social_links?: Json | null
+          theme_gradient?: string | null
+          theme_name?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string | null
+          wallpaper_style?: string | null
+          wallpaper_value?: string | null
+        }
+        Update: {
+          animation_intensity?: number | null
+          animation_speed?: number | null
+          animation_type?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          card_style?: Json | null
+          created_at?: string | null
+          custom_accent_color?: string | null
+          custom_background_type?: string | null
+          custom_background_url?: string | null
+          custom_bg_color?: string | null
+          email_collection_enabled?: boolean | null
+          gradient_direction?: string | null
+          id?: string | null
+          motion_enabled?: boolean | null
+          plan?: string | null
+          qr_settings?: Json | null
+          social_links?: Json | null
+          theme_gradient?: string | null
+          theme_name?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string | null
+          wallpaper_style?: string | null
+          wallpaper_value?: string | null
         }
         Relationships: []
       }
